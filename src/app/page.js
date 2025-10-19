@@ -52,31 +52,28 @@ const Dashboard = () => {
     {
       title:
         "Lorem ipsum dolor sit amet, consectet Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore",
-      date: "18 November 2025",
-      time: "09:29:00 AM",
+      date: "2025-10-12T05:00:00Z",
       image: "/assets/home/agenda.png",
-      month: "Nov",
-      day: "18",
+      month: "Okt",
+      day: "12",
       href: "/agenda",
     },
     {
       title:
         "Lorem ipsum dolor sit amet, consectet Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore",
-      date: "20 November 2025",
-      time: "01:00:00 PM",
+      date: "2025-10-11T06:00:00Z",
       image: "/assets/home/agenda.png",
-      month: "Nov",
-      day: "20",
+      month: "Okt",
+      day: "11",
       href: "/agenda",
     },
     {
       title:
         "Lorem ipsum dolor sit amet, consectet Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
-      date: "25 November 2025",
-      time: "10:00:00 AM",
+      date: "2025-10-10T03:00:00Z",
       image: "/assets/agenda-3.jpg",
-      month: "Nov",
-      day: "25",
+      month: "Okt",
+      day: "10",
       href: "/agenda",
     },
   ];
@@ -85,24 +82,21 @@ const Dashboard = () => {
     {
       title:
         "Lorem ipsum dolor sit amet, consectet Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
-      date: "17 November 2025",
-      time: "08:00:00 AM",
+      date: "2025-10-09T01:00:00Z",
       image: "/assets/home/berita.png",
       href: "/berita",
     },
     {
       title:
         "Lorem ipsum dolor sit amet, consectet Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
-      date: "16 November 2025",
-      time: "03:15:00 PM",
+      date: "2025-10-08T08:15:00Z",
       image: "/assets/home/berita.png",
       href: "/berita",
     },
     {
       title:
         "Lorem ipsum dolor sit amet, consectet Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
-      date: "15 November 2025",
-      time: "10:30:00 AM",
+      date: "2025-10-07T03:30:00Z",
       image: "/assets/home/berita.png",
       href: "/berita",
     },
@@ -112,19 +106,19 @@ const Dashboard = () => {
     {
       title:
         "Lorem ipsum dolor sit amet, consectet Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
-      date: "14 November 2025",
+      date: "2025-10-06T05:00:00Z",
       href: "/pengumuman",
     },
     {
       title:
         "Lorem ipsum dolor sit amet, consectet Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
-      date: "13 November 2025",
+      date: "2025-10-05T05:00:00Z",
       href: "/pengumuman",
     },
     {
       title:
         "Lorem ipsum dolor sit amet, consectet Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
-      date: "10 November 2025",
+      date: "2025-10-04T05:00:00Z",
       href: "/pengumuman",
     },
   ];
@@ -213,7 +207,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <ImageSlider />
+      <ImageSlider className="mt-12" />
       <section className="px-4 py-8 md:px-12 h-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-3 h-full items-start gap-8 ">
           <Information type="agenda" data={dummyAgenda} />
