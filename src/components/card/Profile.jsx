@@ -7,9 +7,11 @@ import React from "react";
 export default function Profile({
   id,
   name,
-  role,
-  imageSrc,
-  socials = {},
+  position,
+  image_path,
+  social_media,
+  linkedin,
+  email,
   shape = "square", // square | circle
 }) {
   const profileUrl = `/about/all-members/profile?id=${id}`;
@@ -26,7 +28,7 @@ export default function Profile({
           }`}
         >
           <Image
-            src={imageSrc || "/assets/default-profile.jpg"}
+            src={`${process.env.NEXT_PUBLIC_HOST}${image_path}`}
             alt={name}
             fill
             priority
@@ -38,13 +40,13 @@ export default function Profile({
         <h3 className="font-semibold text-gray-900 text-lg md:text-xl leading-snug">
           {name}
         </h3>
-        <p className="text-sm text-gray-600 mb-3">{role}</p>
+        <p className="text-sm text-gray-600 mb-3">{position}</p>
       </Link>
 
       <div className="flex space-x-4 text-primary mt-1 z-0">
-        {socials.linkedin && (
+        {linkedin && (
           <a
-            href={socials.linkedin}
+            href={linkedin}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:scale-110 transition-transform"
@@ -52,9 +54,9 @@ export default function Profile({
             <FaLinkedin className="hover:text-[#0A66C2]" size={20} />
           </a>
         )}
-        {socials.github && (
+        {social_media && (
           <a
-            href={socials.github}
+            href={social_media}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:scale-110 transition-transform"
@@ -62,9 +64,9 @@ export default function Profile({
             <FaGithub className="hover:text-black" size={20} />
           </a>
         )}
-        {socials.instagram && (
+        {email && (
           <a
-            href={socials.instagram}
+            href={email}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:scale-110 transition-transform"

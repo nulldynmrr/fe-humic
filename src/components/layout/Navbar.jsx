@@ -33,12 +33,7 @@ const menuItems = [
     ],
   },
   {
-    name: "Contact Us",
-    href: "#",
-    dropdown: [
-      { name: "Events", href: "/news/events" },
-      { name: "Announcements", href: "/news/announcements" },
-    ],
+    name: "Contact Us", href: "/contact"
   },
 ];
 

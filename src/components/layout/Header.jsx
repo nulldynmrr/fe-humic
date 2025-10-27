@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const Header = ({ title, subtitle, imageSrc, showSubtitle = true }) => {
   return (
-    <div className="px-4 py-8 md:px-12 mt-[90px] relative w-full h-[200px] overflow-hidden">
+    <div className="px-4 py-8 md:px-12 relative w-full h-[200px] overflow-hidden">
       <Image
         src={imageSrc}
         alt={title}

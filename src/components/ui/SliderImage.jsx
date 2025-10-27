@@ -7,54 +7,53 @@ import "swiper/css/pagination";
 
 const images = [
   "/assets/home/image-header.svg",
-  "https://images.unsplash.com/photo-1491553895911-0055eca6402d",
-  "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
+  "/assets/home/image-header.svg",
+  "/assets/home/image-header.svg",
 ];
 
 const ImageSlider = () => {
   return (
-    <div className="relative w-full h-screen bg-black overflow-hidden">
+    <div className="relative w-full bg-black overflow-hidden">
       <Swiper
         modules={[Pagination, Autoplay]}
         pagination={{ clickable: true }}
         autoplay={{
-          delay: 3500,
+          delay: 10000,
           disableOnInteraction: false,
         }}
         loop={true}
-        className="w-full h-full"
+        className="w-full aspect-[3/1]"
       >
         {images.map((src, i) => (
-          <SwiperSlide key={i}>
-            <div className="relative w-full h-full flex items-center justify-center bg-black">
-              <img
-                src={src}
-                alt={`Slide ${i + 1}`}
-                className="max-w-none w-auto h-full object-contain"
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
-            </div>
+          <SwiperSlide key={i} className="relative w-full h-full">
+            <img
+              src={src}
+              alt={`Slide ${i + 1}`}
+              className="absolute inset-0 w-full h-full object-contain bg-black"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
           </SwiperSlide>
         ))}
       </Swiper>
+
       <style jsx global>{`
         .swiper-pagination-bullet {
-          width: 30px;
-          height: 8px;
-          border-radius: 10px;
+          width: 16px;
+          height: 5px;
+          border-radius: 8px;
           background: rgba(255, 255, 255, 0.5);
           opacity: 1;
           transition: all 0.3s ease;
         }
 
         .swiper-pagination-bullet-active {
-          width: 45px;
+          width: 24px;
           background: #fff;
           opacity: 1;
         }
 
         .swiper-pagination {
-          bottom: 25px !important;
+          bottom: 20px !important;
           display: flex;
           justify-content: center;
           gap: 6px;

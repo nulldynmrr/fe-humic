@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useCallback, useRef, useState, useEffect } from "react";
 import ImageSlider from "@/components/ui/SliderImage";
 import List from "@/components/ui/Checklist";
 import Stats from "@/components/ui/StatsSection";
@@ -10,13 +10,96 @@ import CardFeedback from "@/components/card/Feedback";
 import Accordion from "@/components/card/Accordion";
 import Image from "next/image";
 import Link from "next/link";
-import { FiArrowUpRight } from "react-icons/fi";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import { FaCalendarAlt, FaClock, FaBell } from "react-icons/fa";
 
+import request from "@/utils/request";
+import toast from "react-hot-toast";
+
 const Dashboard = () => {
   const feedbackRef = useRef(null);
+
+  const [agenda, setAgenda] = useState([]);
+  const [berita, setBerita] = useState([]);
+  const [pengumuman, setPengumuman] = useState([]);
+  const [testimoni, setTestimoni] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchAllAgenda = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await request.get("/agenda");
+      setAgenda(response.data);
+    } catch (err) {
+      if (err.response) {
+        tost.dismiss();
+        setAgenda([]);
+      } else {
+        toast.error("Gagal memuat data agenda");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchAllBerita = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await request.get("/berita");
+      setBerita(response.data);
+    } catch (err) {
+      if (err.response) {
+        toast.dismiss();
+        setBerita([]);
+      } else {
+        toast.error("Gagal memuat data berita");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchAllPengumuman = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await request.get("/pengumuman");
+      setPengumuman(response.data);
+    } catch (err) {
+      if (err.response) {
+        toast.dismiss();
+        setPengumuman([]);
+      } else {
+        toast.error("Gagal memuat data pengumuman");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchAllTestimoni = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await request.get("/testimony");
+      setTestimoni(response.data);
+    } catch (err) {
+      if (err.response) {
+        toast.dismiss();
+        setTestimoni([]);
+      } else {
+        toast.error("Gagal memuat data testimoni");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAllAgenda();
+    fetchAllBerita();
+    fetchAllPengumuman();
+    fetchAllTestimoni();
+  }, [fetchAllAgenda, fetchAllBerita, fetchAllPengumuman, fetchAllTestimoni]);
 
   const animateScroll = (container, distance, duration = 450) => {
     if (!container) return;
@@ -47,116 +130,6 @@ const Dashboard = () => {
 
   const scrollLeft = () => animateScroll(feedbackRef.current, -getStep());
   const scrollRight = () => animateScroll(feedbackRef.current, getStep());
-
-  const dummyAgenda = [
-    {
-      title:
-        "Lorem ipsum dolor sit amet, consectet Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore",
-      date: "2025-10-12T05:00:00Z",
-      image: "/assets/home/agenda.png",
-      month: "Okt",
-      day: "12",
-      href: "/agenda",
-    },
-    {
-      title:
-        "Lorem ipsum dolor sit amet, consectet Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore",
-      date: "2025-10-11T06:00:00Z",
-      image: "/assets/home/agenda.png",
-      month: "Okt",
-      day: "11",
-      href: "/agenda",
-    },
-    {
-      title:
-        "Lorem ipsum dolor sit amet, consectet Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
-      date: "2025-10-10T03:00:00Z",
-      image: "/assets/agenda-3.jpg",
-      month: "Okt",
-      day: "10",
-      href: "/agenda",
-    },
-  ];
-
-  const dummyBerita = [
-    {
-      title:
-        "Lorem ipsum dolor sit amet, consectet Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
-      date: "2025-10-09T01:00:00Z",
-      image: "/assets/home/berita.png",
-      href: "/berita",
-    },
-    {
-      title:
-        "Lorem ipsum dolor sit amet, consectet Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
-      date: "2025-10-08T08:15:00Z",
-      image: "/assets/home/berita.png",
-      href: "/berita",
-    },
-    {
-      title:
-        "Lorem ipsum dolor sit amet, consectet Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
-      date: "2025-10-07T03:30:00Z",
-      image: "/assets/home/berita.png",
-      href: "/berita",
-    },
-  ];
-
-  const dummyPengumuman = [
-    {
-      title:
-        "Lorem ipsum dolor sit amet, consectet Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
-      date: "2025-10-06T05:00:00Z",
-      href: "/pengumuman",
-    },
-    {
-      title:
-        "Lorem ipsum dolor sit amet, consectet Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
-      date: "2025-10-05T05:00:00Z",
-      href: "/pengumuman",
-    },
-    {
-      title:
-        "Lorem ipsum dolor sit amet, consectet Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
-      date: "2025-10-04T05:00:00Z",
-      href: "/pengumuman",
-    },
-  ];
-
-  const feedbacks = [
-    {
-      name: "Abdull",
-      role: "Front End Developer Intern",
-      university: "Mahasiswa UGM",
-      feedback:
-        "Pengalaman magang yang sangat berkesan! Timnya suportif dan banyak belajar tentang React.",
-      rating: 5,
-    },
-    {
-      name: "Anisa Rahmawati",
-      role: "Data Analyst Intern",
-      university: "Mahasiswa UI",
-      feedback:
-        "Proyek yang menantang tapi menyenangkan. Banyak belajar tentang analisis data real.",
-      rating: 4,
-    },
-    {
-      name: "Rizky Pratama",
-      role: "UI/UX Designer Intern",
-      university: "Mahasiswa ITB",
-      feedback:
-        "Desain sistemnya keren banget, dapat banyak insight soal user journey dan visual hierarchy.",
-      rating: 5,
-    },
-    {
-      name: "Anisa Rahmawati",
-      role: "Data Analyst Intern",
-      university: "Mahasiswa UI",
-      feedback:
-        "Proyek yang menantang tapi menyenangkan. Banyak belajar tentang analisis data real.",
-      rating: 4,
-    },
-  ];
 
   const stats = [
     { value: 10, label: "Divisi Magang yang Tersedia" },
@@ -210,9 +183,9 @@ const Dashboard = () => {
       <ImageSlider className="mt-12" />
       <section className="px-4 py-8 md:px-12 h-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-3 h-full items-start gap-8 ">
-          <Information type="agenda" data={dummyAgenda} />
-          <Information type="berita" data={dummyBerita} />
-          <Information type="pengumuman" data={dummyPengumuman} />
+          <Information type="agenda" data={agenda} loading={loading} />
+          <Information type="berita" data={berita} loading={loading} />
+          <Information type="pengumuman" data={pengumuman} loading={loading} />
         </div>
       </section>
       <section className="h-full md:min-h-[600px] overflow-hidden">
@@ -301,13 +274,20 @@ const Dashboard = () => {
               ]}
             />
 
-            <Link
-              href="#"
-              className="flex items-center gap-2 text-xl text-primary font-semibold hover:underline transition-all duration-300"
-            >
-              Apply for your internship
-              <FiArrowUpRight className="text-2xl" />
-            </Link>
+            <div className="flex flex-col md:flex-row space-x-4">
+              <Button
+                onClick={() => {}}
+                text="Apply for internship"
+                variant="secondary"
+                maxWidth
+              />
+              <Button
+                onClick={() => {}}
+                text="Apply for warp internship"
+                variant="primary"
+                maxWidth
+              />
+            </div>
           </div>
         </div>
 
@@ -344,9 +324,9 @@ const Dashboard = () => {
               className="flex space-x-4 overflow-x-auto pr-[90px] snap-x snap-mandatory scrollbar-hide"
               style={{ scrollBehavior: "smooth" }}
             >
-              {feedbacks.map((fb, index) => (
+              {testimoni.map((testimoni, index) => (
                 <div key={index} className="shrink-0 snap-start">
-                  <CardFeedback {...fb} />
+                  <CardFeedback {...testimoni} />
                 </div>
               ))}
             </div>

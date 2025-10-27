@@ -15,10 +15,10 @@ const Button = ({
   equalSize,
 }) => {
   const baseStyle =
-    "flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200";
+    "flex items-center justify-center gap-2 px-4 py-2 rounded-sm text-sm font-medium transition-colors duration-200";
 
   const variants = {
-    primary: "bg-primary text-white hover:bg-primary-600",
+    primary: "bg-primary text-white hover:bg-primary-600 ",
     secondary:
       "bg-white text-primary border border-primary-500 hover:bg-primary",
     disabled: "bg-neut-300 text-white cursor-not-allowed",
