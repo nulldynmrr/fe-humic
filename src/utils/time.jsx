@@ -2,6 +2,7 @@ export function formatWaktu(timestamp, mode = "default") {
   try {
     const now = new Date();
     const date = new Date(timestamp);
+    if (isNaN(date.getTime())) return "-";
 
     const diffMs = now.getTime() - date.getTime();
     const diffMinutes = Math.floor(diffMs / 60000);

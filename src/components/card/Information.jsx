@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { formatWaktu } from "@/utils/time";
-import Skeleton from "@/components/ui/Sekeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Information({ type, data, loading = false }) {
   const icon =
@@ -23,7 +23,7 @@ export default function Information({ type, data, loading = false }) {
 
   return (
     <section
-      className="flex flex-col overflow-hidden"
+      className="flex flex-col overflow-hidden min-h-full "
       aria-labelledby={`${type}-title`}
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200">
@@ -57,7 +57,9 @@ export default function Information({ type, data, loading = false }) {
             <article
               key={idx}
               className={`mb-4 ${
-                type !== "agenda" && idx !== 0 ? "pt-3 mt-3" : ""
+                type !== "agenda" && type !== "berita" && idx !== 0
+                  ? "pt-3 mt-[-20px]"
+                  : ""
               }`}
             >
               <Link href={item.href || "#"} className="block">
@@ -88,7 +90,7 @@ export default function Information({ type, data, loading = false }) {
                     </div>
                   </div>
                 ) : type === "pengumuman" ? (
-                  <div className="flex flex-col bg-neut-50 p-4 rounded-md">
+                  <div className="flex flex-col h-full bg-neut-50 p-4 rounded-md">
                     <h3 className="text-md font-medium text-neut-900 line-clamp-2">
                       {item.title}
                     </h3>
