@@ -2,13 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  FaEnvelope,
-  FaChevronDown,
-  FaSearch,
-  FaBars,
-  FaTimes,
-} from "react-icons/fa";
+import { FaEnvelope, FaChevronDown, FaBars, FaTimes } from "react-icons/fa";
 
 const menuItems = [
   { name: "Home", href: "/" },
@@ -26,14 +20,11 @@ const menuItems = [
   },
   {
     name: "Internship Project",
-    href: "#",
-    dropdown: [
-      { name: "Internship", href: "/internship" },
-      { name: "International Internship", href: "/international-internship" },
-    ],
+    href: "/internship-project",
   },
   {
-    name: "Contact Us", href: "/contact"
+    name: "Contact Us",
+    href: "/contact",
   },
 ];
 
@@ -91,7 +82,6 @@ const Navbar = () => {
                   humic@telkomuniversity.ac.id
                 </span>
               </a>
-              <FaSearch className="cursor-pointer hover:opacity-80" />
             </div>
 
             <ul className="flex items-center space-x-8 relative mt-3">

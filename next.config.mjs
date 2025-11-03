@@ -1,16 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // SEBLUM DEPLOY GANTI
-  // images: {
-  //     remotePatterns: [
-  //       {
-  //         protocol: "https",
-  //         hostname: "api.myapp.com",
-  //         pathname: "/img/**",
-  //       },
-  //     ],
-  //   }
-
   images: {
     remotePatterns: [
       {
@@ -19,16 +8,11 @@ const nextConfig = {
         port: "3000",
         pathname: "/img/**",
       },
-      {
-        protocol: "http",
-        hostname: "localhost",
-        port: "3000",
-        pathname: "/img/**",
-      },
-      {
-        protocol: "https",
-        hostname: "**",
-      },
+      // {
+      //   protocol: "https",
+      //   hostname: "api.example.com",
+      //   pathname: "/img/**",
+      // },
     ],
   },
   async rewrites() {
