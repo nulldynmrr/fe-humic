@@ -47,13 +47,13 @@ const data = {
       items: [
         {
           title: "Dashboard",
-          url: "admin/dashboard",
+          url: "dashboard",
           icon: LayoutDashboard,
           isActive: true,
         },
         {
           title: "Users Admin",
-          url: "/users-admin",
+          url: "users-admin",
           icon: Users,
         },
       ],
@@ -63,37 +63,42 @@ const data = {
       items: [
         {
           title: "Agenda",
-          url: "admin/agenda",
+          url: "agenda-overview",
           icon: CalendarDays,
         },
         {
           title: "Berita",
-          url: "admin/berita",
+          url: "berita-overview",
           icon: Newspaper,
         },
         {
           title: "Pengumuman",
-          url: "admin/pengumuman",
+          url: "pengumuman-overview",
           icon: Megaphone,
         },
         {
           title: "Internship Project",
-          url: "admin/internship-project",
+          url: "internship-project-overview",
           icon: Briefcase,
         },
         {
-          title: "Team Humic",
-          url: "admin/team-humic",
+          title: "Staffs",
+          url: "staffs-overview",
+          icon: Users,
+        },
+        {
+          title: "Intern",
+          url: "teams-overview",
           icon: Users2,
         },
         {
           title: "Testimoni",
-          url: "admin/testimoni",
+          url: "testimoni-overview",
           icon: MessageSquare,
         },
         {
           title: "Partnership",
-          url: "admin/partnership",
+          url: "partnership-overview",
           icon: Handshake,
         },
       ],
@@ -103,12 +108,12 @@ const data = {
       items: [
         {
           title: "Settings",
-          url: "admin/settings",
+          url: "settings",
           icon: Settings,
         },
         {
           title: "Help Center",
-          url: "admin/help-center",
+          url: "help-center",
           icon: HelpCircle,
         },
       ],

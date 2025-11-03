@@ -116,13 +116,13 @@
   }
 }
 
-// style buat layout Admin
-.desktop-padding-left {
-  padding-left: 0;
+html,
+body,
+#__next {
+  overflow-x: hidden;
 }
 
-@media (min-width: 768px) {
-  .desktop-padding-left {
-    padding-left: 240px;
-  }
-}
+/* * {
+  max-width: 100vw;
+  box-sizing: border-box;
+} */

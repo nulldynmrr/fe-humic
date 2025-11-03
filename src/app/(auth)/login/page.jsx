@@ -5,10 +5,12 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const onSubmit = (e) => {
@@ -42,7 +44,7 @@ export default function LoginPage() {
 
           <form onSubmit={onSubmit} className="mt-8 space-y-5">
             <div className="flex flex-col space-y-2">
-              <Label htmlFor="email" className="text-gray-700">
+              <Label htmlFor="email" className="text-gray-900">
                 Email
               </Label>
               <Input
@@ -53,27 +55,38 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="text-black bg-white focus:bg-white focus:ring-0 focus:border-gray-300 hover:bg-white autofill:text-black autofill:bg-white"
               />
             </div>
 
             <div className="flex flex-col space-y-2">
               <div className="flex justify-between items-center">
-                <Label htmlFor="password" className="text-gray-700">
+                <Label htmlFor="password" className="text-gray-900">
                   Password
                 </Label>
-                <a href="#" className="text-sm text-[#62748E] hover:underline">
+                <a href="#" className="text-sm text-gray-700 hover:underline">
                   Forgot password?
                 </a>
               </div>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="********"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="********"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="text-black bg-white pr-10 focus:bg-white focus:ring-0 focus:border-gray-300 hover:bg-white "
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             <Button

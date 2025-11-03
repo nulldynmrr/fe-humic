@@ -14,10 +14,10 @@ export default function AdminLayout({ children }) {
         <AppSidebar />
       </div>
 
-      <div className="flex flex-col flex-1 w-full md:ml-[240px] md:max-w-[calc(100vw-240px)] transition-all">
+      <div className="flex flex-col flex-1 w-full md:ml-[240px] transition-all overflow-hidden">
         <AdminNavbar />
         <main className="flex-1 px-4 py-4 md:px-8 lg:px-12 overflow-y-auto">
-          <div className="max-w-full">{children}</div>
+          <div className="w-full overflow-x-auto">{children}</div>
         </main>
       </div>
 
