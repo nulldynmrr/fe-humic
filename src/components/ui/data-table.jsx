@@ -11,7 +11,7 @@ import {
 } from "@tanstack/react-table";
 import { ChevronDown, Filter } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
@@ -19,7 +19,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/Dropdown-menu";
 import {
   Table,
   TableBody,
@@ -27,7 +27,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/Table";
 import { Pagination } from "@/components/ui/pagination";
 
 export function DataTable({
@@ -36,6 +36,8 @@ export function DataTable({
   filterKey = "",
   filterOptions = [],
   onFilterSelect,
+  onFilterChange,
+  placeholderSearch,
 }) {
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
@@ -66,43 +68,40 @@ export function DataTable({
       <div className="flex flex-col md:flex-row md:items-center py-4 gap-2">
         {filterKey && (
           <Input
-            placeholder={`Filter by ${filterKey}...`}
+            placeholder={placeholderSearch || `Cari...`}
             value={table.getColumn(filterKey)?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table.getColumn(filterKey)?.setFilterValue(event.target.value)
-            }
+            onChange={(event) => {
+              const value = event.target.value;
+              if (onFilterChange) onFilterChange(value);
+              table.getColumn(filterKey)?.setFilterValue(value);
+            }}
             className="max-w-sm border-black/10 dark:border-white/10"
           />
         )}
+
         {filterOptions.length > 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger
               asChild
-              className="bg-sidebar
-    border 
-   border-black/10 dark:border-white/10 dark:hover:bg-sidebar/20"
+              className="bg-sidebar border border-black/10 dark:border-white/10 dark:hover:bg-sidebar/20"
             >
               <Button variant="outline" className="flex items-center gap-1">
                 <Filter className="h-4 w-4" />
                 Filter
               </Button>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent
               align="start"
               className="bg-white dark:bg-neutral-900 border border-black/10 dark:border-white/10"
             >
               {filterOptions.map((option) => (
                 <DropdownMenuItem
-                  key={option.value}
+                  key={option.value || option.label}
                   onClick={() => {
                     if (onFilterSelect) onFilterSelect(option.value);
                   }}
-                  className="
-        capitalize cursor-pointer
-        text-black dark:text-white
-        hover:bg-gray-100 dark:hover:bg-gray-200/20
-        transition-colors
-      "
+                  className="capitalize cursor-pointer text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors"
                 >
                   {option.label}
                 </DropdownMenuItem>
@@ -114,9 +113,7 @@ export function DataTable({
         <DropdownMenu>
           <DropdownMenuTrigger
             asChild
-            className="bg-sidebar
-    border 
-   border-black/10 dark:border-white/10 dark:hover:bg-sidebar/20"
+            className="bg-sidebar border border-black/10 dark:border-white/10 dark:hover:bg-sidebar/20"
           >
             <Button variant="outline" className="md:ml-auto">
               Columns <ChevronDown className="ml-1 h-4 w-4" />
@@ -132,12 +129,7 @@ export function DataTable({
               .map((column) => (
                 <DropdownMenuCheckboxItem
                   key={column.id}
-                  className="
-        capitalize cursor-pointers
-        text-black dark:text-white
-        hover:bg-gray-100 dark:hover:bg-gray-200/20
-        transition-colors
-      "
+                  className="capitalize cursor-pointer text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors"
                   checked={column.getIsVisible()}
                   onCheckedChange={(value) => column.toggleVisibility(!!value)}
                 >

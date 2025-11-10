@@ -8,18 +8,22 @@ const nextConfig = {
         port: "3000",
         pathname: "/img/**",
       },
-      // {
-      //   protocol: "https",
-      //   hostname: "api.example.com",
-      //   pathname: "/img/**",
-      // },
     ],
+    unoptimized: process.env.NODE_ENV === "development",
   },
   async rewrites() {
     return [
       {
         source: "/api/:path*",
-        destination: `${process.env.NEXT_PUBLIC_HOST}/api/:path*`,
+        destination: `${
+          process.env.NEXT_PUBLIC_HOST || "http://localhost:3000"
+        }/api/:path*`,
+      },
+      {
+        source: "/img/:path*",
+        destination: `${
+          process.env.NEXT_PUBLIC_HOST || "http://localhost:3000"
+        }/img/:path*`,
       },
     ];
   },

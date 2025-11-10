@@ -1,37 +1,60 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 
-const images = [
-  "/assets/home/image-header.svg",
-  "/assets/home/image-header.svg",
-  "/assets/home/image-header.svg",
-];
+import request from "@/utils/request";
+import toast from "react-hot-toast";
 
 const ImageSlider = () => {
+  const [banner, setBanner] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchAllBanner = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await request.get("/banner");
+      setBanner(response.data);
+    } catch (err) {
+      if (err.response) {
+        toast.dismiss();
+      } else {
+        toast.error("Gagal mengambil data banner");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAllBanner();
+  }, [fetchAllBanner]);
+
   return (
     <div className="relative w-full bg-black overflow-hidden">
       <Swiper
         modules={[Pagination, Autoplay]}
         pagination={{ clickable: true }}
         autoplay={{
-          delay: 10000,
+          delay: 8000,
           disableOnInteraction: false,
         }}
         loop={true}
-        className="w-full aspect-[3/1]"
+        className="w-full aspect-[3.4/1.1]"
       >
-        {images.map((src, i) => (
-          <SwiperSlide key={i} className="relative w-full h-full">
+        {banner.map((src, i) => (
+          <SwiperSlide
+            key={i}
+            className="relative w-full h-full flex items-center justify-center bg-black overflow-hidden"
+          >
             <img
-              src={src}
-              alt={`Slide ${i + 1}`}
-              className="absolute inset-0 w-full h-full object-contain bg-black"
+              src={`${process.env.NEXT_PUBLIC_HOST}${src.image_path}`}
+              alt={`Banner ${i + 1}`}
+              className="max-w-none w-full h-[110%] object-contain transition-transform duration-700 ease-in-out"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
           </SwiperSlide>
         ))}
       </Swiper>

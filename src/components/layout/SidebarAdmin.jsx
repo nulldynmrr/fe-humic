@@ -6,13 +6,12 @@ import {
   Users,
   CalendarDays,
   Newspaper,
-  Megaphone,
   Briefcase,
   Users2,
   MessageSquare,
   Handshake,
   Settings,
-  HelpCircle,
+  Megaphone,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -107,14 +106,14 @@ const data = {
       title: "Other",
       items: [
         {
+          title: "Banner",
+          url: "banner-overview",
+          icon: Megaphone,
+        },
+        {
           title: "Settings",
           url: "settings",
           icon: Settings,
-        },
-        {
-          title: "Help Center",
-          url: "help-center",
-          icon: HelpCircle,
         },
       ],
     },

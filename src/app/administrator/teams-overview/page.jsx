@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { DataTable } from "@/components/ui/data-table";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Upload, Plus, Edit, Trash, Eye } from "lucide-react";
 import TableAction from "@/components/ui/TableAction";
 
@@ -82,9 +82,21 @@ export default function Intern() {
     { accessorKey: "contact", header: "Contact" },
     { accessorKey: "linkedin", header: "Linkedin" },
     { accessorKey: "social_media", header: "Social Media" },
-    { accessorKey: "start_date", header: "Start Date", cell: ({ getValue }) => <span>{formatWaktu(getValue(), "date")}</span> },
-    { accessorKey: "end_date", header: "End Date", cell: ({ getValue }) => <span>{formatWaktu(getValue(), "date")}</span> },
-    { accessorKey: "updated_at", header: "Date", cell: ({ getValue }) => <span>{formatWaktu(getValue(), "date")}</span> },
+    {
+      accessorKey: "start_date",
+      header: "Start Date",
+      cell: ({ getValue }) => <span>{formatWaktu(getValue(), "date")}</span>,
+    },
+    {
+      accessorKey: "end_date",
+      header: "End Date",
+      cell: ({ getValue }) => <span>{formatWaktu(getValue(), "date")}</span>,
+    },
+    {
+      accessorKey: "updated_at",
+      header: "Date",
+      cell: ({ getValue }) => <span>{formatWaktu(getValue(), "date")}</span>,
+    },
 
     {
       id: "actions",

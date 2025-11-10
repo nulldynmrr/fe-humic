@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const request = axios.create({
-  baseURL: "/api", // Use Next.js proxy
+  baseURL: "/api",
   timeout: 60000,
   headers: {
     "Content-Type": "application/json",
@@ -10,11 +10,10 @@ const request = axios.create({
 });
 
 const requestHandler = (request) => {
-  // Token sementara di-nonaktifkan
-  // let token = Cookies.get("token");
-  // if (token !== undefined) {
-  //   request.headers.Authorization = `Bearer ${token}`;
-  // }
+  let token = Cookies.get("token");
+  if (token !== undefined) {
+    request.headers.Authorization = `Bearer ${token}`;
+  }
 
   return request;
 };
@@ -23,8 +22,8 @@ const responseHandler = (response) => response;
 
 const errorHandler = (error) => {
   if (error.response && error.response.status === 401) {
-    // expiredTokenHandler();
-    // console.warn("401 Unauthorized — token handling disabled");
+    expiredTokenHandler();
+    console.warn("401 Unauthorized — token handling disabled");
   } else if (error.code === "ERR_NETWORK") {
     console.log("Network error:", error);
   }

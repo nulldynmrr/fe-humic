@@ -4,7 +4,7 @@ import React, { useCallback, useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { BreadcrumbDefault } from "@/components/ui/breadcrumb";
+import { BreadcrumbDefault } from "@/components/ui/Breadcrumb";
 import Header from "@/components/layout/Header";
 import Table from "@/components/ui/TableCustom";
 import Project from "@/components/card/Project";
