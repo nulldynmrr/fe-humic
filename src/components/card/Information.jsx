@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { formatWaktu } from "@/utils/time";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 export default function Information({ type, data, loading = false }) {
   const icon =

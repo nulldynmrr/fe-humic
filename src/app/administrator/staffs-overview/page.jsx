@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { DataTable } from "@/components/ui/data-table";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Upload, Plus, Edit, Trash, Eye } from "lucide-react";
 import TableAction from "@/components/ui/TableAction";
 
@@ -12,41 +12,41 @@ import { formatWaktu } from "@/utils/time";
 import request from "@/utils/request";
 import { toast } from "sonner";
 
-export default function Partnership() {
+export default function Staffs() {
   const router = useRouter();
-  const [partners, setPartners] = useState([]);
+  const [staffs, setStaffs] = useState([]);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
 
   const onDelete = async (id) => {
     try {
-      await request.delete(`/partners/${id}`);
-      toast.success("Partnership berhasil dihapus");
-      setPartners((prev) => prev.filter((item) => item.id !== id));
-      fetchAllPartnership();
+      await request.delete(`/staff/${id}`);
+      toast.success("Staff berhasil dihapus");
+      setStaffs((prev) => prev.filter((item) => item.id !== id));
+      fetchAllStaffs();
     } catch (err) {
-      toast.error("Partnership gagal dihapus");
+      toast.error("Staff gagal dihapus");
     }
   };
 
-  const fetchAllPartnership = useCallback(async () => {
+  const fetchAllStaffs = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await request.get("/partners", {
+      const response = await request.get("/staff", {
         params: query ? { search: query } : {},
       });
-      setPartners(response.data);
+      setStaffs(response.data);
     } catch (err) {
-      toast.error("Gagal memuat data partnership");
-      setPartners([]);
+      toast.error("Gagal memuat data staff");
+      setStaffs([]);
     } finally {
       setLoading(false);
     }
   }, [query]);
 
   useEffect(() => {
-    fetchAllPartnership();
-  }, [fetchAllPartnership]);
+    fetchAllStaffs();
+  }, [fetchAllStaffs]);
 
   const handleFilter = (filterType) => {
     console.log("Filter:", filterType);
@@ -55,14 +55,14 @@ export default function Partnership() {
   const columns = [
     { header: "No", cell: ({ row }) => <span>{row.index + 1}</span> },
     {
-      accessorKey: "logo",
-      header: "Logo",
+      accessorKey: "image_path",
+      header: "Image",
       cell: ({ getValue }) => {
         const src = getValue();
         return src ? (
           <Image
             src={`${process.env.NEXT_PUBLIC_HOST}${src}`}
-            alt="logo"
+            alt="image"
             width={60}
             height={40}
             className="rounded-md object-cover"
@@ -75,8 +75,13 @@ export default function Partnership() {
       },
     },
     { accessorKey: "name", header: "Name" },
+    { accessorKey: "position", header: "Position" },
     { accessorKey: "description", header: "Description" },
-    { accessorKey: "link", header: "Link" },
+    { accessorKey: "education", header: "Education" },
+    { accessorKey: "publication", header: "Publication" },
+    { accessorKey: "email", header: "Email" },
+    { accessorKey: "linkendin", header: "Linkedin" },
+    { accessorKey: "social_media", header: "Social Media" },
     {
       accessorKey: "updated_at",
       header: "Date",
@@ -117,7 +122,7 @@ export default function Partnership() {
     <section>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-bold">Partnership</h2>
+          <h2 className="text-2xl font-bold">Staffs</h2>
           <p className="text-[#62748E] dark:text-[#828b97]">
             Here's a list of your tasks for this month!
           </p>
@@ -144,12 +149,12 @@ export default function Partnership() {
 
       {loading ? (
         <div className="max-w-full text-center py-8 text-muted-foreground">
-          Memuat data partnership...
+          Memuat data staffs...
         </div>
       ) : (
         <DataTable
           columns={columns}
-          data={partners}
+          data={staffs}
           filterKey="name"
           filterOptions={[
             {

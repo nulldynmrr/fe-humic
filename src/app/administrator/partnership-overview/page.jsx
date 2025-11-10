@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { DataTable } from "@/components/ui/data-table";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Upload, Plus, Edit, Trash, Eye } from "lucide-react";
 import TableAction from "@/components/ui/TableAction";
 
@@ -12,41 +12,41 @@ import { formatWaktu } from "@/utils/time";
 import request from "@/utils/request";
 import { toast } from "sonner";
 
-export default function Staffs() {
+export default function Partnership() {
   const router = useRouter();
-  const [staffs, setStaffs] = useState([]);
+  const [partners, setPartners] = useState([]);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
 
   const onDelete = async (id) => {
     try {
-      await request.delete(`/staff/${id}`);
-      toast.success("Staff berhasil dihapus");
-      setStaffs((prev) => prev.filter((item) => item.id !== id));
-      fetchAllStaffs();
+      await request.delete(`/partners/${id}`);
+      toast.success("Partnership berhasil dihapus");
+      setPartners((prev) => prev.filter((item) => item.id !== id));
+      fetchAllPartnership();
     } catch (err) {
-      toast.error("Staff gagal dihapus");
+      toast.error("Partnership gagal dihapus");
     }
   };
 
-  const fetchAllStaffs = useCallback(async () => {
+  const fetchAllPartnership = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await request.get("/staff", {
+      const response = await request.get("/partners", {
         params: query ? { search: query } : {},
       });
-      setStaffs(response.data);
+      setPartners(response.data);
     } catch (err) {
-      toast.error("Gagal memuat data staff");
-      setStaffs([]);
+      toast.error("Gagal memuat data partnership");
+      setPartners([]);
     } finally {
       setLoading(false);
     }
   }, [query]);
 
   useEffect(() => {
-    fetchAllStaffs();
-  }, [fetchAllStaffs]);
+    fetchAllPartnership();
+  }, [fetchAllPartnership]);
 
   const handleFilter = (filterType) => {
     console.log("Filter:", filterType);
@@ -55,14 +55,14 @@ export default function Staffs() {
   const columns = [
     { header: "No", cell: ({ row }) => <span>{row.index + 1}</span> },
     {
-      accessorKey: "image_path",
-      header: "Image",
+      accessorKey: "logo",
+      header: "Logo",
       cell: ({ getValue }) => {
         const src = getValue();
         return src ? (
           <Image
             src={`${process.env.NEXT_PUBLIC_HOST}${src}`}
-            alt="image"
+            alt="logo"
             width={60}
             height={40}
             className="rounded-md object-cover"
@@ -75,13 +75,8 @@ export default function Staffs() {
       },
     },
     { accessorKey: "name", header: "Name" },
-    { accessorKey: "position", header: "Position" },
     { accessorKey: "description", header: "Description" },
-    { accessorKey: "education", header: "Education" },
-    { accessorKey: "publication", header: "Publication" },
-    { accessorKey: "email", header: "Email" },
-    { accessorKey: "linkendin", header: "Linkedin" },
-    { accessorKey: "social_media", header: "Social Media" },
+    { accessorKey: "link", header: "Link" },
     {
       accessorKey: "updated_at",
       header: "Date",
@@ -122,7 +117,7 @@ export default function Staffs() {
     <section>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-bold">Staffs</h2>
+          <h2 className="text-2xl font-bold">Partnership</h2>
           <p className="text-[#62748E] dark:text-[#828b97]">
             Here's a list of your tasks for this month!
           </p>
@@ -149,12 +144,12 @@ export default function Staffs() {
 
       {loading ? (
         <div className="max-w-full text-center py-8 text-muted-foreground">
-          Memuat data staffs...
+          Memuat data partnership...
         </div>
       ) : (
         <DataTable
           columns={columns}
-          data={staffs}
+          data={partners}
           filterKey="name"
           filterOptions={[
             {

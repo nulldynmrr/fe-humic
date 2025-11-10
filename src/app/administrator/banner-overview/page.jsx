@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { DataTable } from "@/components/ui/data-table";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Upload, Plus, Edit, Trash, Eye } from "lucide-react";
 import TableAction from "@/components/ui/TableAction";
 
@@ -12,41 +12,41 @@ import { formatWaktu } from "@/utils/time";
 import request from "@/utils/request";
 import { toast } from "sonner";
 
-export default function Agenda() {
+export default function Banner() {
   const router = useRouter();
-  const [agenda, setAgenda] = useState([]);
+  const [berita, setBerita] = useState([]);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
 
   const onDelete = async (id) => {
     try {
-      await request.delete(`/agenda/${id}`);
-      toast.success("Agenda berhasil dihapus");
-      setAgenda((prev) => prev.filter((item) => item.id !== id));
-      fetchAllAgenda();
+      await request.delete(`/banner/${id}`);
+      toast.success("Data berhasil dihapus");
+      setBerita((prev) => prev.filter((item) => item.id !== id));
+      fetchAllBanner();
     } catch (err) {
-      toast.error("Agenda gagal dihapus");
+      toast.error("Data gagal dihapus");
     }
   };
 
-  const fetchAllAgenda = useCallback(async () => {
+  const fetchAllBanner = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await request.get("/agenda", {
+      const response = await request.get("/banner", {
         params: query ? { search: query } : {},
       });
-      setAgenda(response.data);
+      setBerita(response.data);
     } catch (err) {
-      toast.error("Gagal memuat data agenda");
-      setAgenda([]);
+      toast.error("Gagal memuat data banner");
+      setBerita([]);
     } finally {
       setLoading(false);
     }
   }, [query]);
 
   useEffect(() => {
-    fetchAllAgenda();
-  }, [fetchAllAgenda]);
+    fetchAllBanner();
+  }, [fetchAllBanner]);
 
   const handleFilter = (filterType) => {
     console.log("Filter:", filterType);
@@ -63,8 +63,8 @@ export default function Agenda() {
           <Image
             src={`${process.env.NEXT_PUBLIC_HOST}${src}`}
             alt="image"
-            width={60}
-            height={40}
+            width={900}
+            height={100}
             className="rounded-md object-cover"
           />
         ) : (
@@ -73,12 +73,6 @@ export default function Agenda() {
           </div>
         );
       },
-    },
-    { accessorKey: "title", header: "Title" },
-    {
-      accessorKey: "date",
-      header: "Date",
-      cell: ({ getValue }) => <span>{formatWaktu(getValue(), "date")}</span>,
     },
     {
       id: "actions",
@@ -115,7 +109,7 @@ export default function Agenda() {
     <section>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-bold">Agenda</h2>
+          <h2 className="text-2xl font-bold">Banner</h2>
           <p className="text-[#62748E] dark:text-[#828b97]">
             Here's a list of your tasks for this month!
           </p>
@@ -123,17 +117,9 @@ export default function Agenda() {
 
         <div className="flex space-x-2">
           <Button
-            variant="secondary"
-            icon={Upload}
-            onClick={() => router.push("/admin/import")}
-          >
-            Import
-          </Button>
-
-          <Button
             variant="default"
             icon={Plus}
-            onClick={() => router.push("/admin/create")}
+            onClick={() => router.push("/administrator/create")}
           >
             Create
           </Button>
@@ -142,12 +128,12 @@ export default function Agenda() {
 
       {loading ? (
         <div className="max-w-full text-center py-8 text-muted-foreground">
-          Memuat data agenda...
+          Memuat data berita...
         </div>
       ) : (
         <DataTable
           columns={columns}
-          data={agenda}
+          data={berita}
           filterKey="title"
           filterOptions={[
             {

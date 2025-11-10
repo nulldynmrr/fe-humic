@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { DataTable } from "@/components/ui/data-table";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Upload, Plus, Edit, Trash, Eye } from "lucide-react";
 import TableAction from "@/components/ui/TableAction";
 
@@ -125,7 +125,7 @@ export default function Agenda() {
           <Button
             variant="secondary"
             icon={Upload}
-            onClick={() => router.push("/admin/import")}
+            onClick={() => router.push("/administrator/import")}
           >
             Import
           </Button>
@@ -133,7 +133,7 @@ export default function Agenda() {
           <Button
             variant="default"
             icon={Plus}
-            onClick={() => router.push("/admin/create")}
+            onClick={() => router.push("/administrator/create-agenda")}
           >
             Create
           </Button>
@@ -149,6 +149,7 @@ export default function Agenda() {
           columns={columns}
           data={agenda}
           filterKey="title"
+          placeholderSearch="Cari berdasarkan title..."
           filterOptions={[
             {
               label: "Ascending",

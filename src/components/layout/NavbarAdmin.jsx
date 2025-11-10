@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import {
   Search,
@@ -14,15 +13,25 @@ import {
   Users,
   Package,
   LayoutDashboard,
+  LogOut,
+  User,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTheme } from "next-themes";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/Dropdown-menu";
 
 export default function AdminNavbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { theme, setTheme } = useTheme();
-  const [search, setSearch] = useState("");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
@@ -36,6 +45,15 @@ export default function AdminNavbar() {
     { label: "Settings", href: "/admin/settings", icon: Settings },
   ];
 
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/logout", { method: "POST" });
+      router.push("/login-administrator");
+    } catch (err) {
+      console.error("Logout failed", err);
+    }
+  };
+
   return (
     <header
       className={cn(
@@ -44,10 +62,7 @@ export default function AdminNavbar() {
       )}
     >
       <div className="pl-2 md:pl-6 flex items-center gap-6">
-        <Link
-          href="/admin/dashboard"
-          className="md:hidden flex space-x-2 items-center"
-        >
+        <Link href="/admin/dashboard" className="md:hidden flex space-x-2 items-center">
           <Image
             src="/assets/logo-humic-pesergi.png"
             alt="Logo"
@@ -57,13 +72,11 @@ export default function AdminNavbar() {
           />
           <div>
             <h2 className="truncate text-medium">Humic Centered</h2>
-            <p className="truncate text-xs text-muted-foreground">
-              Admin Dashboard
-            </p>
+            <p className="truncate text-xs text-muted-foreground">Admin Dashboard</p>
           </div>
         </Link>
 
-        {isDashboard ? (
+        {isDashboard && (
           <nav className="hidden md:flex items-center gap-6">
             {menuItems.map(({ label, href }) => {
               const isActive = pathname === href;
@@ -83,16 +96,6 @@ export default function AdminNavbar() {
               );
             })}
           </nav>
-        ) : (
-          <div className="ml-6 md:ml-0 relative hidden sm:block w-full md:w-[280px] lg:w-[400px]">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-8"
-            />
-          </div>
         )}
       </div>
 
@@ -100,26 +103,12 @@ export default function AdminNavbar() {
         {isDashboard && (
           <div className="relative hidden sm:block">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-8 w-44 sm:w-56"
-            />
           </div>
         )}
 
         {mounted && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-          >
-            {theme === "light" ? (
-              <Moon className="h-[1.2rem] w-[1.2rem]" />
-            ) : (
-              <Sun className="h-[1.2rem] w-[1.2rem]" />
-            )}
+          <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
+            {theme === "light" ? <Moon className="h-[1.2rem] w-[1.2rem]" /> : <Sun className="h-[1.2rem] w-[1.2rem]" />}
           </Button>
         )}
 
@@ -127,10 +116,33 @@ export default function AdminNavbar() {
           <Settings className="h-[1.2rem] w-[1.2rem]" />
         </Button>
 
-        <Avatar className="cursor-pointer">
-          <AvatarImage src="/avatars/admin.jpg" alt="@admin" />
-          <AvatarFallback>A1</AvatarFallback>
-        </Avatar>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Avatar className="cursor-pointer">
+              <AvatarImage src="/avatars/admin.jpg" alt="@admin" />
+              <AvatarFallback>A1</AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent className="w-48 mt-4" align="end">
+            <DropdownMenuLabel>Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => router.push("/administrator/profile")}
+              className="cursor-pointer capitalize text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors"
+            >
+              <User className="w-4 h-4 mr-2" />
+              Edit Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={handleLogout}
+              className="cursor-pointer text-red-500 focus:text-red-600 capitalize transition-colors"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

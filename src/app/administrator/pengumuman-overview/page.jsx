@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { DataTable } from "@/components/ui/data-table";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Upload, Plus, Edit, Trash, Eye } from "lucide-react";
 import TableAction from "@/components/ui/TableAction";
 
@@ -12,41 +12,41 @@ import { formatWaktu } from "@/utils/time";
 import request from "@/utils/request";
 import { toast } from "sonner";
 
-export default function Projects() {
+export default function Pengumuman() {
   const router = useRouter();
-  const [projects, setProjects] = useState([]);
+  const [pengumuman, setPengumuman] = useState([]);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
 
   const onDelete = async (id) => {
     try {
-      await request.delete(`/project/${id}`);
-      toast.success("Project berhasil dihapus");
-      setProjects((prev) => prev.filter((item) => item.id !== id));
-      fetchAllInternship();
+      await request.delete(`/pengumuman/${id}`);
+      toast.success("Pengumuman berhasil dihapus");
+      setPengumuman((prev) => prev.filter((item) => item.id !== id));
+      fetchAllPengumuman();
     } catch (err) {
-      toast.error("Project gagal dihapus");
+      toast.error("Pengumuman gagal dihapus");
     }
   };
 
-  const fetchAllInternship = useCallback(async () => {
+  const fetchAllPengumuman = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await request.get("/project", {
+      const response = await request.get("/pengumuman", {
         params: query ? { search: query } : {},
       });
-      setProjects(response.data);
+      setPengumuman(response.data);
     } catch (err) {
-      toast.error("Gagal memuat data project");
-      setProjects([]);
+      toast.error("Gagal memuat data pengumuman");
+      setPengumuman([]);
     } finally {
       setLoading(false);
     }
   }, [query]);
 
   useEffect(() => {
-    fetchAllInternship();
-  }, [fetchAllInternship]);
+    fetchAllPengumuman();
+  }, [fetchAllPengumuman]);
 
   const handleFilter = (filterType) => {
     console.log("Filter:", filterType);
@@ -75,11 +75,9 @@ export default function Projects() {
       },
     },
     { accessorKey: "title", header: "Title" },
-    { accessorKey: "description", header: "Description" },
-    { accessorKey: "publication", header: "Publication" },
-    { accessorKey: "link", header: "Link" },
+    { accessorKey: "content", header: "Description" },
     {
-      accessorKey: "updated_at",
+      accessorKey: "date",
       header: "Date",
       cell: ({ getValue }) => <span>{formatWaktu(getValue(), "date")}</span>,
     },
@@ -118,7 +116,7 @@ export default function Projects() {
     <section>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-bold">Internship Project</h2>
+          <h2 className="text-2xl font-bold">Pengumuman</h2>
           <p className="text-[#62748E] dark:text-[#828b97]">
             Here's a list of your tasks for this month!
           </p>
@@ -145,12 +143,12 @@ export default function Projects() {
 
       {loading ? (
         <div className="max-w-full text-center py-8 text-muted-foreground">
-          Memuat data project...
+          Memuat data pengumuman...
         </div>
       ) : (
         <DataTable
           columns={columns}
-          data={projects}
+          data={pengumuman}
           filterKey="title"
           filterOptions={[
             {

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/input";
 import * as XLSX from "xlsx";
 import request from "@/utils/request";
@@ -11,7 +11,6 @@ export default function ExportXlsxToJsonPage() {
   const [fileName, setFileName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Mapping key API (fixed)
   const apiKeys = ["title", "content", "date", "image_path"];
 
   const handleFileUpload = useCallback((event) => {
@@ -28,15 +27,12 @@ export default function ExportXlsxToJsonPage() {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
 
-        // Semua data Excel jadi array of objects
         const rawJson = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
 
-        // Convert tanggal ke ISO dan filter hanya key API
         const mappedJson = rawJson.map((row) => {
           const obj = {};
           apiKeys.forEach((key) => {
             if (key === "date" && row[key]) {
-              // Validasi dan konversi tanggal
               try {
                 const dateValue = new Date(row[key]);
                 obj[key] = isNaN(dateValue.getTime())
@@ -46,7 +42,6 @@ export default function ExportXlsxToJsonPage() {
                 obj[key] = "";
               }
             } else if (row[key] !== undefined && row[key] !== null) {
-              // Pastikan string dan trim whitespace
               obj[key] = String(row[key]).trim();
             } else {
               obj[key] = "";
@@ -55,7 +50,6 @@ export default function ExportXlsxToJsonPage() {
           return obj;
         });
 
-        // Filter data yang memiliki minimal title
         const validData = mappedJson.filter(
           (item) => item.title && item.title.length > 0
         );
@@ -63,13 +57,11 @@ export default function ExportXlsxToJsonPage() {
         setJsonData(validData);
 
         if (validData.length === 0) {
-          alert(
-            "⚠️ Tidak ada data valid yang ditemukan. Pastikan kolom 'title' terisi."
-          );
+          alert("Tidak ada data valid yang ditemukan.");
         }
       } catch (error) {
         console.error("Error parsing file:", error);
-        alert("❌ Gagal membaca file. Pastikan format Excel benar.");
+        alert("Gagal membaca file. Pastikan format Excel benar.");
       }
     };
 
@@ -91,31 +83,27 @@ export default function ExportXlsxToJsonPage() {
         formData.append("date", item.date);
 
         if (item.image_path) {
-          // Fetch file dari URL
           const response = await fetch(item.image_path);
           if (!response.ok)
             throw new Error("Gagal fetch file: " + item.image_path);
           const blob = await response.blob();
-
-          // Ambil nama file dari URL (optional)
           const fileName = item.image_path.split("/").pop().split("?")[0];
 
           formData.append("image", blob, fileName);
         }
 
-        // Kirim ke server
         await fetch("/pengumuman", {
           method: "POST",
           body: formData,
         });
       }
 
-      alert(`✅ Berhasil mengirim ${jsonData.length} data ke server!`);
+      alert(`Berhasil mengirim ${jsonData.length} data ke server!`);
       setJsonData([]);
       setFileName("");
     } catch (error) {
       console.error("Gagal mengirim data:", error);
-      alert(`❌ Error: ${error.message}`);
+      alert(`Error: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -145,7 +133,7 @@ export default function ExportXlsxToJsonPage() {
         <>
           <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
             <p className="text-sm font-medium text-blue-900">
-              ✓ {jsonData.length} data siap dikirim
+              {jsonData.length} data siap dikirim
             </p>
           </div>
 

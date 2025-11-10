@@ -33,7 +33,7 @@ const Dashboard = () => {
       setAgenda(response.data);
     } catch (err) {
       if (err.response) {
-        tost.dismiss();
+        toast.dismiss();
         setAgenda([]);
       } else {
         toast.error("Gagal memuat data agenda");
