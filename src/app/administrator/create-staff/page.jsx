@@ -31,9 +31,7 @@ const staffSchema = z.object({
     .min(3, "Education wajib diisi")
     .max(500, "Education terlalu panjang"),
 
-  publication: z
-    .string()
-    .max(2000, "Publication terlalu panjang"),
+  publication: z.string().max(2000, "Publication terlalu panjang"),
 
   email: z.string().email("Email tidak valid"),
 
@@ -299,9 +297,7 @@ export default function CreateStaff() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="publication">
-              Publication
-            </Label>
+            <Label htmlFor="publication">Publication</Label>
             <Input
               name="publication"
               value={formData.publication}
