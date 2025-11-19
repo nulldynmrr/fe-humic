@@ -92,9 +92,6 @@ export default function Login() {
       if (response.status === 200 || response.status === 201) {
         const data = response.data;
 
-        console.log("Processed Data:", data);
-        console.log("Token:", data?.token);
-
         if (data?.token) {
           Cookies.set("token", data.token, { expires: 1 });
           console.log("Token saved to cookies successfully");
@@ -102,7 +99,6 @@ export default function Login() {
           toast.dismiss();
           toast.success(data.message || "Login Successful");
 
-          console.log("Redirecting to dashboard...");
           router.push("/administrator/dashboard");
         } else {
           console.error("No token found in response data");
@@ -281,7 +277,7 @@ export default function Login() {
       </div>
 
       <div className="hidden md:flex w-1/2 items-center justify-end relative bg-[#F1F5F9] overflow-hidden">
-        <Image src="/assets/login/auth-cover.svg" alt="Auth Cover" fill />
+        <Image src="/assets/login/auth-cover.png" alt="Auth Cover" fill />
       </div>
     </section>
   );

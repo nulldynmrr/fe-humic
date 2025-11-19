@@ -2,47 +2,16 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import File from "@/components/ui/File";
-import { DatePicker } from "@/components/ui/date-picker";
 import { z } from "zod";
 import request from "@/utils/request";
 import { toast } from "sonner";
+import { Info } from "lucide-react";
 
-const agendaSchema = z.object({
-  title: z
-    .string()
-    .min(3, "Title harus minimal 3 karakter")
-    .max(100, "Title terlalu panjang"),
-
-  content: z
-    .string()
-    .min(5, "Content minimal 5 karakter")
-    .max(5000, "Content terlalu panjang"),
-
-  date: z
-    .string()
-    .min(1, "Tanggal wajib diisi!")
-    .refine(
-      (value) => {
-        const selected = new Date(value);
-        const today = new Date();
-
-        selected.setHours(0, 0, 0, 0);
-        today.setHours(0, 0, 0, 0);
-
-        return selected >= today;
-      },
-      {
-        message: "Tanggal tidak boleh sebelum hari ini!",
-      }
-    ),
-
+const internSchema = z.object({
   image: z
     .any()
-    .refine((file) => file !== null, "Profile image wajib diisi!")
+    .refine((file) => file !== null, "Banner image wajib diisi!")
     .refine((file) => !file || file.size <= 5000000, "Maksimal file ukuran 5MB")
     .refine(
       (file) =>
@@ -59,11 +28,8 @@ const scrollToError = (field) => {
   }
 };
 
-export default function CreateAgenda() {
+export default function CreateIntern() {
   const [formData, setFormData] = useState({
-    title: "",
-    content: "",
-    date: "",
     image: null,
   });
 
@@ -97,6 +63,38 @@ export default function CreateAgenda() {
     }
   };
 
+  //   const handleImageChange = (file) => {
+  //   setImageError("");
+
+  //   if (!file) {
+  //     setFormData((prev) => ({ ...prev, image: null }));
+  //     return;
+  //   }
+
+  //   const img = new Image();
+  //   img.src = URL.createObjectURL(file);
+
+  //   img.onload = () => {
+  //     const width = img.width;
+  //     const height = img.height;
+  //     const ratio = width / height;
+
+  //     if ((width !== 1200 || height !== 400) && Math.abs(ratio - 3) > 0.01) {
+  //       setImageError("Ukuran banner harus 1200×400 atau rasio 3:1.");
+  //       setFormData((prev) => ({ ...prev, image: null }));
+  //       return;
+  //     }
+
+  //     setFormData((prev) => ({ ...prev, image: file }));
+
+  //     if (status.errors.image) {
+  //       const newErrors = { ...status.errors };
+  //       delete newErrors.image;
+  //       setStatus((prev) => ({ ...prev, errors: newErrors }));
+  //     }
+  //   };
+  // };
+
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -104,7 +102,7 @@ export default function CreateAgenda() {
     setStatus({ type: "", text: "", errors: {} });
 
     try {
-      const validation = agendaSchema.safeParse(formData);
+      const validation = internSchema.safeParse(formData);
 
       if (!validation.success) {
         const zodErrors = {};
@@ -126,16 +124,6 @@ export default function CreateAgenda() {
         return;
       }
 
-      if (formData.date) {
-        const d = new Date(formData.date);
-
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, "0");
-        const dd = String(d.getDate()).padStart(2, "0");
-
-        formData.date = `${yyyy}-${mm}-${dd}`;
-      }
-
       const formDataToSend = new FormData();
       Object.keys(formData).forEach((key) => {
         if (formData[key] !== null && formData[key] !== "") {
@@ -143,23 +131,23 @@ export default function CreateAgenda() {
         }
       });
 
-      const response = await request.post("/agenda", formDataToSend, {
+      const response = await request.post("/banner", formDataToSend, {
         "Content-Type": "multipart/form-data",
       });
 
       if (response.status === 200 || response.status === 201) {
         toast.dismiss();
-        toast.success(response.data?.message || "Data Agenda berhasil dibuat!");
+        toast.success(response.data?.message || "Data Banner berhasil dibuat!");
 
         onReset();
       } else {
         toast.dismiss();
-        toast.error("Gagal membuat data Agenda - Respons tidak valid");
+        toast.error("Gagal membuat data Banner - Respons tidak valid");
       }
     } catch (error) {
       setStatus({
         type: "error",
-        text: "Gagal membuat data Agenda. Silakan coba lagi.",
+        text: "Gagal membuat data Banner. Silakan coba lagi.",
         errors: {},
       });
     } finally {
@@ -169,9 +157,6 @@ export default function CreateAgenda() {
 
   const onReset = () => {
     setFormData({
-      title: "",
-      content: "",
-      date: "",
       image: null,
     });
 
@@ -187,77 +172,31 @@ export default function CreateAgenda() {
   return (
     <section className="py-4 bg-sidebar p-6 rounded-sm shadow-md mt-16 md:mt-0">
       <div>
-        <h2 className="text-2xl font-bold">Create an Agenda</h2>
+        <h2 className="text-2xl font-bold">Create an Banner</h2>
         <p className="text-[#62748E] dark:text-[#828b97]">
           Here's a list of your tasks for this month!
         </p>
       </div>
 
       <form onSubmit={onSubmit} className="space-y-8 mt-12" noValidate>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="title" required>
-              Title
-            </Label>
-            <Input
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-              placeholder="Masukkan title"
-              className="mt-2"
-            />
-            {status.errors.title && (
-              <p className="mt-1 text-sm text-red-600">{status.errors.title}</p>
-            )}
-          </div>
-
-          <div>
-            <Label htmlFor="date" required>
-              Schedule Time
-            </Label>
-            <DatePicker
-              value={formData.date ? new Date(formData.date) : null}
-              onChange={(date) =>
-                handleInputChange({
-                  target: {
-                    name: "date",
-                    value: date ? date.toISOString() : "",
-                  },
-                })
-              }
-              placeholder="Pilih tanggal ..."
-            />
-            {status.errors.date && (
-              <p className="mt-1 text-sm text-red-600">{status.errors.date}</p>
-            )}
-          </div>
-        </div>
-
-        <div>
-          <Label htmlFor="content" required>
-            Content
-          </Label>
-          <Textarea
-            name="content"
-            value={formData.content}
-            onChange={handleInputChange}
-            placeholder="Tulis konten agenda disini ..."
-            className="mt-2"
-          />
-
-          {status.errors.content && (
-            <p className="mt-1 text-sm text-red-600">{status.errors.content}</p>
-          )}
+        <div
+          className="flex items-start gap-2 mt-2 px-3 py-2 rounded-md 
+  bg-blue-500 text-blue-100 border border-blue-600 dark:border-blue-400"
+        >
+          <Info size={16} className="mt-0.5 text-blue-100" />
+          <p className="text-md leading-4">
+            Ukuran banner <b>1200px × 400px</b> atau rasio <b>3:1</b>.
+          </p>
         </div>
 
         <div>
           <File
-            label="Image Agenda"
+            label="Unggah Banner"
             name="image"
             accept=".jpg,.jpeg,.png,.webp"
             value={formData.image}
             onChange={handleImageChange}
-            placeholder="Drag & drop gambar agenda atau klik untuk upload"
+            placeholder="Drag & drop gambar banner atau klik untuk upload"
             maxSizeMB={5}
           />
           {status.errors.image && (

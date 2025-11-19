@@ -85,6 +85,7 @@ export default function Partnership() {
     {
       id: "actions",
       header: "Actions",
+      enableHiding: false,
       cell: ({ row }) => {
         const data = row.original;
         return (
