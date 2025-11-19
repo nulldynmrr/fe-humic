@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { DataTable } from "@/components/ui/data-table";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { Upload, Plus, Edit, Trash, Eye } from "lucide-react";
 import TableAction from "@/components/ui/TableAction";
 import Modal from "@/components/card/Modal";
@@ -40,31 +40,29 @@ export default function Intern() {
   };
 
   const fetchAllIntern = useCallback(
-  async (searchQuery = "", filterType = "") => {
-    setLoading(true);
-    try {
-      const params = {};
+    async (searchQuery = "", filterType = "") => {
+      setLoading(true);
+      try {
+        const params = {};
 
-      if (searchQuery) params.search = searchQuery;
-      if (filterType) params.sort = filterType.toUpperCase();
+        if (searchQuery) params.search = searchQuery;
+        if (filterType) params.sort = filterType.toUpperCase();
 
-      const response = await request.get("/intern", { params });
-      setInterns(response.data);
-    } catch (err) {
-      toast.error("Gagal memuat data intern");
-      setInterns([]);
-    } finally {
-      setLoading(false);
-    }
-  },
-  []
-);
+        const response = await request.get("/intern", { params });
+        setInterns(response.data);
+      } catch (err) {
+        toast.error("Gagal memuat data intern");
+        setInterns([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
-
-useEffect(() => {
-  fetchAllIntern(query);
-}, [query, fetchAllIntern]);
-
+  useEffect(() => {
+    fetchAllIntern(query);
+  }, [query, fetchAllIntern]);
 
   const onUpdate = (updatedData) => {
     setInterns((prev) =>

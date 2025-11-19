@@ -4,7 +4,7 @@ import React, { useCallback, useRef, useState, useEffect } from "react";
 import ImageSlider from "@/components/ui/SliderImage";
 import List from "@/components/ui/Checklist";
 import Stats from "@/components/ui/StatsSection";
-import ButtonDefault from "@/components/ui/Button";
+import ButtonDefault from "@/components/ui/button";
 import Information from "@/components/card/Information";
 import CardFeedback from "@/components/card/Feedback";
 import Accordion from "@/components/card/Accordion";

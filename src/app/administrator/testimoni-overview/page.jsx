@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { DataTable } from "@/components/ui/data-table";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { Upload, Plus, Edit, Trash, Eye, Star } from "lucide-react";
 import TableAction from "@/components/ui/TableAction";
 import request from "@/utils/request";
