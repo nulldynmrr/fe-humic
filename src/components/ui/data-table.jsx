@@ -11,7 +11,7 @@ import {
 } from "@tanstack/react-table";
 import { ChevronDown, Filter } from "lucide-react";
 
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
