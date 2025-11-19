@@ -12,14 +12,6 @@ const menuItems = [
   },
   {
     name: "Research and Innovation",
-    href: "#",
-    dropdown: [
-      { name: "Research Projects", href: "/research-projects" },
-      { name: "Publications", href: "/publications" },
-    ],
-  },
-  {
-    name: "Internship Project",
     href: "/internship-project",
   },
   {
@@ -77,7 +69,7 @@ const Navbar = () => {
                 href="mailto:humic@telkomuniversity.ac.id"
                 className="flex items-center gap-2"
               >
-                <FaEnvelope className="text-primary" />
+                <FaEnvelope className="text-primary mt-1" />
                 <span className="cursor-pointer">
                   humic@telkomuniversity.ac.id
                 </span>

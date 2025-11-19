@@ -56,10 +56,10 @@ const Article = () => {
       <section className="px-4 py-8 md:px-24 lg:px-34 ">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <h1 className="text-3xl font-bold text-black mb-4 md:mb-0">
-            Our Portfolio Project
+            Our Articles
           </h1>
           <SearchDefault
-            placeholder="Project apa yang ingin kamu cari ?"
+            placeholder="Artikel apa yang ingin kamu cari ?"
             onSubmit={(q) => onSearch(q.trim())}
           />
         </div>

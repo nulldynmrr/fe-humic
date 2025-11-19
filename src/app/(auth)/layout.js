@@ -6,8 +6,19 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "Login | Admin",
-  description: "Login Admin",
+  title: "Login | Admin Dashboard",
+  description:
+    "Admin akan masuk ke dalam dashboard untuk mengelola data pada aplikasi Humic.",
+
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
 };
 
 export default function AuthLayout({ children }) {

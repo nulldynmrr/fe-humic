@@ -18,7 +18,7 @@ export default function AdminLayout({ children }) {
         <div className="fixed top-0 left-0 right-0 z-40 bg-background border-b border-gray-200 dark:border-white/10">
           <AdminNavbar />
         </div>
-        <main className="flex-1 px-4 py-4 md:px-8 lg:px-12 overflow-y-auto pt-16 md:pt-20">
+        <main className="flex-1 px-4 py-4 md:px-8 lg:px-12 overflow-y-auto overflow-auto p-4pt-16 md:pt-20">
           <div className="w-full overflow-x-auto">{children}</div>
         </main>
       </div>

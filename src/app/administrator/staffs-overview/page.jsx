@@ -7,49 +7,67 @@ import { DataTable } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/Button";
 import { Upload, Plus, Edit, Trash, Eye } from "lucide-react";
 import TableAction from "@/components/ui/TableAction";
+import Modal from "@/components/card/Modal";
 
 import { formatWaktu } from "@/utils/time";
 import request from "@/utils/request";
 import { toast } from "sonner";
 
-export default function Staffs() {
+export default function Staff() {
   const router = useRouter();
   const [staffs, setStaffs] = useState([]);
   const [query, setQuery] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [modalMode, setModalMode] = useState("view");
   const [loading, setLoading] = useState(false);
 
   const onDelete = async (id) => {
     try {
-      await request.delete(`/staff/${id}`);
-      toast.success("Staff berhasil dihapus");
+      const response = await request.delete(`/staff/${id}`);
+      toast.success("Data staff berhasil dihapus");
       setStaffs((prev) => prev.filter((item) => item.id !== id));
-      fetchAllStaffs();
     } catch (err) {
-      toast.error("Staff gagal dihapus");
+      console.error("Delete error:", err.response?.data || err.message);
+      toast.error(
+        `Gagal menghapus staff: ${err.response?.data?.message || err.message}`
+      );
     }
   };
 
-  const fetchAllStaffs = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await request.get("/staff", {
-        params: query ? { search: query } : {},
-      });
-      setStaffs(response.data);
-    } catch (err) {
-      toast.error("Gagal memuat data staff");
-      setStaffs([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [query]);
+  const handleFilter = (filterType) => {
+    fetchAllAgenda(query, filterType);
+  };
+
+  const fetchAllIntern = useCallback(
+    async (searchQuery = "", filterType = "") => {
+      setLoading(true);
+      try {
+        const params = {};
+
+        if (searchQuery) params.search = searchQuery;
+        if (filterType) params.sort = filterType.toUpperCase();
+
+        const response = await request.get("/staff", { params });
+        setStaffs(response.data);
+      } catch (err) {
+        toast.error("Gagal memuat data staff");
+        setStaffs([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
-    fetchAllStaffs();
-  }, [fetchAllStaffs]);
+    fetchAllIntern(query);
+  }, [query, fetchAllIntern]);
 
-  const handleFilter = (filterType) => {
-    console.log("Filter:", filterType);
+  const onUpdate = (updatedData) => {
+    setStaffs((prev) =>
+      prev.map((item) => (item.id === updatedData.id ? updatedData : item))
+    );
   };
 
   const columns = [
@@ -76,17 +94,28 @@ export default function Staffs() {
     },
     { accessorKey: "name", header: "Name" },
     { accessorKey: "position", header: "Position" },
-    { accessorKey: "description", header: "Description" },
+    { accessorKey: "desctiption", header: "Description" },
     { accessorKey: "education", header: "Education" },
     { accessorKey: "publication", header: "Publication" },
     { accessorKey: "email", header: "Email" },
-    { accessorKey: "linkendin", header: "Linkedin" },
+    { accessorKey: "linkedin", header: "Linkedin" },
     { accessorKey: "social_media", header: "Social Media" },
     {
       accessorKey: "updated_at",
       header: "Date",
       cell: ({ getValue }) => <span>{formatWaktu(getValue(), "date")}</span>,
     },
+  ];
+
+  const modalFields = columns
+    .filter((col) => col.accessorKey && col.id !== "actions")
+    .map((col) => ({
+      label: col.header,
+      key: col.accessorKey,
+    }));
+
+  const tableColumns = [
+    ...columns.filter((col) => col.id !== "actions"),
     {
       id: "actions",
       header: "Actions",
@@ -98,18 +127,35 @@ export default function Staffs() {
               {
                 label: "Lihat Detail",
                 icon: <Eye className="h-4 w-4" />,
-                onClick: () => toast.success("Detail"),
+                className:
+                  "capitalize cursor-pointer text-black dark:text-white bg-red-500 hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
+                onClick: () => {
+                  setSelectedRow(data);
+                  setOpenModal(true);
+                  setModalMode("view");
+                },
               },
               {
                 label: "Edit",
                 icon: <Edit className="h-4 w-4" />,
-                onClick: () => console.log("Edit", data.id),
+                className:
+                  "capitalize cursor-pointer text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
+                onClick: () => {
+                  setSelectedRow(data);
+                  setOpenModal(true);
+                  setModalMode("edit");
+                },
               },
               {
                 label: "Delete",
                 icon: <Trash className="h-4 w-4" />,
+                className:
+                  "capitalize cursor-pointer text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
                 danger: true,
-                onClick: () => onDelete(data.id),
+                onClick: () => {
+                  console.log("Klik Delete, data row:", data);
+                  onDelete(data.id);
+                },
               },
             ]}
           />
@@ -119,20 +165,20 @@ export default function Staffs() {
   ];
 
   return (
-    <section>
-      <div className="flex items-center justify-between mb-4">
+    <section className="w-full max-w-[1200px] mx-auto px-4 md:px-0 mt-16 md:mt-0">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-bold">Staffs</h2>
+          <h2 className="text-2xl font-bold">Staff HUMIC</h2>
           <p className="text-[#62748E] dark:text-[#828b97]">
             Here's a list of your tasks for this month!
           </p>
         </div>
 
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 mt-2 md:mt-0">
           <Button
             variant="secondary"
             icon={Upload}
-            onClick={() => router.push("/admin/import")}
+            onClick={() => router.push("/administrator/import")}
           >
             Import
           </Button>
@@ -140,7 +186,7 @@ export default function Staffs() {
           <Button
             variant="default"
             icon={Plus}
-            onClick={() => router.push("/admin/create")}
+            onClick={() => router.push("/administrator/create-staff")}
           >
             Create
           </Button>
@@ -149,32 +195,41 @@ export default function Staffs() {
 
       {loading ? (
         <div className="max-w-full text-center py-8 text-muted-foreground">
-          Memuat data staffs...
+          Memuat data staff...
         </div>
       ) : (
         <DataTable
-          columns={columns}
+          columns={tableColumns}
           data={staffs}
           filterKey="name"
           filterOptions={[
             {
-              label: "Ascending",
+              label: "Ascending by Date",
               value: "asc",
               onClick: () => handleFilter("asc"),
             },
             {
-              label: "Descending",
+              label: "Descending by Date",
               value: "desc",
               onClick: () => handleFilter("desc"),
-            },
-            {
-              label: "By Date",
-              value: "date",
-              onClick: () => handleFilter("date"),
             },
           ]}
         />
       )}
+      <Modal
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        data={selectedRow}
+        fields={modalFields}
+        apiPath={selectedRow ? `/staff/${selectedRow.id}` : ""}
+        method="PATCH"
+        mode={modalMode}
+        onUpdate={(updatedRow) => {
+          setStaffs((prev) =>
+            prev.map((row) => (row.id === updatedRow.id ? updatedRow : row))
+          );
+        }}
+      />
     </section>
   );
 }

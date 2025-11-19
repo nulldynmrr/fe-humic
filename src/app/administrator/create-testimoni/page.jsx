@@ -17,6 +17,7 @@ const fields = [
     type: "select",
     placeholder: "Masukkan Nama Lengkap",
     apiOptions: "/intern",
+    variant: "search",
     row: 0,
   },
   {

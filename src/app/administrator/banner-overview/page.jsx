@@ -7,6 +7,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/Button";
 import { Upload, Plus, Edit, Trash, Eye } from "lucide-react";
 import TableAction from "@/components/ui/TableAction";
+import Modal from "@/components/card/Modal";
 
 import { formatWaktu } from "@/utils/time";
 import request from "@/utils/request";
@@ -14,18 +15,25 @@ import { toast } from "sonner";
 
 export default function Banner() {
   const router = useRouter();
-  const [berita, setBerita] = useState([]);
+  const [banner, setBanner] = useState([]);
   const [query, setQuery] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [modalMode, setModalMode] = useState("view");
   const [loading, setLoading] = useState(false);
 
   const onDelete = async (id) => {
     try {
-      await request.delete(`/banner/${id}`);
-      toast.success("Data berhasil dihapus");
-      setBerita((prev) => prev.filter((item) => item.id !== id));
-      fetchAllBanner();
+      const response = await request.delete(`/banner/${id}`);
+      toast.success("Data banner berhasil dihapus");
+      setBanner((prev) => prev.filter((item) => item.id !== id));
     } catch (err) {
-      toast.error("Data gagal dihapus");
+      console.error("Delete error:", err.response?.data || err.message);
+      toast.error(
+        `Gagal menghapus data banner: ${
+          err.response?.data?.message || err.message
+        }`
+      );
     }
   };
 
@@ -35,10 +43,10 @@ export default function Banner() {
       const response = await request.get("/banner", {
         params: query ? { search: query } : {},
       });
-      setBerita(response.data);
+      setBanner(response.data);
     } catch (err) {
       toast.error("Gagal memuat data banner");
-      setBerita([]);
+      setBanner([]);
     } finally {
       setLoading(false);
     }
@@ -48,8 +56,12 @@ export default function Banner() {
     fetchAllBanner();
   }, [fetchAllBanner]);
 
-  const handleFilter = (filterType) => {
-    console.log("Filter:", filterType);
+  console.log(banner);
+
+  const onUpdate = (updatedData) => {
+    setBanner((prev) =>
+      prev.map((item) => (item.id === updatedData.id ? updatedData : item))
+    );
   };
 
   const columns = [
@@ -63,8 +75,8 @@ export default function Banner() {
           <Image
             src={`${process.env.NEXT_PUBLIC_HOST}${src}`}
             alt="image"
-            width={900}
-            height={100}
+            width={600}
+            height={200}
             className="rounded-md object-cover"
           />
         ) : (
@@ -74,6 +86,17 @@ export default function Banner() {
         );
       },
     },
+  ];
+
+  const modalFields = columns
+    .filter((col) => col.accessorKey && col.id !== "actions")
+    .map((col) => ({
+      label: col.header,
+      key: col.accessorKey,
+    }));
+
+  const tableColumns = [
+    ...columns.filter((col) => col.id !== "actions"),
     {
       id: "actions",
       header: "Actions",
@@ -85,18 +108,35 @@ export default function Banner() {
               {
                 label: "Lihat Detail",
                 icon: <Eye className="h-4 w-4" />,
-                onClick: () => toast.success("Detail"),
+                className:
+                  "capitalize cursor-pointer text-black dark:text-white bg-red-500 hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
+                onClick: () => {
+                  setSelectedRow(data);
+                  setOpenModal(true);
+                  setModalMode("view");
+                },
               },
               {
                 label: "Edit",
                 icon: <Edit className="h-4 w-4" />,
-                onClick: () => console.log("Edit", data.id),
+                className:
+                  "capitalize cursor-pointer text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
+                onClick: () => {
+                  setSelectedRow(data);
+                  setOpenModal(true);
+                  setModalMode("edit");
+                },
               },
               {
                 label: "Delete",
                 icon: <Trash className="h-4 w-4" />,
+                className:
+                  "capitalize cursor-pointer text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
                 danger: true,
-                onClick: () => onDelete(data.id),
+                onClick: () => {
+                  console.log("Klik Delete, data row:", data);
+                  onDelete(data.id);
+                },
               },
             ]}
           />
@@ -106,8 +146,8 @@ export default function Banner() {
   ];
 
   return (
-    <section>
-      <div className="flex items-center justify-between mb-4">
+    <section className="w-full max-w-[1200px] mx-auto px-4 md:px-0 mt-16 md:mt-0">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-4">
         <div>
           <h2 className="text-2xl font-bold">Banner</h2>
           <p className="text-[#62748E] dark:text-[#828b97]">
@@ -115,11 +155,19 @@ export default function Banner() {
           </p>
         </div>
 
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 mt-2 md:mt-0">
+          <Button
+            variant="secondary"
+            icon={Upload}
+            onClick={() => router.push("/administrator/import")}
+          >
+            Import
+          </Button>
+
           <Button
             variant="default"
             icon={Plus}
-            onClick={() => router.push("/administrator/create")}
+            onClick={() => router.push("/administrator/create-banner")}
           >
             Create
           </Button>
@@ -128,32 +176,40 @@ export default function Banner() {
 
       {loading ? (
         <div className="max-w-full text-center py-8 text-muted-foreground">
-          Memuat data berita...
+          Memuat data banner...
         </div>
       ) : (
         <DataTable
-          columns={columns}
-          data={berita}
-          filterKey="title"
+          columns={tableColumns}
+          data={banner}
           filterOptions={[
             {
-              label: "Ascending",
+              label: "Ascending by Date",
               value: "asc",
               onClick: () => handleFilter("asc"),
             },
             {
-              label: "Descending",
+              label: "Descending by Date",
               value: "desc",
               onClick: () => handleFilter("desc"),
-            },
-            {
-              label: "By Date",
-              value: "date",
-              onClick: () => handleFilter("date"),
             },
           ]}
         />
       )}
+      <Modal
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        data={selectedRow}
+        fields={modalFields}
+        apiPath={selectedRow ? `/banner/${selectedRow.id}` : ""}
+        method="PATCH"
+        mode={modalMode}
+        onUpdate={(updatedRow) => {
+          setBanner((prev) =>
+            prev.map((row) => (row.id === updatedRow.id ? updatedRow : row))
+          );
+        }}
+      />
     </section>
   );
 }

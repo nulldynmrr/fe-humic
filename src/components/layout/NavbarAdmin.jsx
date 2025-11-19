@@ -27,6 +27,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/Dropdown-menu";
+import Cookies from "js-cookie";
 
 export default function AdminNavbar() {
   const pathname = usePathname();
@@ -45,13 +46,9 @@ export default function AdminNavbar() {
     { label: "Settings", href: "/admin/settings", icon: Settings },
   ];
 
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/logout", { method: "POST" });
-      router.push("/login-administrator");
-    } catch (err) {
-      console.error("Logout failed", err);
-    }
+  const handleLogout = () => {
+    Cookies.remove("token");
+    router.push("/login-administrator");
   };
 
   return (
@@ -62,7 +59,10 @@ export default function AdminNavbar() {
       )}
     >
       <div className="pl-2 md:pl-6 flex items-center gap-6">
-        <Link href="/admin/dashboard" className="md:hidden flex space-x-2 items-center">
+        <Link
+          href="/admin/dashboard"
+          className="md:hidden flex space-x-2 items-center"
+        >
           <Image
             src="/assets/logo-humic-pesergi.png"
             alt="Logo"
@@ -72,7 +72,9 @@ export default function AdminNavbar() {
           />
           <div>
             <h2 className="truncate text-medium">Humic Centered</h2>
-            <p className="truncate text-xs text-muted-foreground">Admin Dashboard</p>
+            <p className="truncate text-xs text-muted-foreground">
+              Admin Dashboard
+            </p>
           </div>
         </Link>
 
@@ -107,8 +109,16 @@ export default function AdminNavbar() {
         )}
 
         {mounted && (
-          <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
-            {theme === "light" ? <Moon className="h-[1.2rem] w-[1.2rem]" /> : <Sun className="h-[1.2rem] w-[1.2rem]" />}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+          >
+            {theme === "light" ? (
+              <Moon className="h-[1.2rem] w-[1.2rem]" />
+            ) : (
+              <Sun className="h-[1.2rem] w-[1.2rem]" />
+            )}
           </Button>
         )}
 
