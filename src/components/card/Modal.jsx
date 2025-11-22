@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import { formatWaktu } from "@/utils/time";
 import request from "@/utils/request";
 import { toast } from "sonner";
@@ -18,6 +19,7 @@ export default function Modal({
   method = "PATCH",
   apiPath,
   mode = "view",
+  onUpdate, 
 }) {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({});
@@ -48,9 +50,10 @@ export default function Modal({
       await request[method.toLowerCase()](apiPath, updatedFields);
       toast.success("Data berhasil diperbarui");
 
-      if (typeof onUpdate === "function") {
-        onUpdate({ ...data, ...updatedFields });
-      }
+   if (typeof onUpdate === "function") {
+  onUpdate({ ...data, ...updatedFields });
+}
+
 
       setEditMode(false);
       onClose?.();
@@ -92,50 +95,59 @@ export default function Modal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {fields.map((field) => {
               if (field.key === "image_path" || field.key === "updated_at")
-                return null;
+                 return null;
 
               const value = formData[field.key];
+               const isDateField = field.key.toLowerCase().includes("date");
 
-              const isDateField = ["start_date", "end_date"].includes(
-                field.key
-              );
+  return (
+    <div key={field.key}>
+      <p className="text-xs text-gray-400 dark:text-gray-500">
+        {field.label}
+      </p>
 
-              return (
-                <div key={field.key}>
-                  <p className="text-xs text-gray-400 dark:text-gray-500">
-                    {field.label}
-                  </p>
-                  {editMode ? (
-                    <Input
-                      type={isDateField ? "date" : "text"}
-                      name={field.key}
-                      value={
-                        isDateField && value ? value.split("T")[0] : value || ""
-                      }
-                      onChange={handleInputChange}
-                      className="font-bold text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700"
-                    />
-                  ) : (
-                    <p className="font-bold text-gray-900 dark:text-gray-100">
-                      {value && /^https?:\/\//.test(value) ? (
-                        <a
-                          href={value}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 dark:text-blue-400 underline"
-                        >
-                          {value}
-                        </a>
-                      ) : isDateField ? (
-                        formatWaktu(value, "date")
-                      ) : (
-                        value
-                      )}
-                    </p>
-                  )}
-                </div>
-              );
-            })}
+      {editMode ? (
+        isDateField ? (
+  <DatePicker
+  value={value ? new Date(value) : null}
+  onChange={(date) => {
+    if (!date) {
+      setFormData((prev) => ({ ...prev, [field.key]: null }));
+      return;
+    }
+
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+
+    setFormData((prev) => ({
+      ...prev,
+      [field.key]: `${y}-${m}-${d}`,
+    }));
+  }}
+/>
+
+
+        ) : (
+          <Input
+            type="text"
+            name={field.key}
+            value={value || ""}
+            onChange={handleInputChange}
+            className="mt-2 font-bold text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700"
+          />
+        )
+      ) : (
+        <p className="font-bold text-gray-900 dark:text-gray-100">
+          {isDateField && value
+            ? formatWaktu(value, "date")
+            : value}
+        </p>
+      )}
+    </div>
+  );
+})}
+
           </div>
         </div>
 
