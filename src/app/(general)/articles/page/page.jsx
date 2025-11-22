@@ -124,8 +124,7 @@ const Article = () => {
     <div className="min-h-screen">
       <Header title="Our Articles" imageSrc="/assets/bg-header.png" />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-24 lg:px-32">
-        {/* Bagian Artikel (2/3) */}
-        <section className="md:col-span-2">
+        <section className="md:col-span-2 h-full">
           {currentArticle && (
             <div className="py-8">
               <BreadcrumbDefault
@@ -184,7 +183,6 @@ const Article = () => {
           </div>
         </section>
 
-        {/* Bagian Informasi (1/3) */}
         <section className="flex flex-col gap-6 py-8">
           <Information type="agenda" data={agenda} loading={loading} />
           <Information type="berita" data={berita} loading={loading} />
