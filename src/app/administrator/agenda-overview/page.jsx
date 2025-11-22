@@ -24,7 +24,7 @@ export default function Agenda() {
 
   const onDelete = async (id) => {
     try {
-      const response = await request.delete(`/Agenda/${id}`);
+      const response = await request.delete(`/agenda/${id}`);
       toast.success("Data Agenda berhasil dihapus");
       setAgenda((prev) => prev.filter((item) => item.id !== id));
     } catch (err) {
@@ -35,9 +35,10 @@ export default function Agenda() {
     }
   };
 
-  const handleFilter = (filterType) => {
-    fetchAllAgenda(query, filterType);
-  };
+ const handleFilter = (filterType) => {
+  fetchAllIntern(query, filterType);
+};
+
 
   const fetchAllIntern = useCallback(
     async (searchQuery = "", filterType = "") => {
@@ -197,15 +198,7 @@ export default function Agenda() {
           </p>
         </div>
 
-        <div className="flex space-x-2 mt-2 md:mt-0">
-          <Button
-            variant="secondary"
-            icon={Upload}
-            onClick={() => router.push("/administrator/import")}
-          >
-            Import
-          </Button>
-
+        <div className="flex mt-2 md:mt-0">
           <Button
             variant="default"
             icon={Plus}
@@ -248,10 +241,8 @@ export default function Agenda() {
         method="PATCH"
         mode={modalMode}
         onUpdate={(updatedRow) => {
-          setAgenda((prev) =>
-            prev.map((row) => (row.id === updatedRow.id ? updatedRow : row))
-          );
-        }}
+    fetchAllIntern();
+  }}
       />
     </section>
   );

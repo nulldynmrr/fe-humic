@@ -124,17 +124,9 @@ export default function Berita() {
 
         <div className="flex space-x-2">
           <Button
-            variant="secondary"
-            icon={Upload}
-            onClick={() => router.push("/admin/import")}
-          >
-            Import
-          </Button>
-
-          <Button
             variant="default"
             icon={Plus}
-            onClick={() => router.push("/admin/create")}
+            onClick={() => router.push("/administrator/create-berita")}
           >
             Create
           </Button>
