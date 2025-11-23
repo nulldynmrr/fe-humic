@@ -53,9 +53,9 @@ const Agenda = () => {
     <div className="min-h-screen">
       <Header title="Agenda" imageSrc="/assets/bg-header.png" />
       <section className="px-4 py-8 md:px-24 lg:px-34 ">
-          <h1 className="text-3xl font-bold text-black mb-4 md:mb-0 mt-12">
-            Daftar Agenda
-          </h1>
+        <h1 className="text-3xl font-bold text-black mb-4 md:mb-0 mt-6">
+          Daftar Agenda
+        </h1>
         <Project data={agenda} />
       </section>
     </div>
