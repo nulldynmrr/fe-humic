@@ -8,6 +8,7 @@ import ButtonDefault from "@/components/ui/button";
 import Information from "@/components/card/Information";
 import CardFeedback from "@/components/card/Feedback";
 import Accordion from "@/components/card/Accordion";
+import PageLoader from "@/components/ui/loading";
 import Image from "next/image";
 import Link from "next/link";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
@@ -25,6 +26,7 @@ const Dashboard = () => {
   const [pengumuman, setPengumuman] = useState([]);
   const [testimoni, setTestimoni] = useState([]);
   const [loading, setLoading] = useState(false);
+    const [isLoadingAll, setIsLoadingAll] = useState(true); 
 
   const fetchAllAgenda = useCallback(async () => {
     setLoading(true);
@@ -95,11 +97,21 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    fetchAllAgenda();
-    fetchAllBerita();
-    fetchAllPengumuman();
-    fetchAllTestimoni();
+    const fetchAll = async () => {
+      setIsLoadingAll(true);
+      await Promise.all([
+        fetchAllAgenda(),
+        fetchAllBerita(),
+        fetchAllPengumuman(),
+        fetchAllTestimoni(),
+      ]);
+      setIsLoadingAll(false); 
+    };
+    fetchAll();
   }, [fetchAllAgenda, fetchAllBerita, fetchAllPengumuman, fetchAllTestimoni]);
+
+  
+  if (isLoadingAll) return <PageLoader  className="mt-[-3.5rem] mb-12 h"/>; 
 
   const animateScroll = (container, distance, duration = 450) => {
     if (!container) return;

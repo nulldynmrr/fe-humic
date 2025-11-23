@@ -21,6 +21,13 @@ const requestHandler = (request) => {
 
 const responseHandler = (response) => response;
 
+const expiredTokenHandler = () => {
+  Cookies.remove("token");
+  if (typeof window !== "undefined") {
+    window.location.href = "/login-administrator";
+  }
+};
+
 const errorHandler = (error) => {
   if (error.response && error.response.status === 401) {
     expiredTokenHandler();
