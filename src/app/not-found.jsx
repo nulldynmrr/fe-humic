@@ -13,7 +13,7 @@ export default function NotFound() {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 bg-">
+    <div className="min-h-screen flex items-center justify-center px-6 bg-white">
       <div className="text-center max-w-xl">
         <h1 className="text-[96px] font-extrabold leading-none text-slate-900">
           404
