@@ -36,11 +36,11 @@ export default function Agenda() {
   };
 
  const handleFilter = (filterType) => {
-  fetchAllIntern(query, filterType);
+  fetchAllAgenda(query, filterType);
 };
 
 
-  const fetchAllIntern = useCallback(
+  const fetchAllAgenda = useCallback(
     async (searchQuery = "", filterType = "") => {
       setLoading(true);
       try {
@@ -62,8 +62,8 @@ export default function Agenda() {
   );
 
   useEffect(() => {
-    fetchAllIntern(query);
-  }, [query, fetchAllIntern]);
+    fetchAllAgenda(query);
+  }, [query, fetchAllAgenda]);
 
   const onUpdate = (updatedData) => {
     setAgenda((prev) =>
@@ -241,7 +241,7 @@ export default function Agenda() {
         method="PATCH"
         mode={modalMode}
         onUpdate={(updatedRow) => {
-    fetchAllIntern();
+    fetchAllAgenda();
   }}
       />
     </section>

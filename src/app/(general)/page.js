@@ -347,7 +347,7 @@ const Dashboard = () => {
           </div>
         </div>
       </section>
-      <section className="px-4 py-8 md:px-12 h-full md:min-h-[600px] flex flex-col justify-center items-center overflow-hidden gap-6">
+      <section className="px-4 py-8 md:px-12 h-full flex flex-col justify-center items-center overflow-hidden gap-6">
         <h1 className="text-3xl font-bold text-black">
           Frequently asked questions
         </h1>

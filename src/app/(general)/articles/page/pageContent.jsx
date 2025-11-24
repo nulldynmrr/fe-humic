@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useState, useEffect, Suspense } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Information from "@/components/card/Information";
@@ -13,7 +13,7 @@ import { formatWaktu } from "@/utils/time";
 import request from "@/utils/request";
 import { toast } from "react-hot-toast";
 
-const ArticleContent = () => {
+export const ArticleContent = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 
@@ -95,13 +95,19 @@ const ArticleContent = () => {
     fetchAllAgenda();
     fetchAllBerita();
     fetchAllPengumuman();
-  }, [fetchArticle, fetchAllArticles, fetchAllAgenda, fetchAllBerita, fetchAllPengumuman]);
+  }, [
+    fetchArticle,
+    fetchAllArticles,
+    fetchAllAgenda,
+    fetchAllBerita,
+    fetchAllPengumuman,
+  ]);
 
   return (
     <div className="min-h-screen">
       <Header title="Our Articles" imageSrc="/assets/bg-header.png" />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-4 md:px-24 lg:px-32 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-20 items-start">
         <section className="md:col-span-2 h-full min-h-[500px] ">
           {currentArticle && (
             <div className="py-8">
@@ -112,10 +118,13 @@ const ArticleContent = () => {
                 ]}
               />
 
-              <h1 className="text-2xl md:text-3xl font-semibold mb-2">{currentArticle.title}</h1>
+              <h1 className="text-2xl md:text-3xl font-semibold mb-2">
+                {currentArticle.title}
+              </h1>
 
               <p className="text-sm text-neut-600 mb-4">
-                Diterbitkan pada {formatWaktu(currentArticle.created_at, "date")}
+                Diterbitkan pada{" "}
+                {formatWaktu(currentArticle.created_at, "date")}
               </p>
 
               {currentArticle.image_path && (
@@ -129,16 +138,16 @@ const ArticleContent = () => {
                 </div>
               )}
 
-              {currentArticle.link && (
+              {currentArticle.author && (
                 <div className="flex items-center gap-2 text-neut-700 mb-4">
                   <FaUser size={14} />
                   <Link
-                    href={currentArticle.link}
+                    href={currentArticle.author}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm hover:underline break-all"
                   >
-                    {currentArticle.link}
+                    {currentArticle.author}
                   </Link>
                 </div>
               )}

@@ -53,7 +53,7 @@ const Article = () => {
   return (
     <div className="min-h-screen">
       <Header title="Internship Project" imageSrc="/assets/bg-header.png" />
-      <section className="px-4 py-8 md:px-24 lg:px-34 ">
+      <section className="px-4 py-8 md:px-20">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <h1 className="text-3xl font-bold text-black mb-4 md:mb-0">
             Our Articles

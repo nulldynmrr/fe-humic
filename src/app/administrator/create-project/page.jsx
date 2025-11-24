@@ -12,40 +12,26 @@ import request from "@/utils/request";
 import { toast } from "sonner";
 import RichText from "@/components/ui/richText";
 
-const agendaSchema = z.object({
+const projectSchema = z.object({
   title: z
     .string()
-    .min(3, "Title harus minimal 3 karakter")
+    .min(3, "Title minimal 3 karakter")
     .max(100, "Title terlalu panjang"),
 
-  content: z.string().min(1, "Content tidak boleh kosong"),
+  description: z.string().min(3, "Description tidak boleh kosong"),
 
-  date: z
-    .string()
-    .min(1, "Tanggal wajib diisi!")
-    .refine(
-      (value) => {
-        const selected = new Date(value);
-        const today = new Date();
+  publication: z.string().min(1, "Publication wajib diisi"),
 
-        selected.setHours(0, 0, 0, 0);
-        today.setHours(0, 0, 0, 0);
-
-        return selected >= today;
-      },
-      {
-        message: "Tanggal tidak boleh sebelum hari ini!",
-      }
-    ),
+  link: z.string().url("Format URL tidak valid"),
 
   image: z
     .any()
-    .refine((file) => file !== null, "Profile image wajib diisi!")
-    .refine((file) => !file || file.size <= 5000000, "Maksimal file ukuran 5MB")
+    .refine((file) => file !== null, "Image wajib diupload!")
+    .refine((file) => !file || file.size <= 5000000, "Maksimal file 5MB")
     .refine(
       (file) =>
         !file || ["image/jpeg", "image/jpg", "image/png"].includes(file.type),
-      "Hanya format .jpg, .jpeg, dan .png yang didukung"
+      "Hanya format .jpg, .jpeg, .png yang didukung"
     ),
 });
 
@@ -57,12 +43,12 @@ const scrollToError = (field) => {
   }
 };
 
-export default function CreateBerita() {
+export default function CreateProject() {
   const [formData, setFormData] = useState({
     title: "",
-    content: "",
-    author: "",
-    date: "",
+    description: "",
+    publication: "",
+    link: "",
     image: null,
   });
 
@@ -103,11 +89,10 @@ export default function CreateBerita() {
     setStatus({ type: "", text: "", errors: {} });
 
     try {
-      const validation = agendaSchema.safeParse(formData);
+      const validation = projectSchema.safeParse(formData);
 
       if (!validation.success) {
         const zodErrors = {};
-
         const firstError = validation.error.issues[0];
         scrollToError(firstError.path[0]);
 
@@ -125,16 +110,6 @@ export default function CreateBerita() {
         return;
       }
 
-      if (formData.date) {
-        const d = new Date(formData.date);
-
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, "0");
-        const dd = String(d.getDate()).padStart(2, "0");
-
-        formData.date = `${yyyy}-${mm}-${dd}`;
-      }
-
       const formDataToSend = new FormData();
       Object.keys(formData).forEach((key) => {
         if (formData[key] !== null && formData[key] !== "") {
@@ -142,23 +117,23 @@ export default function CreateBerita() {
         }
       });
 
-      const response = await request.post("/berita", formDataToSend, {
-        "Content-Type": "multipart/form-data",
-      });
+      const response = await request.post("/project", formDataToSend);
 
       if (response.status === 200 || response.status === 201) {
         toast.dismiss();
-        toast.success(response.data?.message || "Data Berita berhasil dibuat!");
-
+        toast.success(
+          response.data?.message || "Data Project berhasil dibuat!"
+        );
         onReset();
       } else {
         toast.dismiss();
-        toast.error("Gagal membuat data Berita - Respons tidak valid");
+        toast.error("Gagal membuat data Project - Respons tidak valid");
       }
     } catch (error) {
+      console.log(error.response || error);
       setStatus({
         type: "error",
-        text: "Gagal membuat data Berita. Silakan coba lagi.",
+        text: "Gagal membuat data Project. Silakan coba lagi.",
         errors: {},
       });
     } finally {
@@ -169,9 +144,9 @@ export default function CreateBerita() {
   const onReset = () => {
     setFormData({
       title: "",
-      content: "",
-      author: "",
-      date: "",
+      description: "",
+      publication: "",
+      link: "",
       image: null,
     });
 
@@ -187,7 +162,7 @@ export default function CreateBerita() {
   return (
     <section className="py-4 bg-sidebar p-6 rounded-sm shadow-md mt-16 md:mt-0">
       <div>
-        <h2 className="text-2xl font-bold">Create an Berita</h2>
+        <h2 className="text-2xl font-bold">Create an Project</h2>
         <p className="text-[#62748E] dark:text-[#828b97]">
           Here's a list of your tasks for this month!
         </p>
@@ -212,46 +187,43 @@ export default function CreateBerita() {
           </div>
 
           <div>
-            <Label htmlFor="date" required>
-              Schedule Time
+            <Label htmlFor="link" required>
+              Link
             </Label>
-            <DatePicker
-              value={formData.date ? new Date(formData.date) : null}
-              onChange={(date) =>
-                handleInputChange({
-                  target: {
-                    name: "date",
-                    value: date ? date.toISOString() : "",
-                  },
-                })
-              }
-              placeholder="Pilih tanggal ..."
+            <Input
+              name="link"
+              value={formData.link}
+              onChange={handleInputChange}
+              placeholder="https://example.com"
+              className="mt-2"
             />
-            {status.errors.date && (
-              <p className="mt-1 text-sm text-red-600">{status.errors.date}</p>
+            {status.errors.link && (
+              <p className="mt-1 text-sm text-red-600">{status.errors.link}</p>
             )}
           </div>
         </div>
 
         <div>
-          <Label htmlFor="content" required>
-            Content
+          <Label htmlFor="description" required>
+            Description
           </Label>
           <RichText
-            value={formData.content}
+            value={formData.description}
             onChange={(value) =>
-              setFormData((prev) => ({ ...prev, content: value }))
+              setFormData((prev) => ({ ...prev, description: value }))
             }
           />
 
-          {status.errors.content && (
-            <p className="mt-1 text-sm text-red-600">{status.errors.content}</p>
+          {status.errors.description && (
+            <p className="mt-1 text-sm text-red-600">
+              {status.errors.description}
+            </p>
           )}
         </div>
 
         <div>
           <File
-            label="Image Berita"
+            label="Image Project"
             name="image"
             accept=".jpg,.jpeg,.png,.webp"
             value={formData.image}
@@ -280,7 +252,7 @@ export default function CreateBerita() {
           <Button variant="secondary" onClick={onReset} disabled={loading}>
             Reset
           </Button>
-          <Button variant="default" disabled={loading}>
+          <Button type="submit" variant="default" disabled={loading}>
             {loading ? "Menyimpan..." : "Simpan"}
           </Button>
         </div>

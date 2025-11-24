@@ -7,6 +7,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Upload, Plus, Edit, Trash, Eye } from "lucide-react";
 import TableAction from "@/components/ui/TableAction";
+import Modal from "@/components/card/Modal";
 
 import { formatWaktu } from "@/utils/time";
 import request from "@/utils/request";
@@ -14,42 +15,61 @@ import { toast } from "sonner";
 
 export default function Partnership() {
   const router = useRouter();
-  const [partners, setPartners] = useState([]);
+  const [partnership, setPartnership] = useState([]);
   const [query, setQuery] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [modalMode, setModalMode] = useState("view");
   const [loading, setLoading] = useState(false);
 
   const onDelete = async (id) => {
     try {
-      await request.delete(`/partners/${id}`);
-      toast.success("Partnership berhasil dihapus");
-      setPartners((prev) => prev.filter((item) => item.id !== id));
-      fetchAllPartnership();
+      const response = await request.delete(`/partners/${id}`);
+      toast.success("Data Partnership berhasil dihapus");
+      setPartnership((prev) => prev.filter((item) => item.id !== id));
     } catch (err) {
-      toast.error("Partnership gagal dihapus");
+      console.error("Delete error:", err.response?.data || err.message);
+      toast.error(
+        `Gagal menghapus Partnership: ${
+          err.response?.data?.message || err.message
+        }`
+      );
     }
   };
 
-  const fetchAllPartnership = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await request.get("/partners", {
-        params: query ? { search: query } : {},
-      });
-      setPartners(response.data);
-    } catch (err) {
-      toast.error("Gagal memuat data partnership");
-      setPartners([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [query]);
+  const handleFilter = (filterType) => {
+    fetchAllParthnership(query, filterType);
+  };
+
+  const fetchAllParthnership = useCallback(
+    async (searchQuery = "", filterType = "") => {
+      setLoading(true);
+      try {
+        const params = {};
+
+        if (searchQuery) params.search = searchQuery;
+        if (filterType) params.sort = filterType.toUpperCase();
+
+        const response = await request.get("/partners", { params });
+        setPartnership(response.data);
+      } catch (err) {
+        toast.error("Gagal memuat data Partnership");
+        setPartnership([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
-    fetchAllPartnership();
-  }, [fetchAllPartnership]);
+    fetchAllParthnership(query);
+  }, [query, fetchAllParthnership]);
 
-  const handleFilter = (filterType) => {
-    console.log("Filter:", filterType);
+  const onUpdate = (updatedData) => {
+    setPartnership((prev) =>
+      prev.map((item) => (item.id === updatedData.id ? updatedData : item))
+    );
   };
 
   const columns = [
@@ -82,10 +102,20 @@ export default function Partnership() {
       header: "Date",
       cell: ({ getValue }) => <span>{formatWaktu(getValue(), "date")}</span>,
     },
+  ];
+
+  const modalFields = columns
+    .filter((col) => col.accessorKey && col.id !== "actions")
+    .map((col) => ({
+      label: col.header,
+      key: col.accessorKey,
+    }));
+
+  const tableColumns = [
+    ...columns.filter((col) => col.id !== "actions"),
     {
       id: "actions",
       header: "Actions",
-      enableHiding: false,
       cell: ({ row }) => {
         const data = row.original;
         return (
@@ -94,18 +124,35 @@ export default function Partnership() {
               {
                 label: "Lihat Detail",
                 icon: <Eye className="h-4 w-4" />,
-                onClick: () => toast.success("Detail"),
+                className:
+                  "capitalize cursor-pointer text-black dark:text-white bg-red-500 hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
+                onClick: () => {
+                  setSelectedRow(data);
+                  setOpenModal(true);
+                  setModalMode("view");
+                },
               },
               {
                 label: "Edit",
                 icon: <Edit className="h-4 w-4" />,
-                onClick: () => console.log("Edit", data.id),
+                className:
+                  "capitalize cursor-pointer text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
+                onClick: () => {
+                  setSelectedRow(data);
+                  setOpenModal(true);
+                  setModalMode("edit");
+                },
               },
               {
                 label: "Delete",
                 icon: <Trash className="h-4 w-4" />,
+                className:
+                  "capitalize cursor-pointer text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
                 danger: true,
-                onClick: () => onDelete(data.id),
+                onClick: () => {
+                  console.log("Klik Delete, data row:", data);
+                  onDelete(data.id);
+                },
               },
             ]}
           />
@@ -115,28 +162,20 @@ export default function Partnership() {
   ];
 
   return (
-    <section>
-      <div className="flex items-center justify-between mb-4">
+    <section className="w-full max-w-[1200px] mx-auto px-4 md:px-0 mt-16 md:mt-0">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-bold">Partnership</h2>
+          <h2 className="text-2xl font-bold">Partnership HUMIC</h2>
           <p className="text-[#62748E] dark:text-[#828b97]">
             Here's a list of your tasks for this month!
           </p>
         </div>
 
-        <div className="flex space-x-2">
-          <Button
-            variant="secondary"
-            icon={Upload}
-            onClick={() => router.push("/admin/import")}
-          >
-            Import
-          </Button>
-
+        <div className="flex mt-2 md:mt-0">
           <Button
             variant="default"
             icon={Plus}
-            onClick={() => router.push("/admin/create")}
+            onClick={() => router.push("/administrator/create-partnership")}
           >
             Create
           </Button>
@@ -145,32 +184,39 @@ export default function Partnership() {
 
       {loading ? (
         <div className="max-w-full text-center py-8 text-muted-foreground">
-          Memuat data partnership...
+          Memuat data Partnership...
         </div>
       ) : (
         <DataTable
-          columns={columns}
-          data={partners}
+          columns={tableColumns}
+          data={partnership}
           filterKey="name"
           filterOptions={[
             {
-              label: "Ascending",
+              label: "Ascending by Date",
               value: "asc",
               onClick: () => handleFilter("asc"),
             },
             {
-              label: "Descending",
+              label: "Descending by Date",
               value: "desc",
               onClick: () => handleFilter("desc"),
-            },
-            {
-              label: "By Date",
-              value: "date",
-              onClick: () => handleFilter("date"),
             },
           ]}
         />
       )}
+      <Modal
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        data={selectedRow}
+        fields={modalFields}
+        apiPath={selectedRow ? `/partnership/${selectedRow.id}` : ""}
+        method="PATCH"
+        mode={modalMode}
+        onUpdate={(updatedRow) => {
+          fetchAllParthnership();
+        }}
+      />
     </section>
   );
 }

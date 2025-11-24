@@ -43,27 +43,28 @@ export default function Information({ type, data, loading = false }) {
       aria-labelledby={`${type}-title`}
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200">
-        <div className="flex items-center gap-2">
-          {icon}
-          <h2 id={`${type}-title`} className="font-semibold text-lg">
-            {title}
-          </h2>
-        </div>
-        <Link
-          href={
-            type === "agenda"
-              ? "/agenda"
-              : type === "berita"
-              ? "/articles"
-              : type === "pengumuman"
-              ? "/pengumuman"
-              : "#"
-          }
-          className="text-sm text-primary flex items-center gap-1 font-medium"
-        >
-          Semua <MdOutlineKeyboardArrowRight />
-        </Link>
-      </div>
+  <div className="flex items-center gap-2">
+    {icon}
+    <h2 id={`${type}-title`} className="font-semibold text-lg">
+      {title}
+    </h2>
+  </div>
+
+  {type !== "pengumuman" && (
+    <Link
+      href={
+        type === "agenda"
+          ? "/agenda"
+          : type === "berita"
+          ? "/articles"
+          : "#"
+      }
+      className="text-sm text-primary flex items-center gap-1 font-medium"
+    >
+      Semua <MdOutlineKeyboardArrowRight />
+    </Link>
+  )}
+</div>
 
       <div className="p-4">
         {loading && <Skeleton />}

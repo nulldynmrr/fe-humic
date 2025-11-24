@@ -101,16 +101,6 @@ export default function Intern() {
     { accessorKey: "linkedin", header: "Linkedin" },
     { accessorKey: "social_media", header: "Social Media" },
     {
-      accessorKey: "start_date",
-      header: "Start Date",
-      cell: ({ getValue }) => <span>{formatWaktu(getValue(), "date")}</span>,
-    },
-    {
-      accessorKey: "end_date",
-      header: "End Date",
-      cell: ({ getValue }) => <span>{formatWaktu(getValue(), "date")}</span>,
-    },
-    {
       accessorKey: "updated_at",
       header: "Date",
       cell: ({ getValue }) => <span>{formatWaktu(getValue(), "date")}</span>,

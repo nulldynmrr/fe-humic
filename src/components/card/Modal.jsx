@@ -19,10 +19,11 @@ export default function Modal({
   method = "PATCH",
   apiPath,
   mode = "view",
-  onUpdate, 
+  onUpdate,
 }) {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({});
+  const hideEdit = apiPath?.startsWith("/testimony");
 
   useEffect(() => {
     if (data) setFormData({ ...data });
@@ -34,6 +35,22 @@ export default function Modal({
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const getImageSrc = () => {
+    if (formData.logo instanceof File) {
+      return URL.createObjectURL(formData.logo);
+    }
+
+    if (typeof formData.logo === "string" && formData.logo.length > 0) {
+      return `${process.env.NEXT_PUBLIC_HOST}${formData.logo}`;
+    }
+
+    if (formData.image_path) {
+      return `${process.env.NEXT_PUBLIC_HOST}${formData.image_path}`;
+    }
+
+    return;
   };
 
   const onSave = async () => {
@@ -50,10 +67,9 @@ export default function Modal({
       await request[method.toLowerCase()](apiPath, updatedFields);
       toast.success("Data berhasil diperbarui");
 
-   if (typeof onUpdate === "function") {
-  onUpdate({ ...data, ...updatedFields });
-}
-
+      if (typeof onUpdate === "function") {
+        onUpdate({ ...data, ...updatedFields });
+      }
 
       setEditMode(false);
       onClose?.();
@@ -76,9 +92,9 @@ export default function Modal({
         </div>
 
         <div className="flex justify-center mb-4">
-          {formData.image_path ? (
+          {formData.image_path || formData.logo ? (
             <Image
-              src={`${process.env.NEXT_PUBLIC_HOST}${formData.image_path}`}
+              src={getImageSrc()}
               alt={formData.name || "Profile"}
               width={120}
               height={120}
@@ -94,80 +110,88 @@ export default function Modal({
         <div className="space-y-4 mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {fields.map((field) => {
-              if (field.key === "image_path" || field.key === "updated_at")
-                 return null;
+              if (
+                field.key === "image_path" ||
+                field.key === "logo" ||
+                field.key === "updated_at"
+              )
+                return null;
 
               const value = formData[field.key];
-               const isDateField = field.key.toLowerCase().includes("date");
+              const isDateField = field.key.toLowerCase().includes("date");
 
-  return (
-    <div key={field.key}>
-      <p className="text-xs text-gray-400 dark:text-gray-500">
-        {field.label}
-      </p>
+              return (
+                <div key={field.key}>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    {field.label}
+                  </p>
 
-      {editMode ? (
-        isDateField ? (
-  <DatePicker
-  value={value ? new Date(value) : null}
-  onChange={(date) => {
-    if (!date) {
-      setFormData((prev) => ({ ...prev, [field.key]: null }));
-      return;
-    }
+                  {editMode ? (
+                    isDateField ? (
+                      <DatePicker
+                        value={value ? new Date(value) : null}
+                        onChange={(date) => {
+                          if (!date) {
+                            setFormData((prev) => ({
+                              ...prev,
+                              [field.key]: null,
+                            }));
+                            return;
+                          }
 
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, "0");
-    const d = String(date.getDate()).padStart(2, "0");
+                          const y = date.getFullYear();
+                          const m = String(date.getMonth() + 1).padStart(
+                            2,
+                            "0"
+                          );
+                          const d = String(date.getDate()).padStart(2, "0");
 
-    setFormData((prev) => ({
-      ...prev,
-      [field.key]: `${y}-${m}-${d}`,
-    }));
-  }}
-/>
-
-
-        ) : (
-          <Input
-            type="text"
-            name={field.key}
-            value={value || ""}
-            onChange={handleInputChange}
-            className="mt-2 font-bold text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700"
-          />
-        )
-      ) : (
-        <p className="font-bold text-gray-900 dark:text-gray-100">
-          {isDateField && value
-            ? formatWaktu(value, "date")
-            : value}
-        </p>
-      )}
-    </div>
-  );
-})}
-
+                          setFormData((prev) => ({
+                            ...prev,
+                            [field.key]: `${y}-${m}-${d}`,
+                          }));
+                        }}
+                      />
+                    ) : (
+                      <Input
+                        type="text"
+                        name={field.key}
+                        value={value || ""}
+                        onChange={handleInputChange}
+                        className="mt-2 font-bold text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700"
+                      />
+                    )
+                  ) : (
+                    <p className="font-bold text-gray-900 dark:text-gray-100">
+                      {isDateField && value
+                        ? formatWaktu(value, "date")
+                        : value}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
 
         <div className="mt-6 flex justify-end space-x-2">
-          {editMode ? (
-            <>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setEditMode(false);
-                  setFormData({ ...data });
-                }}
-              >
-                Cancel
-              </Button>
-              <Button onClick={onSave}>Save</Button>
-            </>
-          ) : (
-            <Button onClick={() => setEditMode(true)}>Edit</Button>
-          )}
+          {!hideEdit &&
+            (editMode ? (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setEditMode(false);
+                    setFormData({ ...data });
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={onSave}>Save</Button>
+              </>
+            ) : (
+              <Button onClick={() => setEditMode(true)}>Edit</Button>
+            ))}
         </div>
       </div>
     </div>

@@ -162,10 +162,10 @@ export default function RichText({ value, onChange, placeholder }) {
           />
         </div>
       )}
-      <EditorContent
-        editor={editor}
-        className="border border-input rounded-md p-2 min-h-[200px] bg-background"
-      />
+    <EditorContent
+  editor={editor}
+  className="rounded-md p-2 min-h-[200px] bg-background focus:outline-none focus:ring-0 border-0"
+ />
     </div>
   );
 }
