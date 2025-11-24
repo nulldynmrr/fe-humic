@@ -7,49 +7,68 @@ import { DataTable } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Upload, Plus, Edit, Trash, Eye } from "lucide-react";
 import TableAction from "@/components/ui/TableAction";
+import Modal from "@/components/card/Modal";
 
 import { formatWaktu } from "@/utils/time";
 import request from "@/utils/request";
 import { toast } from "sonner";
 
-export default function Projects() {
+export default function IntershipProject() {
   const router = useRouter();
   const [projects, setProjects] = useState([]);
   const [query, setQuery] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [modalMode, setModalMode] = useState("view");
   const [loading, setLoading] = useState(false);
 
   const onDelete = async (id) => {
     try {
-      await request.delete(`/project/${id}`);
-      toast.success("Project berhasil dihapus");
+      const response = await request.delete(`/project/${id}`);
+      toast.success("Data Project berhasil dihapus");
       setProjects((prev) => prev.filter((item) => item.id !== id));
-      fetchAllInternship();
     } catch (err) {
-      toast.error("Project gagal dihapus");
+      console.error("Delete error:", err.response?.data || err.message);
+      toast.error(
+        `Gagal menghapus Project: ${err.response?.data?.message || err.message}`
+      );
     }
   };
 
-  const fetchAllInternship = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await request.get("/project", {
-        params: query ? { search: query } : {},
-      });
-      setProjects(response.data);
-    } catch (err) {
-      toast.error("Gagal memuat data project");
-      setProjects([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [query]);
+ const handleFilter = (filterType) => {
+  fetchAllProjects(query, filterType);
+};
+
+
+  const fetchAllProjects = useCallback(
+    async (searchQuery = "", filterType = "") => {
+      setLoading(true);
+      try {
+        const params = {};
+
+        if (searchQuery) params.search = searchQuery;
+        if (filterType) params.sort = filterType.toUpperCase();
+
+        const response = await request.get("/project", { params });
+        setProjects(response.data);
+      } catch (err) {
+        toast.error("Gagal memuat data Project");
+        setProjects([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
-    fetchAllInternship();
-  }, [fetchAllInternship]);
+    fetchAllProjects(query);
+  }, [query, fetchAllProjects]);
 
-  const handleFilter = (filterType) => {
-    console.log("Filter:", filterType);
+  const onUpdate = (updatedData) => {
+    setProjects((prev) =>
+      prev.map((item) => (item.id === updatedData.id ? updatedData : item))
+    );
   };
 
   const columns = [
@@ -83,10 +102,20 @@ export default function Projects() {
       header: "Date",
       cell: ({ getValue }) => <span>{formatWaktu(getValue(), "date")}</span>,
     },
+  ];
+
+  const modalFields = columns
+    .filter((col) => col.accessorKey && col.id !== "actions")
+    .map((col) => ({
+      label: col.header,
+      key: col.accessorKey,
+    }));
+
+  const tableColumns = [
+    ...columns.filter((col) => col.id !== "actions"),
     {
       id: "actions",
       header: "Actions",
-      enableHiding: false,
       cell: ({ row }) => {
         const data = row.original;
         return (
@@ -95,18 +124,35 @@ export default function Projects() {
               {
                 label: "Lihat Detail",
                 icon: <Eye className="h-4 w-4" />,
-                onClick: () => toast.success("Detail"),
+                className:
+                  "capitalize cursor-pointer text-black dark:text-white bg-red-500 hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
+                onClick: () => {
+                  setSelectedRow(data);
+                  setOpenModal(true);
+                  setModalMode("view");
+                },
               },
               {
                 label: "Edit",
                 icon: <Edit className="h-4 w-4" />,
-                onClick: () => console.log("Edit", data.id),
+                className:
+                  "capitalize cursor-pointer text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
+                onClick: () => {
+                  setSelectedRow(data);
+                  setOpenModal(true);
+                  setModalMode("edit");
+                },
               },
               {
                 label: "Delete",
                 icon: <Trash className="h-4 w-4" />,
+                className:
+                  "capitalize cursor-pointer text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
                 danger: true,
-                onClick: () => onDelete(data.id),
+                onClick: () => {
+                  console.log("Klik Delete, data row:", data);
+                  onDelete(data.id);
+                },
               },
             ]}
           />
@@ -116,28 +162,20 @@ export default function Projects() {
   ];
 
   return (
-    <section>
-      <div className="flex items-center justify-between mb-4">
+    <section className="w-full max-w-[1200px] mx-auto px-4 md:px-0 mt-16 md:mt-0">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-bold">Internship Project</h2>
+          <h2 className="text-2xl font-bold">Project HUMIC</h2>
           <p className="text-[#62748E] dark:text-[#828b97]">
             Here's a list of your tasks for this month!
           </p>
         </div>
 
-        <div className="flex space-x-2">
-          <Button
-            variant="secondary"
-            icon={Upload}
-            onClick={() => router.push("/admin/import")}
-          >
-            Import
-          </Button>
-
+        <div className="flex mt-2 md:mt-0">
           <Button
             variant="default"
             icon={Plus}
-            onClick={() => router.push("/admin/create")}
+            onClick={() => router.push("/administrator/create-project")}
           >
             Create
           </Button>
@@ -146,32 +184,39 @@ export default function Projects() {
 
       {loading ? (
         <div className="max-w-full text-center py-8 text-muted-foreground">
-          Memuat data project...
+          Memuat data IntershipProject...
         </div>
       ) : (
         <DataTable
-          columns={columns}
+          columns={tableColumns}
           data={projects}
           filterKey="title"
           filterOptions={[
             {
-              label: "Ascending",
+              label: "Ascending by Date",
               value: "asc",
               onClick: () => handleFilter("asc"),
             },
             {
-              label: "Descending",
+              label: "Descending by Date",
               value: "desc",
               onClick: () => handleFilter("desc"),
-            },
-            {
-              label: "By Date",
-              value: "date",
-              onClick: () => handleFilter("date"),
             },
           ]}
         />
       )}
+      <Modal
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        data={selectedRow}
+        fields={modalFields}
+        apiPath={selectedRow ? `/project/${selectedRow.id}` : ""}
+        method="PATCH"
+        mode={modalMode}
+        onUpdate={(updatedRow) => {
+    fetchAllProjects();
+  }}
+      />
     </section>
   );
 }

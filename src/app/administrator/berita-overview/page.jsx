@@ -7,6 +7,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Upload, Plus, Edit, Trash, Eye } from "lucide-react";
 import TableAction from "@/components/ui/TableAction";
+import Modal from "@/components/card/Modal";
 
 import { formatWaktu } from "@/utils/time";
 import request from "@/utils/request";
@@ -16,40 +17,57 @@ export default function Berita() {
   const router = useRouter();
   const [berita, setBerita] = useState([]);
   const [query, setQuery] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [modalMode, setModalMode] = useState("view");
   const [loading, setLoading] = useState(false);
 
   const onDelete = async (id) => {
     try {
-      await request.delete(`/berita/${id}`);
-      toast.success("Data berhasil dihapus");
+      const response = await request.delete(`/berita/${id}`);
+      toast.success("Data Berita berhasil dihapus");
       setBerita((prev) => prev.filter((item) => item.id !== id));
-      fetchAllBerita();
     } catch (err) {
-      toast.error("Data gagal dihapus");
+      console.error("Delete error:", err.response?.data || err.message);
+      toast.error(
+        `Gagal menghapus Berita: ${err.response?.data?.message || err.message}`
+      );
     }
   };
 
-  const fetchAllBerita = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await request.get("/berita", {
-        params: query ? { search: query } : {},
-      });
-      setBerita(response.data);
-    } catch (err) {
-      toast.error("Gagal memuat data berita");
-      setBerita([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [query]);
+  const handleFilter = (filterType) => {
+    fetchAllBerita(query, filterType);
+  };
+
+  const fetchAllBerita = useCallback(
+    async (searchQuery = "", filterType = "") => {
+      setLoading(true);
+      try {
+        const params = {};
+
+        if (searchQuery) params.search = searchQuery;
+        if (filterType) params.sort = filterType.toUpperCase();
+
+        const response = await request.get("/berita", { params });
+        setBerita(response.data);
+      } catch (err) {
+        toast.error("Gagal memuat data Berita");
+        setBerita([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
-    fetchAllBerita();
-  }, [fetchAllBerita]);
+    fetchAllBerita(query);
+  }, [query, fetchAllBerita]);
 
-  const handleFilter = (filterType) => {
-    console.log("Filter:", filterType);
+  const onUpdate = (updatedData) => {
+    setBerita((prev) =>
+      prev.map((item) => (item.id === updatedData.id ? updatedData : item))
+    );
   };
 
   const columns = [
@@ -75,15 +93,26 @@ export default function Berita() {
       },
     },
     { accessorKey: "title", header: "Title" },
+    { accessorKey: "content", header: "Kontent" },
     {
       accessorKey: "date",
       header: "Date",
       cell: ({ getValue }) => <span>{formatWaktu(getValue(), "date")}</span>,
     },
+  ];
+
+  const modalFields = columns
+    .filter((col) => col.accessorKey && col.id !== "actions")
+    .map((col) => ({
+      label: col.header,
+      key: col.accessorKey,
+    }));
+
+  const tableColumns = [
+    ...columns.filter((col) => col.id !== "actions"),
     {
       id: "actions",
       header: "Actions",
-      enableHiding: false,
       cell: ({ row }) => {
         const data = row.original;
         return (
@@ -92,18 +121,35 @@ export default function Berita() {
               {
                 label: "Lihat Detail",
                 icon: <Eye className="h-4 w-4" />,
-                onClick: () => toast.success("Detail"),
+                className:
+                  "capitalize cursor-pointer text-black dark:text-white bg-red-500 hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
+                onClick: () => {
+                  setSelectedRow(data);
+                  setOpenModal(true);
+                  setModalMode("view");
+                },
               },
               {
                 label: "Edit",
                 icon: <Edit className="h-4 w-4" />,
-                onClick: () => console.log("Edit", data.id),
+                className:
+                  "capitalize cursor-pointer text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
+                onClick: () => {
+                  setSelectedRow(data);
+                  setOpenModal(true);
+                  setModalMode("edit");
+                },
               },
               {
                 label: "Delete",
                 icon: <Trash className="h-4 w-4" />,
+                className:
+                  "capitalize cursor-pointer text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
                 danger: true,
-                onClick: () => onDelete(data.id),
+                onClick: () => {
+                  console.log("Klik Delete, data row:", data);
+                  onDelete(data.id);
+                },
               },
             ]}
           />
@@ -113,16 +159,16 @@ export default function Berita() {
   ];
 
   return (
-    <section>
-      <div className="flex items-center justify-between mb-4">
+    <section className="w-full max-w-[1200px] mx-auto px-4 md:px-0 mt-16 md:mt-0">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-bold">Berita</h2>
+          <h2 className="text-2xl font-bold">Berita HUMIC</h2>
           <p className="text-[#62748E] dark:text-[#828b97]">
             Here's a list of your tasks for this month!
           </p>
         </div>
 
-        <div className="flex space-x-2">
+        <div className="flex mt-2 md:mt-0">
           <Button
             variant="default"
             icon={Plus}
@@ -135,32 +181,39 @@ export default function Berita() {
 
       {loading ? (
         <div className="max-w-full text-center py-8 text-muted-foreground">
-          Memuat data berita...
+          Memuat data Berita...
         </div>
       ) : (
         <DataTable
-          columns={columns}
+          columns={tableColumns}
           data={berita}
           filterKey="title"
           filterOptions={[
             {
-              label: "Ascending",
+              label: "Ascending by Date",
               value: "asc",
               onClick: () => handleFilter("asc"),
             },
             {
-              label: "Descending",
+              label: "Descending by Date",
               value: "desc",
               onClick: () => handleFilter("desc"),
-            },
-            {
-              label: "By Date",
-              value: "date",
-              onClick: () => handleFilter("date"),
             },
           ]}
         />
       )}
+      <Modal
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        data={selectedRow}
+        fields={modalFields}
+        apiPath={selectedRow ? `/berita/${selectedRow.id}` : ""}
+        method="PATCH"
+        mode={modalMode}
+        onUpdate={(updatedRow) => {
+          fetchAllBerita();
+        }}
+      />
     </section>
   );
 }

@@ -8,6 +8,7 @@ import ButtonDefault from "@/components/ui/button";
 import Information from "@/components/card/Information";
 import CardFeedback from "@/components/card/Feedback";
 import Accordion from "@/components/card/Accordion";
+import PageLoader from "@/components/ui/loading";
 import Image from "next/image";
 import Link from "next/link";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
@@ -25,6 +26,7 @@ const Dashboard = () => {
   const [pengumuman, setPengumuman] = useState([]);
   const [testimoni, setTestimoni] = useState([]);
   const [loading, setLoading] = useState(false);
+    const [isLoadingAll, setIsLoadingAll] = useState(true); 
 
   const fetchAllAgenda = useCallback(async () => {
     setLoading(true);
@@ -95,11 +97,21 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    fetchAllAgenda();
-    fetchAllBerita();
-    fetchAllPengumuman();
-    fetchAllTestimoni();
+    const fetchAll = async () => {
+      setIsLoadingAll(true);
+      await Promise.all([
+        fetchAllAgenda(),
+        fetchAllBerita(),
+        fetchAllPengumuman(),
+        fetchAllTestimoni(),
+      ]);
+      setIsLoadingAll(false); 
+    };
+    fetchAll();
   }, [fetchAllAgenda, fetchAllBerita, fetchAllPengumuman, fetchAllTestimoni]);
+
+  
+  if (isLoadingAll) return <PageLoader  className="mt-[-3.5rem] mb-12 h"/>; 
 
   const animateScroll = (container, distance, duration = 450) => {
     if (!container) return;
@@ -335,7 +347,7 @@ const Dashboard = () => {
           </div>
         </div>
       </section>
-      <section className="px-4 py-8 md:px-12 h-full md:min-h-[600px] flex flex-col justify-center items-center overflow-hidden gap-6">
+      <section className="px-4 py-8 md:px-12 h-full flex flex-col justify-center items-center overflow-hidden gap-6">
         <h1 className="text-3xl font-bold text-black">
           Frequently asked questions
         </h1>

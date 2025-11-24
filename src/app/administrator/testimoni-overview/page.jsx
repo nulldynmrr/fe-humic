@@ -6,25 +6,38 @@ import { DataTable } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Upload, Plus, Edit, Trash, Eye, Star } from "lucide-react";
 import TableAction from "@/components/ui/TableAction";
+import Modal from "@/components/card/Modal";
+
 import request from "@/utils/request";
 import { toast } from "sonner";
 
 export default function Testimoni() {
   const router = useRouter();
-  const [testimoni, setTestimoni] = useState([]);
+  const [testimony, setTestimony] = useState([]);
   const [interns, setInterns] = useState([]);
   const [query, setQuery] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [modalMode, setModalMode] = useState("view");
   const [loading, setLoading] = useState(false);
 
   const onDelete = async (id) => {
     try {
-      await request.delete(`/testimony/${id}`);
-      toast.success("Testimoni berhasil dihapus");
-      setTestimoni((prev) => prev.filter((item) => item.id !== id));
-      fetchAllTestimoni();
+      const response = await request.delete(`/testimony/${id}`);
+      toast.success("Data Testimoni berhasil dihapus");
+      setTestimony((prev) => prev.filter((item) => item.id !== id));
     } catch (err) {
-      toast.error("Gagal menghapus testimoni");
+      console.error("Delete error:", err.response?.data || err.message);
+      toast.error(
+        `Gagal menghapus Testimoni: ${
+          err.response?.data?.message || err.message
+        }`
+      );
     }
+  };
+
+  const handleFilter = (filterType) => {
+    fetchAllTestimoni(query, filterType);
   };
 
   const fetchAllInterns = useCallback(async () => {
@@ -36,41 +49,55 @@ export default function Testimoni() {
     }
   }, []);
 
-  const fetchAllTestimoni = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await request.get("/testimony");
-      setTestimoni(response.data);
-    } catch (err) {
-      toast.error("Gagal memuat data testimoni");
-      setTestimoni([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const fetchAllTestimoni = useCallback(
+    async (searchQuery = "", filterType = "") => {
+      setLoading(true);
+      try {
+        const params = {};
+
+        if (searchQuery) params.search = searchQuery;
+        if (filterType) params.sort = filterType.toUpperCase();
+
+        const response = await request.get("/testimony", { params });
+        setTestimony(response.data);
+      } catch (err) {
+        toast.error("Gagal memuat data Testimoni");
+        setTestimony([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
-    fetchAllTestimoni();
+    fetchAllTestimoni(query);
     fetchAllInterns();
-  }, [fetchAllTestimoni, fetchAllInterns]);
+  }, [query, fetchAllTestimoni, fetchAllInterns]);
 
   const getInternName = (id) => {
     const intern = interns.find((i) => i.id === id);
     return intern ? intern.name : "Tidak diketahui";
   };
 
-  const filteredData = testimoni.filter((item) => {
-    const intern = interns.find((i) => i.id === item.id_intern);
-    const name = intern?.name?.toLowerCase() || "";
-    return name.includes(query.toLowerCase());
-  });
+  const enrichedTestimony = testimony.map((item) => ({
+    ...item,
+    intern_name: getInternName(item.id_intern),
+  }));
+
+  const onUpdate = (updatedData) => {
+    setTestimony((prev) =>
+      prev.map((item) => (item.id === updatedData.id ? updatedData : item))
+    );
+  };
 
   const columns = [
     { header: "No", cell: ({ row }) => <span>{row.index + 1}</span> },
     {
-      accessorKey: "id_intern",
+      id: "intern_name",
+      accessorKey: "intern_name",
       header: "Nama Intern",
-      cell: ({ getValue }) => <span>{getInternName(getValue())}</span>,
+      cell: ({ row }) => <span>{getInternName(row.original.id_intern)}</span>,
     },
     {
       accessorKey: "content",
@@ -90,10 +117,20 @@ export default function Testimoni() {
         </div>
       ),
     },
+  ];
+
+  const modalFields = columns
+    .filter((col) => col.accessorKey && col.id !== "actions")
+    .map((col) => ({
+      label: col.header,
+      key: col.accessorKey,
+    }));
+
+  const tableColumns = [
+    ...columns.filter((col) => col.id !== "actions"),
     {
       id: "actions",
       header: "Actions",
-      enableHiding: false,
       cell: ({ row }) => {
         const data = row.original;
         return (
@@ -102,18 +139,35 @@ export default function Testimoni() {
               {
                 label: "Lihat Detail",
                 icon: <Eye className="h-4 w-4" />,
-                onClick: () => toast.info("👀 Lihat detail testimoni"),
+                className:
+                  "capitalize cursor-pointer text-black dark:text-white bg-red-500 hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
+                onClick: () => {
+                  setSelectedRow(data);
+                  setOpenModal(true);
+                  setModalMode("view");
+                },
               },
-              {
-                label: "Edit",
-                icon: <Edit className="h-4 w-4" />,
-                onClick: () => console.log("Edit", data.id),
-              },
+              // {
+              //   label: "Edit",
+              //   icon: <Edit className="h-4 w-4" />,
+              //   className:
+              //     "capitalize cursor-pointer text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
+              //   onClick: () => {
+              //     setSelectedRow(data);
+              //     setOpenModal(true);
+              //     setModalMode("edit");
+              //   },
+              // },
               {
                 label: "Delete",
                 icon: <Trash className="h-4 w-4" />,
+                className:
+                  "capitalize cursor-pointer text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
                 danger: true,
-                onClick: () => onDelete(data.id),
+                onClick: () => {
+                  console.log("Klik Delete, data row:", data);
+                  onDelete(data.id);
+                },
               },
             ]}
           />
@@ -123,24 +177,23 @@ export default function Testimoni() {
   ];
 
   return (
-    <section>
-      <div className="flex items-center justify-between mb-4">
+    <section className="w-full max-w-[1200px] mx-auto px-4 md:px-0 mt-16 md:mt-0">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-bold">Testimoni</h2>
+          <h2 className="text-2xl font-bold">Testimoni HUMIC</h2>
           <p className="text-[#62748E] dark:text-[#828b97]">
-            Lihat pengalaman para intern bersama HUMIC!
+            Here's a list of your tasks for this month!
           </p>
         </div>
 
-        <div className="flex space-x-2">
+        <div className="flex space-x-4 mt-2 md:mt-0">
           <Button
             variant="secondary"
-            icon={Upload}
-            onClick={() => router.push("/admin/import")}
+            icon={Plus}
+            onClick={() => router.push("/administrator/import-testimoni")}
           >
             Import
           </Button>
-
           <Button
             variant="default"
             icon={Plus}
@@ -153,35 +206,40 @@ export default function Testimoni() {
 
       {loading ? (
         <div className="max-w-full text-center py-8 text-muted-foreground">
-          Memuat data testimoni...
+          Memuat data Testimoni...
         </div>
       ) : (
         <DataTable
-          columns={columns}
-          data={filteredData}
+          columns={tableColumns}
+          data={enrichedTestimony}
           filterKey="intern_name"
           placeholderSearch="Cari berdasarkan nama intern..."
-          onFilterSelect={(value) => console.log("Filter:", value)}
-          onFilterChange={(value) => setQuery(value)}
           filterOptions={[
             {
-              label: "Ascending",
+              label: "Ascending by Date",
               value: "asc",
-              onClick: () => console.log("asc"),
+              onClick: () => handleFilter("asc"),
             },
             {
-              label: "Descending",
+              label: "Descending by Date",
               value: "desc",
-              onClick: () => console.log("desc"),
-            },
-            {
-              label: "By Rating",
-              value: "rating",
-              onClick: () => console.log("rating"),
+              onClick: () => handleFilter("desc"),
             },
           ]}
         />
       )}
+      <Modal
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        data={selectedRow}
+        fields={modalFields}
+        apiPath={selectedRow ? `/testimony/${selectedRow.id}` : ""}
+        method="PATCH"
+        mode={modalMode}
+        onUpdate={(updatedRow) => {
+          fetchAllTestimoni();
+        }}
+      />
     </section>
   );
 }

@@ -23,14 +23,12 @@ const FixMapCenter = ({ position }) => {
 };
 
 const MapInner = () => {
-  // 🗺️ Koordinat lokasi marker
   const markerPosition = [-6.976892539590171, 107.63101589759397];
 
-  // Fungsi untuk buka Google Maps
   const openGoogleMaps = () => {
     const [lat, lng] = markerPosition;
     const url = `https://www.google.com/maps?q=${lat},${lng}`;
-    window.open(url, "_blank"); // buka tab baru
+    window.open(url, "_blank");
   };
 
   return (
@@ -41,14 +39,17 @@ const MapInner = () => {
     >
       <FixMapCenter position={markerPosition} />
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <Marker position={markerPosition} eventHandlers={{ click: openGoogleMaps }}>
+      <Marker
+        position={markerPosition}
+        eventHandlers={{ click: openGoogleMaps }}
+      >
         <Popup>
           <div className="text-center">
             <button
               onClick={openGoogleMaps}
               className="text-blue-600 underline mt-1 hover:text-blue-800"
             >
-                <p className="font-semibold">Gedung F - HUMIC</p>
+              <p className="font-semibold">Gedung F - HUMIC</p>
             </button>
           </div>
         </Popup>

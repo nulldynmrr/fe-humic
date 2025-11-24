@@ -21,25 +21,50 @@ export default function Information({ type, data, loading = false }) {
   const title =
     type === "agenda" ? "Agenda" : type === "berita" ? "Berita" : "Pengumuman";
 
+  const getLink = (item) => {
+    if (type === "agenda") {
+      return `/agenda`;
+    }
+
+    if (type === "berita") {
+      return `/articles/page?id=${item.id}`;
+    }
+
+    if (type === "pengumuman") {
+      return `/articles/page?id=${item.id}`;
+    }
+
+    return "#";
+  };
+
   return (
     <section
-      className="flex flex-col overflow-hidden min-h-full "
+      className="flex flex-col overflow-hidden min-h-full"
       aria-labelledby={`${type}-title`}
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200">
-        <div className="flex items-center gap-2">
-          {icon}
-          <h2 id={`${type}-title`} className="font-semibold text-lg">
-            {title}
-          </h2>
-        </div>
-        <Link
-          href="#"
-          className="text-sm text-primary flex items-center gap-1 font-medium"
-        >
-          Semua <MdOutlineKeyboardArrowRight />
-        </Link>
-      </div>
+  <div className="flex items-center gap-2">
+    {icon}
+    <h2 id={`${type}-title`} className="font-semibold text-lg">
+      {title}
+    </h2>
+  </div>
+
+  {type !== "pengumuman" && (
+    <Link
+      href={
+        type === "agenda"
+          ? "/agenda"
+          : type === "berita"
+          ? "/articles"
+          : "#"
+      }
+      className="text-sm text-primary flex items-center gap-1 font-medium"
+    >
+      Semua <MdOutlineKeyboardArrowRight />
+    </Link>
+  )}
+</div>
 
       <div className="p-4">
         {loading && <Skeleton />}
@@ -62,7 +87,7 @@ export default function Information({ type, data, loading = false }) {
                   : ""
               }`}
             >
-              <Link href={item.href || "#"} className="block">
+              <Link href={getLink(item)} className="block">
                 {idx === 0 && (type === "agenda" || type === "berita") ? (
                   <div className="relative w-full h-60 rounded-lg overflow-hidden">
                     <Image

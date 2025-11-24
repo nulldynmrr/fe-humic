@@ -10,15 +10,17 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { z } from "zod";
 import request from "@/utils/request";
 import { toast } from "sonner";
-import RichText from "@/components/ui/richText";
 
-const agendaSchema = z.object({
+const announcementSchema = z.object({
   title: z
     .string()
-    .min(3, "Title harus minimal 3 karakter")
+    .min(3, "Title minimal 3 karakter")
     .max(100, "Title terlalu panjang"),
 
-  content: z.string().min(1, "Content tidak boleh kosong"),
+  content: z
+    .string()
+    .min(3, "Content minimal 3 karakter")
+    .max(5000, "Content terlalu panjang"),
 
   date: z
     .string()
@@ -40,12 +42,15 @@ const agendaSchema = z.object({
 
   image: z
     .any()
-    .refine((file) => file !== null, "Profile image wajib diisi!")
-    .refine((file) => !file || file.size <= 5000000, "Maksimal file ukuran 5MB")
+    .refine((file) => file !== null, "Gambar wajib diupload!")
+    .refine((file) => !file || file.size <= 5_000_000, "Max 5MB")
     .refine(
       (file) =>
-        !file || ["image/jpeg", "image/jpg", "image/png"].includes(file.type),
-      "Hanya format .jpg, .jpeg, dan .png yang didukung"
+        !file ||
+        ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
+          file.type
+        ),
+      "Hanya .jpg, .jpeg, .png, .webp"
     ),
 });
 
@@ -57,11 +62,10 @@ const scrollToError = (field) => {
   }
 };
 
-export default function CreateBerita() {
+export default function CreatePengumuman() {
   const [formData, setFormData] = useState({
     title: "",
     content: "",
-    author: "",
     date: "",
     image: null,
   });
@@ -72,11 +76,12 @@ export default function CreateBerita() {
     errors: {},
   });
 
-  const [validations, setValidations] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // INPUT HANDLER
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     if (status.errors[name]) {
@@ -96,20 +101,19 @@ export default function CreateBerita() {
     }
   };
 
+  // SUBMIT
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setValidations([]);
     setStatus({ type: "", text: "", errors: {} });
 
     try {
-      const validation = agendaSchema.safeParse(formData);
+      const validation = announcementSchema.safeParse(formData);
 
       if (!validation.success) {
         const zodErrors = {};
-
-        const firstError = validation.error.issues[0];
-        scrollToError(firstError.path[0]);
+        const first = validation.error.issues[0];
+        scrollToError(first.path[0]);
 
         validation.error.issues.forEach((err) => {
           zodErrors[err.path[0]] = err.message;
@@ -125,75 +129,61 @@ export default function CreateBerita() {
         return;
       }
 
+      // FORMAT TANGGAL KE YYYY-MM-DD
       if (formData.date) {
         const d = new Date(formData.date);
-
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, "0");
-        const dd = String(d.getDate()).padStart(2, "0");
-
-        formData.date = `${yyyy}-${mm}-${dd}`;
+        formData.date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+          2,
+          "0"
+        )}-${String(d.getDate()).padStart(2, "0")}`;
       }
 
+      // MAKE FORM DATA
       const formDataToSend = new FormData();
       Object.keys(formData).forEach((key) => {
-        if (formData[key] !== null && formData[key] !== "") {
+        if (formData[key]) {
           formDataToSend.append(key, formData[key]);
         }
       });
 
-      const response = await request.post("/berita", formDataToSend, {
+      // API POST
+      const response = await request.post("/pengumuman", formDataToSend, {
         "Content-Type": "multipart/form-data",
       });
 
       if (response.status === 200 || response.status === 201) {
         toast.dismiss();
-        toast.success(response.data?.message || "Data Berita berhasil dibuat!");
-
+        toast.success(response.data?.message || "Pengumuman berhasil dibuat!");
         onReset();
       } else {
-        toast.dismiss();
-        toast.error("Gagal membuat data Berita - Respons tidak valid");
+        toast.error("Gagal membuat pengumuman");
       }
-    } catch (error) {
-      setStatus({
-        type: "error",
-        text: "Gagal membuat data Berita. Silakan coba lagi.",
-        errors: {},
-      });
+    } catch (err) {
+      toast.error("Terjadi kesalahan saat membuat pengumuman");
     } finally {
       setLoading(false);
     }
   };
 
+  // RESET FORM
   const onReset = () => {
     setFormData({
       title: "",
       content: "",
-      author: "",
       date: "",
       image: null,
     });
 
-    setStatus({
-      type: "",
-      text: "",
-      errors: {},
-    });
-
-    setValidations([]);
+    setStatus({ type: "", text: "", errors: {} });
   };
 
   return (
     <section className="py-4 bg-sidebar p-6 rounded-sm shadow-md mt-16 md:mt-0">
-      <div>
-        <h2 className="text-2xl font-bold">Create an Berita</h2>
-        <p className="text-[#62748E] dark:text-[#828b97]">
-          Here's a list of your tasks for this month!
-        </p>
-      </div>
+      <h2 className="text-2xl font-bold">Create Pengumuman</h2>
+      <p className="text-muted">Buat pengumuman</p>
 
-      <form onSubmit={onSubmit} className="space-y-8 mt-12" noValidate>
+      <form onSubmit={onSubmit} className="space-y-8 mt-10" noValidate>
+        {/* Title + Date */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="title" required>
@@ -203,17 +193,17 @@ export default function CreateBerita() {
               name="title"
               value={formData.title}
               onChange={handleInputChange}
-              placeholder="Masukkan title"
+              placeholder="Masukkan title pengumuman"
               className="mt-2"
             />
             {status.errors.title && (
-              <p className="mt-1 text-sm text-red-600">{status.errors.title}</p>
+              <p className="text-sm text-red-600 mt-1">{status.errors.title}</p>
             )}
           </div>
 
           <div>
             <Label htmlFor="date" required>
-              Schedule Time
+              Date
             </Label>
             <DatePicker
               value={formData.date ? new Date(formData.date) : null}
@@ -225,10 +215,10 @@ export default function CreateBerita() {
                   },
                 })
               }
-              placeholder="Pilih tanggal ..."
+              placeholder="Pilih tanggal pengumuman"
             />
             {status.errors.date && (
-              <p className="mt-1 text-sm text-red-600">{status.errors.date}</p>
+              <p className="text-sm text-red-600 mt-1">{status.errors.date}</p>
             )}
           </div>
         </div>
@@ -237,39 +227,39 @@ export default function CreateBerita() {
           <Label htmlFor="content" required>
             Content
           </Label>
-          <RichText
+          <Textarea
+            name="content"
             value={formData.content}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, content: value }))
-            }
+            onChange={handleInputChange}
+            placeholder="Tulis isi pengumuman..."
+            className="mt-2"
           />
-
           {status.errors.content && (
-            <p className="mt-1 text-sm text-red-600">{status.errors.content}</p>
+            <p className="text-sm text-red-600 mt-1">{status.errors.content}</p>
           )}
         </div>
 
         <div>
           <File
-            label="Image Berita"
+            label="Image Announcement"
             name="image"
             accept=".jpg,.jpeg,.png,.webp"
             value={formData.image}
             onChange={handleImageChange}
-            placeholder="Drag & drop gambar berita atau klik untuk upload"
+            placeholder="Upload gambar pengumuman"
             maxSizeMB={5}
           />
           {status.errors.image && (
-            <p className="mt-1 text-sm text-red-600">{status.errors.image}</p>
+            <p className="text-sm text-red-600 mt-1">{status.errors.image}</p>
           )}
         </div>
 
         {status.text && (
           <div
-            className={`mb-6 p-4 rounded-lg ${
-              status.type === "success"
-                ? "bg-green-50 text-green-800 border border-green-200"
-                : "bg-red-50 text-red-800 border border-red-200"
+            className={`p-4 rounded-md ${
+              status.type === "error"
+                ? "bg-red-50 text-red-800 border border-red-200"
+                : "bg-green-50 text-green-800 border border-green-200"
             }`}
           >
             {status.text}

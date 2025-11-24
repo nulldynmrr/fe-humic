@@ -30,22 +30,24 @@ const IntershipProject = () => {
     }
   }, []);
 
-  const onSearch = useCallback(async (search) => {
-    setLoading(true);
-    try {
-      console.log("Searching project with query:", search);
-      const response = await request.get(`/project/search`, {
-        params: { que: search },
-      });
-      setProjects(response.data);
-    } catch (err) {
-      toast.error("Gagal mencari project");
-      setProjects([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  
+const onSearch = useCallback(async (search) => {
+  setLoading(true);
+  try {
+    console.log("Searching project with query:", search);
 
+    const response = await request.get(`/project/search/internship`, {
+      params: { que: search }, 
+    });
+
+    setProjects(response.data);
+  } catch (err) {
+    toast.error("Gagal mencari project");
+    setProjects([]);
+  } finally {
+    setLoading(false);
+  }
+}, []);
   useEffect(() => {
     featchAllProject();
   }, [featchAllProject]);
@@ -55,7 +57,7 @@ const IntershipProject = () => {
       <Header title="Internship Project" imageSrc="/assets/bg-header.png" />
       <section className="px-4 py-8 md:px-24 lg:px-34">
         <div className="flex flex-col md:flex-row justify-between items-center">
-          <h1 className="text-3xl font-bold text-black mb-4 md:mb-0">
+          <h1 className="text-3xl font-bold text-black mb-4 md:mb-0 mt-6">
             Our Portfolio Project
           </h1>
           <SearchDefault
