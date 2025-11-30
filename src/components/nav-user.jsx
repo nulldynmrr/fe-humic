@@ -19,7 +19,7 @@ export function NavUser() {
   const router = useRouter();
   const [admin, setAdmin] = useState({
     username: "Loading...",
-    role: "Loaing",
+    role: "Loading...",
     avatar: "",
   });
   const [loading, setLoading] = useState(true);
@@ -38,7 +38,7 @@ export function NavUser() {
       if (response.data) {
         const data = response.data;
         setAdmin({
-          name:data.username,
+          username:data.username,
           role: data.role,
           avatar: data.avatar || data.profileImage || data.photo || "",
         });
@@ -56,7 +56,7 @@ export function NavUser() {
         if (storedAdmin) {
           const adminData = JSON.parse(storedAdmin);
           setAdmin({
-            name: adminData.username,
+            username: adminData.username,
             role: adminData.role,
             avatar: adminData.avatar || adminData.profileImage || "",
           });
@@ -77,9 +77,9 @@ export function NavUser() {
 
   console.log(admin);
 
-  const getInitials = (name) => {
-    if (!name || name === "Loading...") return "...";
-    return name
+  const getInitials = (username) => {
+    if (!username || username === "Loading...") return "...";
+    return username
       .split(" ")
       .map((n) => n[0])
       .join("")
@@ -98,13 +98,13 @@ export function NavUser() {
               disabled={loading}
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={admin.avatar} alt={admin.name} />
+                <AvatarImage src={admin.avatar} alt={admin.username} />
                 <AvatarFallback className="rounded-lg">
-                  {getInitials(admin.name)}
+                  {getInitials(admin.username)}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{admin.name}</span>
+                <span className="truncate font-medium">{admin.username}</span>
                 <span className="truncate text-xs text-muted-foreground">
                   {admin.role}
                 </span>
