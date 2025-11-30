@@ -45,7 +45,7 @@ const UserAdmin = () => {
 
   const fetchCurrentAdmin = useCallback(async () => {
     try {
-      const res = await request.get("/"); 
+      const res = await request.get("/");
       setCurrentAdminRole(res.data.role || null);
     } catch {
       setCurrentAdminRole(null);
@@ -55,7 +55,7 @@ const UserAdmin = () => {
   const fetchAdmins = useCallback(async () => {
     try {
       const response = await request.get("/admin");
-      setAdmins(response.data));
+      setAdmins(response.data);
     } catch {
       toast.error("Gagal memuat data admin");
     }

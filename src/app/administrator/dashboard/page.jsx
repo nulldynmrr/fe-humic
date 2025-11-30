@@ -230,7 +230,7 @@ const Dashboard = () => {
   };
 
   const cardClass =
-    "border bg-white dark:bg-sidebar border-black/10 dark:border-white/10 backdrop-blur-md text-foreground";
+    "overflow-hidden bborder bg-white dark:bg-sidebar border-black/10 dark:border-white/10 backdrop-blur-md text-foreground";
 
   if (isLoadingAll)
     return (
@@ -254,7 +254,7 @@ const Dashboard = () => {
                 {stats.totalResearchProjects}
               </div>
               <p className="text-xs text-muted-foreground">
-                Semua project riset
+                Project Riset
               </p>
             </CardContent>
           </Card>

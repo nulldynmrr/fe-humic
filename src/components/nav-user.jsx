@@ -19,7 +19,7 @@ export function NavUser() {
   const router = useRouter();
   const [admin, setAdmin] = useState({
     username: "Loading...",
-    role: "",
+    role: "Loaing",
     avatar: "",
   });
   const [loading, setLoading] = useState(true);
@@ -74,6 +74,8 @@ export function NavUser() {
   useEffect(() => {
     fetchCurrentAdmin();
   }, [fetchCurrentAdmin]);
+
+  console.log(admin);
 
   const getInitials = (name) => {
     if (!name || name === "Loading...") return "...";
