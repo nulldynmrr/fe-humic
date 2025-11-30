@@ -21,7 +21,7 @@ const partnershipSchema = z.object({
     .min(5, "Description minimal 5 karakter")
     .max(5000, "Description terlalu panjang"),
 
-  link: z.string().url("Link harus berupa URL valid (https://...)"),
+  link: z.string().url("Link harus berupa URL valid (https://example.com)"),
 
   logo: z
     .any()
