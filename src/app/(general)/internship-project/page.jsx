@@ -10,10 +10,9 @@ import { toast } from "react-hot-toast";
 
 const IntershipProject = () => {
   const [projects, setProjects] = useState([]);
-  const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const featchAllProject = useCallback(async () => {
+  const fetchAllProject = useCallback(async () => {
     setLoading(true);
     try {
       const response = await request.get("/project");
@@ -30,33 +29,33 @@ const IntershipProject = () => {
     }
   }, []);
 
-  
-const onSearch = useCallback(async (search) => {
-  setLoading(true);
-  try {
-    console.log("Searching project with query:", search);
+  const onSearch = useCallback(async (search) => {
+    if (!search || search.trim() === "") {
+      fetchAllProject();
+      return;
+    }
 
-    const response = await request.get(`/project/search/internship`, {
-      params: { que: search }, 
-    });
+    setLoading(true);
+    try {
+      const response = await request.get(`/project/search?query=${search}`);
+      setProjects(response.data);
+    } catch (err) {
+      toast.error("Gagal mencari project");
+      setProjects([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchAllProject]);
 
-    setProjects(response.data);
-  } catch (err) {
-    toast.error("Gagal mencari project");
-    setProjects([]);
-  } finally {
-    setLoading(false);
-  }
-}, []);
   useEffect(() => {
-    featchAllProject();
-  }, [featchAllProject]);
+    fetchAllProject();
+  }, [fetchAllProject]);
 
   return (
     <div className="min-h-screen">
       <Header title="Internship Project" imageSrc="/assets/bg-header.png" />
       <section className="px-4 py-8 md:px-24 lg:px-34">
-        <div className="flex flex-col md:flex-row justify-between items-center">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <h1 className="text-3xl font-bold text-black mb-4 md:mb-0 mt-6">
             Our Portfolio Project
           </h1>
@@ -65,7 +64,7 @@ const onSearch = useCallback(async (search) => {
             onSubmit={(q) => onSearch(q.trim())}
           />
         </div>
-        <Project data={projects} />
+        <Project data={projects} loading={loading} />
       </section>
     </div>
   );
