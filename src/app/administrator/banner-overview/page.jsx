@@ -95,6 +95,22 @@ export default function Banner() {
       key: col.accessorKey,
     }));
 
+  const handleFilter = (type) => {
+    if (type === "asc") {
+      setBanner((prev) =>
+        [...prev].sort(
+          (a, b) => new Date(a.created_at) - new Date(b.created_at)
+        )
+      );
+    } else {
+      setBanner((prev) =>
+        [...prev].sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        )
+      );
+    }
+  };
+
   const tableColumns = [
     ...columns.filter((col) => col.id !== "actions"),
     {
@@ -194,8 +210,10 @@ export default function Banner() {
               onClick: () => handleFilter("desc"),
             },
           ]}
+          hide={true}
         />
       )}
+
       <Modal
         isOpen={openModal}
         onClose={() => setOpenModal(false)}
