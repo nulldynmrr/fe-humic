@@ -1,12 +1,17 @@
 "use client";
 
-import { Suspense } from "react";
-import { ArticleContent } from "@/app/(general)/articles/[slug]/pageContent";
+import { Suspense, use } from "react";
+import ArticleContent from "@/app/(general)/articles/[slug]/pageContent";
 
-export default function Page() {
+function ArticleWrapper({ params }) {
+  const { slug } = use(params);
+  return <ArticleContent slug={slug} />;
+}
+
+export default function Page({ params }) {
   return (
     <Suspense fallback={null}>
-      <ArticleContent />
+      <ArticleWrapper params={params} />
     </Suspense>
   );
 }

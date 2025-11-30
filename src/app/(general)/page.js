@@ -157,13 +157,13 @@ const Dashboard = () => {
     },
   ];
 
-  console.log(berita)
+  console.log(berita);
 
   return (
     <>
       <ImageSlider className="mt-12" />
       <section className="px-4 py-8 md:px-12 h-full overflow-hidden">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+        <div className="flex flex-col md:flex-row gap-6 items-start">
           <Information type="agenda" data={agenda} loading={isLoadingAll} />
           <Information type="berita" data={berita} loading={isLoadingAll} />
           <Information

@@ -42,7 +42,6 @@ const announcementSchema = z.object({
 
   image: z
     .any()
-    .refine((file) => file !== null, "Gambar wajib diupload!")
     .refine((file) => !file || file.size <= 5_000_000, "Max 5MB")
     .refine(
       (file) =>
@@ -78,7 +77,6 @@ export default function CreatePengumuman() {
 
   const [loading, setLoading] = useState(false);
 
-  // INPUT HANDLER
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -101,7 +99,6 @@ export default function CreatePengumuman() {
     }
   };
 
-  // SUBMIT
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -129,7 +126,6 @@ export default function CreatePengumuman() {
         return;
       }
 
-      // FORMAT TANGGAL KE YYYY-MM-DD
       if (formData.date) {
         const d = new Date(formData.date);
         formData.date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
@@ -138,7 +134,6 @@ export default function CreatePengumuman() {
         )}-${String(d.getDate()).padStart(2, "0")}`;
       }
 
-      // MAKE FORM DATA
       const formDataToSend = new FormData();
       Object.keys(formData).forEach((key) => {
         if (formData[key]) {
@@ -146,7 +141,6 @@ export default function CreatePengumuman() {
         }
       });
 
-      // API POST
       const response = await request.post("/pengumuman", formDataToSend, {
         "Content-Type": "multipart/form-data",
       });
@@ -165,7 +159,6 @@ export default function CreatePengumuman() {
     }
   };
 
-  // RESET FORM
   const onReset = () => {
     setFormData({
       title: "",
@@ -183,7 +176,6 @@ export default function CreatePengumuman() {
       <p className="text-muted">Buat pengumuman</p>
 
       <form onSubmit={onSubmit} className="space-y-8 mt-10" noValidate>
-        {/* Title + Date */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="title" required>

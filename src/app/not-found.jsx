@@ -25,7 +25,7 @@ export default function NotFound() {
         <div className="mt-8 flex items-center justify-center gap-3">
           <button
             onClick={() => router.back()}
-            className="px-4 py-2 text-sm border border-slate-300 rounded-xl bg-white shadow-sm"
+            className="px-4 py-2 text-sm border text-bl border-slate-300 rounded-xl bg-white shadow-sm"
           >
             Go Back
           </button>

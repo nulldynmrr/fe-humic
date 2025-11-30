@@ -93,6 +93,7 @@ export default function CreateProject() {
 
       if (!validation.success) {
         const zodErrors = {};
+
         const firstError = validation.error.issues[0];
         scrollToError(firstError.path[0]);
 
@@ -117,25 +118,34 @@ export default function CreateProject() {
         }
       });
 
-      const response = await request.post("/project", formDataToSend);
+      const response = await request.post("/project", formDataToSend, {
+        "Content-Type": "multipart/form-data",
+      });
 
       if (response.status === 200 || response.status === 201) {
         toast.dismiss();
         toast.success(
           response.data?.message || "Data Project berhasil dibuat!"
         );
+
         onReset();
       } else {
         toast.dismiss();
         toast.error("Gagal membuat data Project - Respons tidak valid");
       }
     } catch (error) {
-      console.log(error.response || error);
+      console.error("Error:", error);
       setStatus({
         type: "error",
-        text: "Gagal membuat data Project. Silakan coba lagi.",
+        text:
+          error.response?.data?.message ||
+          "Gagal membuat data Project. Silakan coba lagi.",
         errors: {},
       });
+      toast.dismiss();
+      toast.error(
+        error.response?.data?.message || "Gagal membuat data Project"
+      );
     } finally {
       setLoading(false);
     }
@@ -162,7 +172,7 @@ export default function CreateProject() {
   return (
     <section className="py-4 bg-sidebar p-6 rounded-sm shadow-md mt-16 md:mt-0">
       <div>
-        <h2 className="text-2xl font-bold">Create an Project</h2>
+        <h2 className="text-2xl font-bold">Create an Project XXX</h2>
         <p className="text-[#62748E] dark:text-[#828b97]">
           Here's a list of your tasks for this month!
         </p>
@@ -204,8 +214,26 @@ export default function CreateProject() {
         </div>
 
         <div>
+          <Label htmlFor="publication" required>
+            Publication
+          </Label>
+          <Input
+            name="publication"
+            value={formData.publication}
+            onChange={handleInputChange}
+            placeholder="Masukkan publication"
+            className="mt-2"
+          />
+          {status.errors.publication && (
+            <p className="mt-1 text-sm text-red-600">
+              {status.errors.publication}
+            </p>
+          )}
+        </div>
+
+        <div>
           <Label htmlFor="description" required>
-            Description
+            Content
           </Label>
           <RichText
             value={formData.description}
@@ -249,7 +277,12 @@ export default function CreateProject() {
         )}
 
         <div className="flex justify-end space-x-4 pt-6">
-          <Button variant="secondary" onClick={onReset} disabled={loading}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onReset}
+            disabled={loading}
+          >
             Reset
           </Button>
           <Button type="submit" variant="default" disabled={loading}>

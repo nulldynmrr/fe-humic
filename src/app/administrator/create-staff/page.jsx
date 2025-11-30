@@ -35,20 +35,6 @@ const staffSchema = z.object({
 
   email: z.string().email("Email tidak valid"),
 
-  // linkedin: z
-  //   .string()
-  //   .refine(
-  //     (val) => val.includes(".") || val.startsWith("http"),
-  //     "URL LinkedIn tidak valid"
-  //   ),
-
-  // social_media: z
-  //   .string()
-  //   .refine(
-  //     (val) => val.includes(".") || val.startsWith("http"),
-  //     "URL Social Media tidak valid"
-  //   ),
-
   image: z
     .any()
     .refine((file) => file !== null, "Profile image wajib diisi!")
