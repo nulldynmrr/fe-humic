@@ -9,7 +9,7 @@ import { Upload, Plus, Edit, Trash, Eye } from "lucide-react";
 import TableAction from "@/components/ui/TableAction";
 import Modal from "@/components/card/Modal";
 
-import { formatWaktu } from "@/utils/time";
+import { formatWaktu } from "@/lib/time";
 import request from "@/utils/request";
 import { toast } from "sonner";
 

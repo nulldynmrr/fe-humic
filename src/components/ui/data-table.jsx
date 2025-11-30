@@ -29,7 +29,7 @@ import {
   TableRow,
 } from "@/components/ui/Table";
 import { Pagination } from "@/components/ui/pagination";
-import { formatWaktu } from "@/utils/time";
+import { formatWaktu } from "@/lib/time";
 
 export function DataTable({
   columns = [],

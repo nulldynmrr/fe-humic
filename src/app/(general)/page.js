@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useRef, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import ImageSlider from "@/components/ui/SliderImage";
 import List from "@/components/ui/Checklist";
 import Stats from "@/components/ui/StatsSection";
@@ -9,6 +10,7 @@ import Information from "@/components/card/Information";
 import CardFeedback from "@/components/card/Feedback";
 import Accordion from "@/components/card/Accordion";
 import PageLoader from "@/components/ui/loading";
+import { ModalAnnouncement, ModalChoice } from "@/components/ui/Modal";
 import Image from "next/image";
 import Link from "next/link";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
@@ -19,99 +21,64 @@ import request from "@/utils/request";
 import toast from "react-hot-toast";
 
 const Dashboard = () => {
+  const router = useRouter();
   const feedbackRef = useRef(null);
 
   const [agenda, setAgenda] = useState([]);
   const [berita, setBerita] = useState([]);
   const [pengumuman, setPengumuman] = useState([]);
   const [testimoni, setTestimoni] = useState([]);
-  const [loading, setLoading] = useState(false);
-    const [isLoadingAll, setIsLoadingAll] = useState(true); 
+  const [partnership, setPartnership] = useState([]);
+  const [isLoadingAll, setIsLoadingAll] = useState(true);
+  const [openModalIntern, setOpenModalIntern] = useState(false);
+  const [openModalWrap, setopenModalWrap] = useState(false);
 
-  const fetchAllAgenda = useCallback(async () => {
-    setLoading(true);
+  const fetchSection = useCallback(async (url, errorMessage) => {
     try {
-      const response = await request.get("/agenda?limit=4");
-      setAgenda(response.data);
+      const response = await request.get(url);
+      return response.data ?? [];
     } catch (err) {
       if (err.response) {
         toast.dismiss();
-        setAgenda([]);
       } else {
-        toast.error("Gagal memuat data agenda");
+        toast.error(errorMessage);
       }
-    } finally {
-      setLoading(false);
+      return [];
     }
   }, []);
 
-  const fetchAllBerita = useCallback(async () => {
-    setLoading(true);
+  const fetchDashboardData = useCallback(async () => {
+    setIsLoadingAll(true);
     try {
-      const response = await request.get("/berita?limit=4");
-      setBerita(response.data);
-    } catch (err) {
-      if (err.response) {
-        toast.dismiss();
-        setBerita([]);
-      } else {
-        toast.error("Gagal memuat data berita");
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      const [
+        agendaData,
+        beritaData,
+        pengumumanData,
+        testimoniData,
+        partnershipData,
+      ] = await Promise.all([
+        fetchSection("/agenda?limit=4", "Gagal memuat data agenda"),
+        fetchSection("/berita?limit=4", "Gagal memuat data berita"),
+        fetchSection("/pengumuman?limit=5", "Gagal memuat data pengumuman"),
+        fetchSection("/testimony", "Gagal memuat data testimoni"),
+        fetchSection("/partners", "Gagal memuat data partnership"),
+      ]);
 
-  const fetchAllPengumuman = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await request.get("/pengumuman?limit=5");
-      setPengumuman(response.data);
-    } catch (err) {
-      if (err.response) {
-        toast.dismiss();
-        setPengumuman([]);
-      } else {
-        toast.error("Gagal memuat data pengumuman");
-      }
+      setAgenda(agendaData);
+      setBerita(beritaData);
+      setPengumuman(pengumumanData);
+      setTestimoni(testimoniData);
+      setPartnership(partnershipData);
     } finally {
-      setLoading(false);
+      setIsLoadingAll(false);
     }
-  }, []);
-
-  const fetchAllTestimoni = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await request.get("/testimony");
-      setTestimoni(response.data);
-    } catch (err) {
-      if (err.response) {
-        toast.dismiss();
-        setTestimoni([]);
-      } else {
-        toast.error("Gagal memuat data testimoni");
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  }, [fetchSection]);
 
   useEffect(() => {
-    const fetchAll = async () => {
-      setIsLoadingAll(true);
-      await Promise.all([
-        fetchAllAgenda(),
-        fetchAllBerita(),
-        fetchAllPengumuman(),
-        fetchAllTestimoni(),
-      ]);
-      setIsLoadingAll(false); 
-    };
-    fetchAll();
-  }, [fetchAllAgenda, fetchAllBerita, fetchAllPengumuman, fetchAllTestimoni]);
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
-  
-  if (isLoadingAll) return <PageLoader  className="mt-[-3.5rem] mb-12 h"/>; 
+  if (isLoadingAll) return <PageLoader />;
 
   const animateScroll = (container, distance, duration = 450) => {
     if (!container) return;
@@ -190,14 +157,20 @@ const Dashboard = () => {
     },
   ];
 
+  console.log(berita)
+
   return (
     <>
       <ImageSlider className="mt-12" />
       <section className="px-4 py-8 md:px-12 h-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-          <Information type="agenda" data={agenda} loading={loading} />
-          <Information type="berita" data={berita} loading={loading} />
-          <Information type="pengumuman" data={pengumuman} loading={loading} />
+          <Information type="agenda" data={agenda} loading={isLoadingAll} />
+          <Information type="berita" data={berita} loading={isLoadingAll} />
+          <Information
+            type="pengumuman"
+            data={pengumuman}
+            loading={isLoadingAll}
+          />
         </div>
       </section>
       <section className="h-full md:min-h-[600px] overflow-hidden">
@@ -209,7 +182,7 @@ const Dashboard = () => {
               berdampak nyata bagi masyarakat.
             </h1>
             <Link
-              href="#"
+              href="/internship-project"
               className="flex items-center space-x-4 hover:font-underline transition-all duration-300"
             >
               <span>Lihat semua program magang</span>
@@ -288,13 +261,13 @@ const Dashboard = () => {
 
             <div className="flex flex-col md:flex-row space-x-4">
               <ButtonDefault
-                onClick={() => {}}
+                onClick={() => setOpenModalIntern(true)}
                 text="Apply for internship"
                 variant="secondary"
                 maxWidth
               />
               <ButtonDefault
-                onClick={() => {}}
+                onClick={() => setopenModalWrap(true)}
                 text="Apply for warp internship"
                 variant="primary"
                 maxWidth
@@ -313,7 +286,7 @@ const Dashboard = () => {
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua.
             </p>
-            {testimoni.length >= 4 && (
+            {testimoni.length >= 1 && testimoni.length <= 4 && (
               <div className="flex space-x-4">
                 <ButtonDefault
                   onClick={scrollLeft}
@@ -347,7 +320,7 @@ const Dashboard = () => {
           </div>
         </div>
       </section>
-      <section className="px-4 py-8 md:px-12 h-full flex flex-col justify-center items-center overflow-hidden gap-6">
+      <section className="px-4 py-8 md:px-12 h-full md:min-h-[600px] flex flex-col justify-center items-center overflow-hidden gap-6">
         <h1 className="text-3xl font-bold text-black">
           Frequently asked questions
         </h1>
@@ -360,6 +333,54 @@ const Dashboard = () => {
           ))}
         </div>
       </section>
+      <section className="bg-neut-50 px-4 py-8 md:px-12 flex flex-col justify-center items-center overflow-hidden gap-6">
+        <h1 className="text-xl font-bold text-black">Our Partnership</h1>
+        {partnership.length >= 0 && partnership.length <= 12 && (
+          <div className="grid grid-cols-4 gap-4">
+            {partnership.map((p, index) => (
+              <div key={index} className="relative w-full h-20">
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_HOST}${p.logo}`}
+                  alt={p.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <ModalAnnouncement
+        isOpen={openModalIntern}
+        onClose={() => setOpenModalIntern(false)}
+        onDaftar={() =>
+          router.push("https://internify.humicprototyping.com/Internships")
+        }
+        onDone={() => setOpenModalIntern(false)}
+      />
+
+      <ModalChoice
+        isOpen={openModalWrap}
+        onClose={() => setopenModalWrap(false)}
+        options={[
+          {
+            title: "SIRAMA",
+            onClick: () => {
+              setopenModalWrap(false);
+              router.push("https://internify.humicprototyping.com/Internships");
+            },
+          },
+          {
+            title: "SIRAMA 2",
+            onClick: () => {
+              setopenModalWrap(false);
+              router.push("https://internify.humicprototyping.com/Internships");
+            },
+          },
+        ]}
+        onDone={() => setopenModalWrap(false)}
+      />
     </>
   );
 };

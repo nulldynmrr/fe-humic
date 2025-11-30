@@ -5,7 +5,7 @@ import { FaCalendarAlt, FaClock, FaBell } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
-import { formatWaktu } from "@/utils/time";
+import { formatWaktu } from "@/lib/time";
 import { Skeleton } from "@/components/ui/Skeleton";
 
 export default function Information({ type, data, loading = false }) {
@@ -27,11 +27,11 @@ export default function Information({ type, data, loading = false }) {
     }
 
     if (type === "berita") {
-      return `/articles/page?id=${item.id}`;
+      return `/articles/${item.slug}`;
     }
 
     if (type === "pengumuman") {
-      return `/articles/page?id=${item.id}`;
+      return `/articles/${item.slug}`;
     }
 
     return "#";
@@ -43,28 +43,28 @@ export default function Information({ type, data, loading = false }) {
       aria-labelledby={`${type}-title`}
     >
       <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200">
-  <div className="flex items-center gap-2">
-    {icon}
-    <h2 id={`${type}-title`} className="font-semibold text-lg">
-      {title}
-    </h2>
-  </div>
+        <div className="flex items-center gap-2">
+          {icon}
+          <h2 id={`${type}-title`} className="font-semibold text-lg">
+            {title}
+          </h2>
+        </div>
 
-  {type !== "pengumuman" && (
-    <Link
-      href={
-        type === "agenda"
-          ? "/agenda"
-          : type === "berita"
-          ? "/articles"
-          : "#"
-      }
-      className="text-sm text-primary flex items-center gap-1 font-medium"
-    >
-      Semua <MdOutlineKeyboardArrowRight />
-    </Link>
-  )}
-</div>
+        {type !== "pengumuman" && (
+          <Link
+            href={
+              type === "agenda"
+                ? "/agenda"
+                : type === "berita"
+                ? "/articles"
+                : "#"
+            }
+            className="text-sm text-primary flex items-center gap-1 font-medium"
+          >
+            Semua <MdOutlineKeyboardArrowRight />
+          </Link>
+        )}
+      </div>
 
       <div className="p-4">
         {loading && <Skeleton />}
@@ -96,6 +96,7 @@ export default function Information({ type, data, loading = false }) {
                       fill
                       className="object-cover"
                     />
+                    
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                     <div className="absolute bottom-2 p-2 ml-2 text-white border-l-2 border-l-primary">
                       <h3 className="text-lg font-semibold line-clamp-2">

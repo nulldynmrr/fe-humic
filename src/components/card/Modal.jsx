@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/date-picker";
-import { formatWaktu } from "@/utils/time";
+import { formatWaktu } from "@/lib/time";
 import request from "@/utils/request";
 import { toast } from "sonner";
 

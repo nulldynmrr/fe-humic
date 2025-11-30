@@ -9,7 +9,7 @@ import { Upload, Plus, Edit, Trash, Eye } from "lucide-react";
 import TableAction from "@/components/ui/TableAction";
 import Modal from "@/components/card/Modal";
 
-import { formatWaktu } from "@/utils/time";
+import { formatWaktu } from "@/lib/time";
 import request from "@/utils/request";
 import { toast } from "sonner";
 
@@ -30,15 +30,16 @@ export default function Pengumuman() {
     } catch (err) {
       console.error("Delete error:", err.response?.data || err.message);
       toast.error(
-        `Gagal menghapus Pengumuman: ${err.response?.data?.message || err.message}`
+        `Gagal menghapus Pengumuman: ${
+          err.response?.data?.message || err.message
+        }`
       );
     }
   };
 
- const handleFilter = (filterType) => {
-  fetchAllPengumuman(query, filterType);
-};
-
+  const handleFilter = (filterType) => {
+    fetchAllPengumuman(query, filterType);
+  };
 
   const fetchAllPengumuman = useCallback(
     async (searchQuery = "", filterType = "") => {
@@ -212,8 +213,8 @@ export default function Pengumuman() {
         method="PATCH"
         mode={modalMode}
         onUpdate={(updatedRow) => {
-    fetchAllPengumuman();
-  }}
+          fetchAllPengumuman();
+        }}
       />
     </section>
   );

@@ -1,20 +1,28 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
-import { DollarSign, Users } from "lucide-react";
-import request from "@/utils/request";
-import toast from "react-hot-toast";
+
 import {
   Card,
-  CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
+  CardDescription,
+  CardContent,
 } from "@/components/ui/card";
+
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+
 import {
   BarChart,
   Bar,
@@ -22,328 +30,460 @@ import {
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
+
+import request from "@/utils/request";
+import toast from "sonner";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
     totalResearchProjects: 0,
     totalInternshipMember: 0,
+    totalStaff: 0,
     totalWarpInternshipMember: 0,
-    totalProjects: 0,
+    totalVisitors: 0,
   });
+
+  const [visitorData, setVisitorData] = useState([]);
   const [chartData, setChartData] = useState([]);
+  const [logsAnalytics, setLogsAnalytics] = useState([]);
   const [recentActivities, setRecentActivities] = useState({
     salesThisMonth: 0,
     activities: [],
   });
-  const [loading, setLoading] = useState(false);
+
+  const [logsSummary, setLogsSummary] = useState({
+    CREATE: 0,
+    READ: 0,
+    UPDATE: 0,
+    DELETE: 0,
+  });
+
+  const [visitorFilter, setVisitorFilter] = useState("7d");
+  const [logsFilter, setLogsFilter] = useState("7d");
+
   const [isLoadingAll, setIsLoadingAll] = useState(true);
-  const [activeTab, setActiveTab] = useState("Overview");
+  const [isDark, setIsDark] = useState(false);
 
-  const fetchResearchProjects = useCallback(async () => {
-    setLoading(true);
+  useEffect(() => {
+    const checkDarkMode = () => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    };
+
+    checkDarkMode();
+    const obs = new MutationObserver(checkDarkMode);
+    obs.observe(document.documentElement, { attributes: true });
+
+    return () => obs.disconnect();
+  }, []);
+
+  const fetchAllProject = useCallback(async () => {
     try {
-      const response = await request.get("/project");
+      const res = await request.get("/project");
       setStats((prev) => ({
         ...prev,
-        totalResearchProjects: Array.isArray(response.data)
-          ? response.data.length
-          : 0,
+        totalResearchProjects: res.data?.length || 0,
       }));
-    } catch (err) {
-      toast.error("Gagal memuat data research projects");
+    } catch {
       setStats((prev) => ({ ...prev, totalResearchProjects: 0 }));
-    } finally {
-      setLoading(false);
     }
   }, []);
 
-  const fetchInternshipMembers = useCallback(async () => {
-    setLoading(true);
+  const fetchAllIntern = useCallback(async () => {
     try {
-      const response = await request.get("/intern");
+      const res = await request.get("/intern");
       setStats((prev) => ({
         ...prev,
-        totalInternshipMember: Array.isArray(response.data)
-          ? response.data.length
-          : 0,
+        totalInternshipMember: res.data?.length || 0,
       }));
-    } catch (err) {
-      toast.error("Gagal memuat data internship members");
+    } catch {
       setStats((prev) => ({ ...prev, totalInternshipMember: 0 }));
-    } finally {
-      setLoading(false);
     }
   }, []);
 
-  const fetchWarpInternshipMembers = useCallback(async () => {
-    setLoading(true);
+  const fetchAllStaff = useCallback(async () => {
     try {
-      const response = await request.get("/warp-internship-members");
+      const res = await request.get("/staff");
       setStats((prev) => ({
         ...prev,
-        totalWarpInternshipMember: Array.isArray(response.data)
-          ? response.data.length
-          : 0,
+        totalStaff: res.data?.length || 0,
       }));
-    } catch (err) {
-      toast.error("Gagal memuat data warp internship members");
-      setStats((prev) => ({ ...prev, totalWarpInternshipMember: 0 }));
-    } finally {
-      setLoading(false);
+    } catch {
+      setStats((prev) => ({ ...prev, totalStaff: 0 }));
     }
   }, []);
 
-  const fetchTotalProjects = useCallback(async () => {
-    setLoading(true);
+  // const fetchWarpInternshipMembers = useCallback(async () => {
+  //   try {
+  //     const res = await request.get("/");
+  //     setStats((prev) => ({
+  //       ...prev,
+  //       totalWarpInternshipMember: res.data?.length || 0,
+  //     }));
+  //   } catch {
+  //     setStats((prev) => ({ ...prev, totalWarpInternshipMember: 0 }));
+  //   }
+  // }, []);
+
+  // const fetchProjectActivity = useCallback(async () => {
+  //   try {
+  //     const res = await request.get("/project-activity");
+  //     setChartData(res.data || []);
+  //   } catch {
+  //     setChartData([]);
+  //   }
+  // }, []);
+
+  // const fetchRecentActivities = useCallback(async () => {
+  //   try {
+  //     const res = await request.get("/");
+  //     setRecentActivities(res.data || { salesThisMonth: 0, activities: [] });
+  //   } catch {
+  //     setRecentActivities({ salesThisMonth: 0, activities: [] });
+  //   }
+  // }, []);
+
+  // const fetchVisitorAnalytics = useCallback(async (filter = "7d") => {
+  //   try {
+  //     const res = await request.get(`/?period=${filter}`);
+  //     const data = Array.isArray(res.data) ? res.data : [];
+  //     setVisitorData(data);
+
+  //     const total = data.reduce((sum, i) => sum + (i.visits || 0), 0);
+
+  //     setStats((prev) => ({ ...prev, totalVisitors: total }));
+  //   } catch {
+  //     setVisitorData([]);
+  //   }
+  // }, []);
+
+  const fetchLogsAnalytics = useCallback(async (filter = "7d") => {
     try {
-      const response = await request.get("/project");
-      setStats((prev) => ({
-        ...prev,
-        totalProjects: Array.isArray(response.data) ? response.data.length : 0,
+      const res = await request.get("/logs");
+      let data = Array.isArray(res.data) ? res.data : [];
+
+      const now = new Date();
+      const daysMap = { today: 1, "7d": 7, "30d": 30, "90d": 90 };
+      const days = daysMap[filter] || 7;
+
+      const filtered = data.filter((log) => {
+        const diff = (now - new Date(log.created_at)) / 86400000;
+        return diff <= days;
+      });
+
+      const grouped = filtered.reduce((acc, log) => {
+        acc[log.action] = (acc[log.action] || 0) + 1;
+        return acc;
+      }, {});
+
+      const arr = Object.entries(grouped).map(([action, count]) => ({
+        action,
+        count,
       }));
-    } catch (err) {
-      toast.error("Gagal memuat data total projects");
-      setStats((prev) => ({ ...prev, totalProjects: 0 }));
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
-  const fetchProjectActivity = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await request.get("/project-activity");
-      setChartData(Array.isArray(response.data) ? response.data : []);
-    } catch (err) {
-      toast.error("Gagal memuat data project activity");
-      setChartData([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      setLogsAnalytics(arr);
 
-  const fetchRecentActivities = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await request.get("/recent-activities");
-      setRecentActivities(
-        response.data || { salesThisMonth: 0, activities: [] }
-      );
-    } catch (err) {
-      toast.error("Gagal memuat data recent activities");
-      setRecentActivities({ salesThisMonth: 0, activities: [] });
-    } finally {
-      setLoading(false);
+      const summary = {
+        CREATE: filtered.filter((l) => l.action === "CREATE").length,
+        READ: filtered.filter((l) => l.action === "READ").length,
+        UPDATE: filtered.filter((l) => l.action === "UPDATE").length,
+        DELETE: filtered.filter((l) => l.action === "DELETE").length,
+      };
+
+      setLogsSummary(summary);
+    } catch {
+      setLogsAnalytics([]);
+      setLogsSummary({ CREATE: 0, READ: 0, UPDATE: 0, DELETE: 0 });
     }
   }, []);
 
   useEffect(() => {
-    const fetchAll = async () => {
+    const load = async () => {
       setIsLoadingAll(true);
       await Promise.all([
-        fetchResearchProjects(),
-        fetchInternshipMembers(),
-        fetchWarpInternshipMembers(),
-        fetchTotalProjects(),
-        fetchProjectActivity(),
-        fetchRecentActivities(),
+        fetchAllProject(),
+        fetchAllIntern(),
+        fetchAllStaff(),
+        fetchLogsAnalytics(logsFilter),
       ]);
       setIsLoadingAll(false);
     };
-    fetchAll();
+    load();
   }, [
-    fetchResearchProjects,
-    fetchInternshipMembers,
-    fetchWarpInternshipMembers,
-    fetchTotalProjects,
-    fetchProjectActivity,
-    fetchRecentActivities,
+    fetchAllProject,
+    fetchAllStaff,
+    fetchLogsAnalytics,
+    visitorFilter,
+    logsFilter,
   ]);
 
-  const chartConfig = {
-    value: {
-      label: "Activity",
-      color: "#b4272c",
-    },
+  const COLORS = {
+    CREATE: "#10b981",
+    UPDATE: "#3b82f6",
+    DELETE: "#ef4444",
+    READ: "#f59e0b",
   };
 
-  const tabs = ["Overview", "Analytics", "Reports", "Notifications"];
+  const cardClass =
+    "border bg-white dark:bg-sidebar border-black/10 dark:border-white/10 backdrop-blur-md text-foreground";
 
-  if (isLoadingAll) {
+  if (isLoadingAll)
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-lg text-gray-600 dark:text-gray-300">
-          Loading...
-        </div>
+      <div className="flex items-center justify-center h-screen text-gray-500">
+        Loading...
       </div>
     );
-  }
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="p-8 min-h-screen text-foreground">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-black dark:text-white">
-            Dashboard
-          </h1>
-          <button className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
-            Download
-          </button>
-        </div>
-
-        <div className="flex gap-2 mb-8 border-b border-gray-300 dark:border-white/20">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 font-medium transition-colors ${
-                activeTab === tab
-                  ? "text-primary border-b-2 border-primary"
-                  : "text-gray-500 dark:text-white/20 hover:text-gray-700 dark:hover:text-white"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
+        <h1 className="text-3xl font-bold mb-6">Dashboard Analytics</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {[
-            {
-              title: "Total Research Projects",
-              value: `${stats.totalResearchProjects} projects`,
-              icon: <DollarSign className="h-5 w-5 text-gray-400" />,
-              desc: "Proyek riset aktif dan selesai.",
-            },
-            {
-              title: "Total Internship Member",
-              value: `${stats.totalInternshipMember} member`,
-              icon: <Users className="h-5 w-5 text-gray-400" />,
-              desc: "Jumlah member internship humic",
-            },
-            {
-              title: "Total Warp Internship Member",
-              value: `${stats.totalWarpInternshipMember} member`,
-              icon: <Users className="h-5 w-5 text-gray-400" />,
-              desc: "Jumlah member warp internship humic",
-            },
-            {
-              title: "Total Projects",
-              value: `${stats.totalProjects} projects`,
-              icon: <DollarSign className="h-5 w-5 text-gray-400" />,
-              desc: "Jumlah semua project",
-            },
-          ].map((card, idx) => (
-            <Card
-              key={idx}
-              className="bg-sidebar border border-black/10 dark:border-white/10"
-            >
-              <CardHeader className="flex items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-black dark:text-white">
-                  {card.title}
-                </CardTitle>
-                {card.icon}
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-black dark:text-white">
-                  {card.value}
-                </div>
-                <p className="text-xs text-gray-400 dark:text-white/20 mt-1">
-                  {card.desc}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-sidebar border border-black/10 dark:border-white/10">
-            <CardHeader>
-              <CardTitle className="text-black dark:text-white">
-                Project Activity Overview
-              </CardTitle>
+          <Card className={cardClass}>
+            <CardHeader className="flex justify-between flex-row pb-2">
+              <CardTitle>Total Research Projects</CardTitle>
             </CardHeader>
             <CardContent>
-              {chartData.length > 0 ? (
-                <ChartContainer config={chartConfig} className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={chartData}>
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke="#d2d2d1"
-                        vertical={false}
-                      />
-                      <XAxis
-                        dataKey="month"
-                        tickLine={false}
-                        axisLine={false}
-                        tick={{ fill: "#777774", fontSize: 12 }}
-                      />
-                      <YAxis
-                        tickLine={false}
-                        axisLine={false}
-                        tick={{ fill: "#777774", fontSize: 12 }}
-                      />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar
-                        dataKey="value"
-                        fill="#b4272c"
-                        radius={[4, 4, 0, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
-              ) : (
-                <div className="flex items-center justify-center h-[300px] text-gray-400 dark:text-white/20">
-                  No data available
-                </div>
-              )}
+              <div className="text-3xl font-bold">
+                {stats.totalResearchProjects}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Semua project riset
+              </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-sidebar border border-black/10 dark:border-white/10">
-            <CardHeader>
-              <CardTitle className="text-black dark:text-white">
-                Recent Activities
-              </CardTitle>
-              <CardDescription className="text-gray-400 dark:text-white/20">
-                You made {recentActivities.salesThisMonth} sales this month.
-              </CardDescription>
+          <Card className={cardClass}>
+            <CardHeader className="flex justify-between flex-row pb-2">
+              <CardTitle>Internship Members</CardTitle>
             </CardHeader>
             <CardContent>
-              {recentActivities.activities &&
-              recentActivities.activities.length > 0 ? (
-                <div className="space-y-4">
-                  {recentActivities.activities.map((activity, index) => (
-                    <div key={index} className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm font-medium text-black dark:text-white">
-                          {activity.initials}
-                        </span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-black dark:text-white">
-                          {activity.name}
-                        </p>
-                        <p className="text-xs text-gray-400 dark:text-white/20 truncate">
-                          {activity.email}
-                        </p>
-                      </div>
-                      <div className="text-sm font-medium text-success">
-                        +${activity.amount.toFixed(2)}
-                      </div>
-                    </div>
+              <div className="text-3xl font-bold">
+                {stats.totalInternshipMember}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Member Internship Aktif
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className={cardClass}>
+            <CardHeader className="flex justify-between flex-row pb-2">
+              <CardTitle>Staff Members</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{stats.totalStaff}</div>
+              <p className="text-xs text-muted-foreground">
+                Member Staff Aktif
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className={cardClass}>
+            <CardHeader className="flex justify-between flex-row pb-2">
+              <CardTitle>Total Visitors</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{stats.totalVisitors}</div>
+              <p className="text-xs text-muted-foreground">Total pengunjung</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          <Card className={`${cardClass} lg:col-span-2`}>
+            <CardHeader className="flex justify-between flex-row">
+              <div>
+                <CardTitle>Visitor Analytics</CardTitle>
+                <CardDescription>Statistik Pengunjung</CardDescription>
+              </div>
+
+              <Select value={visitorFilter} onValueChange={setVisitorFilter}>
+                <SelectTrigger className="w-[180px] bg-sidebar border border-black/10 dark:border-white/10">
+                  <SelectValue />
+                </SelectTrigger>
+
+                <SelectContent className="bg-sidebar border border-black/10 dark:border-white/10">
+                  <SelectItem value="today">Hari Ini</SelectItem>
+                  <SelectItem value="7d">7 Hari Terakhir</SelectItem>
+                  <SelectItem value="30d">30 Hari Terakhir</SelectItem>
+                  <SelectItem value="90d">90 Hari Terakhir</SelectItem>
+                </SelectContent>
+              </Select>
+            </CardHeader>
+
+            <CardContent>
+              <ChartContainer className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={visitorData}>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke={isDark ? "#374151" : "#d4d4d4"}
+                    />
+
+                    <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+                    <YAxis tick={{ fontSize: 12 }} />
+
+                    <ChartTooltip content={<ChartTooltipContent />} />
+
+                    <Line
+                      type="monotone"
+                      dataKey="visits"
+                      stroke="#3b82f6"
+                      strokeWidth={3}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+
+          <Card className={cardClass}>
+            <CardHeader className="flex justify-between flex-row">
+              <div>
+                <CardTitle>Logs Analytics</CardTitle>
+                <CardDescription>Action yang dilakukan admin</CardDescription>
+              </div>
+
+              <Select value={logsFilter} onValueChange={setLogsFilter}>
+                <SelectTrigger className="w-[150px] bg-sidebar border border-black/10 dark:border-white/10">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-sidebar border border-black/10 dark:border-white/10">
+                  <SelectItem value="today">Hari Ini</SelectItem>
+                  <SelectItem value="7d">7 Hari Terakhir</SelectItem>
+                  <SelectItem value="30d">30 Hari Terakhir</SelectItem>
+                  <SelectItem value="90d">90 Hari Terakhir</SelectItem>
+                </SelectContent>
+              </Select>
+            </CardHeader>
+
+            <CardContent>
+              <PieChart width={350} height={260}>
+                <Pie
+                  data={logsAnalytics}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="count"
+                  label={(entry) => entry.action}
+                >
+                  {logsAnalytics.map((entry, index) => (
+                    <Cell
+                      key={index}
+                      fill={COLORS[entry.action] || "#6b7280"}
+                    />
                   ))}
-                </div>
-              ) : (
-                <div className="flex items-center justify-center h-[200px] text-gray-400 dark:text-white/20">
-                  No activities
-                </div>
-              )}
+                </Pie>
+              </PieChart>
+
+              <div className="mt-4 grid grid-cols-2 gap-3 text-center justify-center text-sm">
+                {(() => {
+                  const entries = Object.entries(logsSummary).filter(
+                    ([key, value]) => value > 0
+                  );
+                  return entries.map(([key, value], index) => {
+                    const isLastOdd =
+                      entries.length % 2 !== 0 && index === entries.length - 1;
+                    const colors = {
+                      CREATE: "green",
+                      READ: "amber",
+                      UPDATE: "blue",
+                      DELETE: "red",
+                    };
+                    return (
+                      <div
+                        key={key}
+                        className={`p-2 rounded bg-${colors[key]}-500/10 ${
+                          isLastOdd ? "col-span-2" : ""
+                        }`}
+                      >
+                        <p
+                          className={`font-bold text-${colors[key]}-600 dark:text-${colors[key]}-400`}
+                        >
+                          {value}
+                        </p>
+                        <p className="text-xs text-muted-foreground">{key}</p>
+                      </div>
+                    );
+                  });
+                })()}
+
+                {Object.values(logsSummary).every((v) => v === 0) && (
+                  <div className="col-span-2 text-muted-foreground text-xs">
+                    Tidak ada aktivitas
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         </div>
+
+        <Card className={`${cardClass} mb-6`}>
+          <CardHeader>
+            <CardTitle>Project Activity</CardTitle>
+            <CardDescription>
+              Aktivitas project 30 hari terakhir
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent>
+            <ChartContainer className="h-[350px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData}>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke={isDark ? "#374151" : "#d4d4d4"}
+                  />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar dataKey="value" fill="#10b981" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+
+        <Card className={cardClass}>
+          <CardHeader>
+            <CardTitle>Recent Activities</CardTitle>
+            <CardDescription>Aktivitas terbaru admin</CardDescription>
+          </CardHeader>
+
+          <CardContent>
+            {recentActivities.activities.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Tidak ada aktivitas
+              </p>
+            ) : (
+              <ul className="space-y-3">
+                {recentActivities.activities.map((act, i) => (
+                  <li
+                    key={i}
+                    className="p-3 rounded-lg bg-black/5 dark:bg-white/5"
+                  >
+                    <div className="font-semibold">{act.title}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {act.description}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground mt-1">
+                      {new Date(act.created_at).toLocaleString()}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

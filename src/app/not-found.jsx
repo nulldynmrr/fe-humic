@@ -1,16 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function NotFound() {
   const router = useRouter();
-
-  useEffect(() => {
-    document.documentElement.classList.remove("dark");
-    document.documentElement.classList.add("light");
-  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center px-6 bg-white">
