@@ -9,7 +9,7 @@ import { Upload, Plus, Edit, Trash, Eye } from "lucide-react";
 import TableAction from "@/components/ui/TableAction";
 import Modal from "@/components/card/Modal";
 
-import { formatWaktu } from "@/utils/time";
+import { formatWaktu } from "@/lib/time";
 import request from "@/utils/request";
 import { toast } from "sonner";
 
@@ -35,10 +35,9 @@ export default function Agenda() {
     }
   };
 
- const handleFilter = (filterType) => {
-  fetchAllAgenda(query, filterType);
-};
-
+  const handleFilter = (filterType) => {
+    fetchAllAgenda(query, filterType);
+  };
 
   const fetchAllAgenda = useCallback(
     async (searchQuery = "", filterType = "") => {
@@ -241,8 +240,8 @@ export default function Agenda() {
         method="PATCH"
         mode={modalMode}
         onUpdate={(updatedRow) => {
-    fetchAllAgenda();
-  }}
+          fetchAllAgenda();
+        }}
       />
     </section>
   );

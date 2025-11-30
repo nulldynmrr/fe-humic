@@ -1,21 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function NotFound() {
   const router = useRouter();
 
-  useEffect(() => {
-    document.documentElement.classList.remove("dark");
-    document.documentElement.classList.add("light");
-  }, []);
-
   return (
     <div className="min-h-screen flex items-center justify-center px-6 bg-white">
       <div className="text-center max-w-xl">
-        <h1 className="text-[96px] font-extrabold leading-none text-slate-900">
+        <h1 className="text-[96px] font-extrabold leading-none text-primary">
           404
         </h1>
 
@@ -24,14 +18,13 @@ export default function NotFound() {
         </p>
 
         <p className="mt-4 text-sm text-slate-500">
-          Halaman yang Anda cari tidak ditemukan <br />
-          atau sudah dipindahkan.
+          Halaman yang Anda cari tidak ditemukan atau sudah dipindahkan.
         </p>
 
         <div className="mt-8 flex items-center justify-center gap-3">
           <button
             onClick={() => router.back()}
-            className="px-4 py-2 text-sm border border-slate-300 rounded-xl bg-white shadow-sm"
+            className="px-4 py-2 text-sm border text-bl border-slate-300 rounded-xl bg-white shadow-sm"
           >
             Go Back
           </button>

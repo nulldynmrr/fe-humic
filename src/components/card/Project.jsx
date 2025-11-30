@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { formatWaktu } from "@/utils/time";
+import { formatWaktu } from "@/lib/time";
 import { FaCalendarAlt } from "react-icons/fa";
 import { FiArrowUpRight } from "react-icons/fi";
 
@@ -10,13 +10,14 @@ export default function Project({ data = [] }) {
   const basePath = pathname.includes("articles")
     ? "/articles"
     : "/internship-project";
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
       {data.length > 0 ? (
         data.map((item, idx) => (
           <Link
             key={`${item.id}-${idx}`}
-            href={`${basePath}/page?id=${item.id}`}
+            href={`${basePath}/${item.slug}`}
             className="w-full overflow-hidden transition-shadow duration-300 cursor-pointer"
           >
             <div className="w-full h-[180px] bg-gray-200 rounded-md overflow-hidden">

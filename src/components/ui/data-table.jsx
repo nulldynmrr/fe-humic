@@ -4,7 +4,7 @@ import * as React from "react";
 import {
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
+  getFilteredRowModel,  
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
@@ -29,7 +29,7 @@ import {
   TableRow,
 } from "@/components/ui/Table";
 import { Pagination } from "@/components/ui/pagination";
-import { formatWaktu } from "@/utils/time";
+import { formatWaktu } from "@/lib/time";
 
 export function DataTable({
   columns = [],
@@ -39,6 +39,7 @@ export function DataTable({
   onFilterSelect,
   onFilterChange,
   placeholderSearch,
+  hide = false,
 }) {
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
@@ -68,7 +69,9 @@ export function DataTable({
 
   return (
     <div className="w-full">
+
       <div className="flex flex-col md:flex-row md:items-center md:justify-between py-4 gap-2">
+
         {filterKey && (
           <div className="w-[75%] md:w-[320px]">
             <Input
@@ -84,70 +87,71 @@ export function DataTable({
           </div>
         )}
 
-        <div className="flex items-center gap-2 md:w-[25%] md:justify-end">
-          {filterOptions.length > 0 && (
+        {!hide && (
+          <div className="flex items-center gap-2 md:w-[25%] md:justify-end">
+            {filterOptions.length > 0 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  asChild
+                  className="bg-sidebar border border-black/10 dark:border-white/10 dark:hover:bg-sidebar/20"
+                >
+                  <Button variant="outline" className="flex items-center gap-1">
+                    <Filter className="h-4 w-4" />
+                    Filter
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent
+                  align="start"
+                  className="bg-white dark:bg-neutral-900 border border-black/10 dark:border-white/10"
+                >
+                  {filterOptions.map((option) => (
+                    <DropdownMenuItem
+                      key={option.value || option.label}
+                      onClick={() => onFilterSelect?.(option.value)}
+                      className="capitalize cursor-pointer text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors"
+                    >
+                      {option.label}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
             <DropdownMenu>
               <DropdownMenuTrigger
                 asChild
                 className="bg-sidebar border border-black/10 dark:border-white/10 dark:hover:bg-sidebar/20"
               >
-                <Button variant="outline" className="flex items-center gap-1">
-                  <Filter className="h-4 w-4" />
-                  Filter
+                <Button variant="outline">
+                  Columns <ChevronDown className="ml-1 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
 
               <DropdownMenuContent
-                align="start"
+                align="end"
                 className="bg-white dark:bg-neutral-900 border border-black/10 dark:border-white/10"
               >
-                {filterOptions.map((option) => (
-                  <DropdownMenuItem
-                    key={option.value || option.label}
-                    onClick={() => {
-                      if (onFilterSelect) onFilterSelect(option.value);
-                    }}
-                    className="capitalize cursor-pointer text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors"
-                  >
-                    {option.label}
-                  </DropdownMenuItem>
-                ))}
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize cursor-pointer text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  ))}
               </DropdownMenuContent>
             </DropdownMenu>
-          )}
+          </div>
+        )}
 
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              asChild
-              className="bg-sidebar border border-black/10 dark:border-white/10 dark:hover:bg-sidebar/20"
-            >
-              <Button variant="outline">
-                Columns <ChevronDown className="ml-1 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent
-              align="end"
-              className="bg-white dark:bg-neutral-900 border border-black/10 dark:border-white/10"
-            >
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize cursor-pointer text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
       </div>
 
       <div className="relative w-full overflow-x-auto rounded-md border border-black/10 dark:border-white/10">
@@ -198,12 +202,12 @@ export function DataTable({
                       cell.column.id?.toLowerCase() === "action";
 
                     let cellContent;
+
                     if (
                       cell.column.id === "start_date" ||
                       cell.column.id === "end_date"
                     ) {
-                      const rawValue = cell.getValue();
-                      cellContent = formatWaktu(rawValue, "default");
+                      cellContent = formatWaktu(cell.getValue(), "default");
                     } else {
                       cellContent = flexRender(
                         cell.column.columnDef.cell,

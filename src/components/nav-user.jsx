@@ -1,33 +1,91 @@
 "use client";
 
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from "lucide-react";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/Dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
+import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import request from "@/utils/request";
+import Cookies from "js-cookie";
 
-export function NavUser({ user }) {
-  const { isMobile } = useSidebar();
+export function NavUser() {
+  const router = useRouter();
+  const [admin, setAdmin] = useState({
+    username: "Loading...",
+    role: "Loading...",
+    avatar: "",
+  });
+  const [loading, setLoading] = useState(true);
+
+  const fetchCurrentAdmin = useCallback(async () => {
+    try {
+      setLoading(true);
+      const token = Cookies.get("token");
+      
+      if (!token) {
+        router.push("/login-administrator");
+        return;
+      }
+      const response = await request.get("/admin");
+      
+      if (response.data) {
+        const data = response.data;
+        setAdmin({
+          username:data.username,
+          role: data.role,
+          avatar: data.avatar || data.profileImage || data.photo || "",
+        });
+      }
+    } catch (error) {
+      console.error("Failed to fetch admin data:", error);
+      
+      if (error?.response?.status === 401 || error?.response?.status === 403) {
+        Cookies.remove("token");
+        router.push("/login-administrator");
+      } else if (error?.response?.status === 404) {
+        console.warn("Endpoint /admin not found, using localStorage fallback");
+        const storedAdmin = localStorage.getItem("admin");
+        
+        if (storedAdmin) {
+          const adminData = JSON.parse(storedAdmin);
+          setAdmin({
+            username: adminData.username,
+            role: adminData.role,
+            avatar: adminData.avatar || adminData.profileImage || "",
+          });
+        } else {
+          router.push("/login-administrator");
+        }
+      } else {
+        router.push("/login-administrator");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [router]);
+
+  useEffect(() => {
+    fetchCurrentAdmin();
+  }, [fetchCurrentAdmin]);
+
+  console.log(admin);
+
+  const getInitials = (username) => {
+    if (!username || username === "Loading...") return "...";
+    return username
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   return (
     <SidebarMenu>
@@ -37,64 +95,22 @@ export function NavUser({ user }) {
             <SidebarMenuButton
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              disabled={loading}
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarImage src={admin.avatar} alt={admin.username} />
+                <AvatarFallback className="rounded-lg">
+                  {getInitials(admin.username)}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate font-medium">{admin.username}</span>
+                <span className="truncate text-xs text-muted-foreground">
+                  {admin.role}
+                </span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={4}
-          >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
-                </div>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut />
-              Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>

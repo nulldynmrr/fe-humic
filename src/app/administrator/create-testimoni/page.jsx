@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import SearchName from "@/components/ui/SelectandSearch";
+import Select from "@/components/ui/SelectandSearch";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -17,27 +17,14 @@ const testimonySchema = z.object({
 });
 
 export default function CreateTestimony() {
-  const [interns, setInterns] = useState([]);
   const [formData, setFormData] = useState({
     id_intern: "",
     content: "",
     rating: 0,
   });
+
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-
-  const loadInterns = async () => {
-    try {
-      const res = await request.get("/intern");
-      setInterns(res.data || []);
-    } catch (err) {
-      toast.error("Gagal memuat data intern");
-    }
-  };
-
-  useEffect(() => {
-    loadInterns();
-  }, []);
 
   const handleChange = (name, value) => {
     setFormData((prev) => ({
@@ -76,6 +63,7 @@ export default function CreateTestimony() {
     try {
       await request.post("/testimony", parsed.data);
       toast.success("Testimoni berhasil dibuat!");
+
       setFormData({
         id_intern: "",
         content: "",
@@ -95,13 +83,10 @@ export default function CreateTestimony() {
       <form onSubmit={onSubmit} className="space-y-6">
         <div>
           <Label>Nama Intern</Label>
-          <SearchName
+          <Select
             name="id_intern"
             label={false}
-            data={interns.map((i) => ({
-              value: i.id,
-              label: i.name,
-            }))}
+            apiEndpoint="/intern"
             value={formData.id_intern}
             onChange={(val) => handleChange("id_intern", val)}
             placeholder="Pilih intern..."

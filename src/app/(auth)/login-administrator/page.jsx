@@ -96,6 +96,18 @@ export default function Login() {
           Cookies.set("token", data.token, { expires: 1 });
           console.log("Token saved to cookies successfully");
 
+          const adminData = {
+            id: data.id || data.adminId || data._id,
+            username: data.username || formData.username,
+            name: data.name || data.fullName || data.displayName || formData.username,
+            email: data.email || "",
+            avatar: data.avatar || data.profileImage || data.photo || "",
+            role: data.role || "admin",
+          };
+
+          localStorage.setItem("admin", JSON.stringify(adminData));
+          console.log("Admin data saved to localStorage as backup");
+
           toast.dismiss();
           toast.success(data.message || "Login Successful");
 

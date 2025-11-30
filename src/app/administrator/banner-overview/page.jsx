@@ -9,7 +9,7 @@ import { Upload, Plus, Edit, Trash, Eye } from "lucide-react";
 import TableAction from "@/components/ui/TableAction";
 import Modal from "@/components/card/Modal";
 
-import { formatWaktu } from "@/utils/time";
+import { formatWaktu } from "@/lib/time";
 import request from "@/utils/request";
 import { toast } from "sonner";
 
@@ -94,6 +94,22 @@ export default function Banner() {
       label: col.header,
       key: col.accessorKey,
     }));
+
+  const handleFilter = (type) => {
+    if (type === "asc") {
+      setBanner((prev) =>
+        [...prev].sort(
+          (a, b) => new Date(a.created_at) - new Date(b.created_at)
+        )
+      );
+    } else {
+      setBanner((prev) =>
+        [...prev].sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        )
+      );
+    }
+  };
 
   const tableColumns = [
     ...columns.filter((col) => col.id !== "actions"),
@@ -194,8 +210,10 @@ export default function Banner() {
               onClick: () => handleFilter("desc"),
             },
           ]}
+          hide={true}
         />
       )}
+
       <Modal
         isOpen={openModal}
         onClose={() => setOpenModal(false)}

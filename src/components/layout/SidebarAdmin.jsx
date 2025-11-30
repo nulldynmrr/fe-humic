@@ -124,7 +124,6 @@ export function AppSidebar({ ...props }) {
   return (
     <SidebarProvider>
       <Sidebar
-        collapsible="icon"
         {...props}
         className="border-r   
         bg-white 

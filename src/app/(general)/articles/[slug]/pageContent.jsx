@@ -5,32 +5,26 @@ import Link from "next/link";
 import Image from "next/image";
 import Information from "@/components/card/Information";
 import { BreadcrumbDefault } from "@/components/ui/breadcrumb";
-import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import Project from "@/components/card/Project";
 import { FaUser } from "react-icons/fa";
-import { formatWaktu } from "@/utils/time";
+import { formatWaktu } from "@/lib/time";
 import request from "@/utils/request";
 import { toast } from "react-hot-toast";
 
-export const ArticleContent = () => {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id");
-
+export default function ArticlePage({ slug }) {
   const [currentArticle, setCurrentArticle] = useState(null);
   const [articles, setArticles] = useState([]);
-
   const [agenda, setAgenda] = useState([]);
   const [berita, setBerita] = useState([]);
   const [pengumuman, setPengumuman] = useState([]);
-
   const [loading, setLoading] = useState(false);
 
   const fetchArticle = useCallback(async () => {
-    if (!id) return;
+    if (!slug) return;
     setLoading(true);
     try {
-      const response = await request.get(`/berita/${id}`);
+      const response = await request.get(`/berita/slug/${slug}`);
       setCurrentArticle(response.data);
     } catch (err) {
       toast.error("Gagal memuat detail berita");
@@ -38,7 +32,7 @@ export const ArticleContent = () => {
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [slug]);
 
   const fetchAllArticles = useCallback(async () => {
     setLoading(true);
@@ -103,6 +97,8 @@ export const ArticleContent = () => {
     fetchAllPengumuman,
   ]);
 
+  console.log(currentArticle);
+
   return (
     <div className="min-h-screen">
       <Header title="Our Articles" imageSrc="/assets/bg-header.png" />
@@ -128,7 +124,7 @@ export const ArticleContent = () => {
               </p>
 
               {currentArticle.image_path && (
-                <div className="relative w-full h-64 md:h-80 rounded-md overflow-hidden mb-4">
+                <div className="relative w-full h-64 md:h-80 rounded-md overflow-hidden mt-12 mb-4">
                   <Image
                     src={`${process.env.NEXT_PUBLIC_HOST}${currentArticle.image_path}`}
                     alt={currentArticle.title}
@@ -175,4 +171,4 @@ export const ArticleContent = () => {
       </div>
     </div>
   );
-};
+}
