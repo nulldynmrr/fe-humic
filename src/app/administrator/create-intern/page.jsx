@@ -226,7 +226,7 @@ export default function CreateIntern() {
     <section className="py-4 bg-sidebar p-6 rounded-sm shadow-md mt-16 md:mt-0">
       <div>
         <h2 className="text-2xl font-bold">
-          Create an Internship Member XXXABCD
+          Create an Internship Member
         </h2>
         <p className="text-[#62748E] dark:text-[#828b97]">
           Here's a list of your tasks for this month!

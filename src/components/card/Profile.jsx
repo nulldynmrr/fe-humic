@@ -9,9 +9,6 @@ export default function Profile({
   name,
   position,
   image_path,
-  social_media,
-  linkedin,
-  email,
   shape = "square", // square | circle
 }) {
   const profileUrl = `/about/all-members/profile?id=${id}`;
@@ -42,39 +39,6 @@ export default function Profile({
         </h3>
         <p className="text-sm text-gray-600 mb-3">{position}</p>
       </Link>
-
-      <div className="flex space-x-4 text-primary mt-1 z-0">
-        {linkedin && (
-          <a
-            href={linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:scale-110 transition-transform"
-          >
-            <FaLinkedin className="hover:text-[#0A66C2]" size={20} />
-          </a>
-        )}
-        {social_media && (
-          <a
-            href={social_media}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:scale-110 transition-transform"
-          >
-            <FaGithub className="hover:text-black" size={20} />
-          </a>
-        )}
-        {email && (
-          <a
-            href={email}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:scale-110 transition-transform"
-          >
-            <FaInstagram className="hover:text-[#E4405F]" size={20} />
-          </a>
-        )}
-      </div>
     </div>
   );
 }
