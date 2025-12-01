@@ -1,61 +1,69 @@
 "use client";
-import dynamic from "next/dynamic";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
+import { useEffect, useRef } from "react";
 import L from "leaflet";
-import { useEffect } from "react";
+import "leaflet/dist/leaflet.css";
 
-const DefaultIcon = L.icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-});
-L.Marker.prototype.options.icon = DefaultIcon;
+// Fix icon default Leaflet (karena issue dengan webpack)
+if (typeof window !== "undefined") {
+  delete L.Icon.Default.prototype._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl:
+      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+    iconUrl:
+      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+    shadowUrl:
+      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+  });
+}
 
-const FixMapCenter = ({ position }) => {
-  const map = useMap();
+const Map = () => {
+  const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+
   useEffect(() => {
-    map.setView(position, map.getZoom(), { animate: true });
-  }, [map, position]);
-  return null;
-};
+    // Pastikan kode hanya jalan di client-side
+    if (typeof window === "undefined" || !mapRef.current) return;
 
-const MapInner = () => {
-  const markerPosition = [-6.976892539590171, 107.63101589759397];
+    // Jika map sudah ada, jangan buat lagi
+    if (mapInstanceRef.current) return;
 
-  const openGoogleMaps = () => {
-    const [lat, lng] = markerPosition;
-    const url = `https://www.google.com/maps?q=${lat},${lng}`;
-    window.open(url, "_blank");
-  };
+    // Koordinat Telkom University Bandung
+    const position = [-6.9734, 107.6297]; // lat, lng
+
+    // Inisialisasi map
+    const map = L.map(mapRef.current).setView(position, 16);
+
+    // Tambah tile layer (peta dasar)
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+
+    // Tambah marker
+    L.marker(position)
+      .addTo(map)
+      .bindPopup("<b>Telkom University</b><br>Gedung F")
+      .openPopup();
+
+    // Simpan instance map
+    mapInstanceRef.current = map;
+
+    // Cleanup saat component unmount
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, []);
 
   return (
-    <MapContainer
-      center={markerPosition}
-      zoom={16}
-      className="w-full h-[500px] rounded-xl shadow-md z-0"
-    >
-      <FixMapCenter position={markerPosition} />
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <Marker
-        position={markerPosition}
-        eventHandlers={{ click: openGoogleMaps }}
-      >
-        <Popup>
-          <div className="text-center">
-            <button
-              onClick={openGoogleMaps}
-              className="text-blue-600 underline mt-1 hover:text-blue-800"
-            >
-              <p className="font-semibold">Gedung F - HUMIC</p>
-            </button>
-          </div>
-        </Popup>
-      </Marker>
-    </MapContainer>
+    <div
+      ref={mapRef}
+      className="w-full h-96 rounded-lg"
+      style={{ minHeight: "400px" }}
+    />
   );
 };
 
-export default dynamic(() => Promise.resolve(MapInner), { ssr: false });
+export default Map;
