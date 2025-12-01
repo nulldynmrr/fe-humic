@@ -1,7 +1,16 @@
 "use client";
 import React from "react";
-import Map from "@/components/Map";
+import dynamic from "next/dynamic";
 import { FaMapMarkerAlt, FaPhoneAlt, FaClock } from "react-icons/fa";
+
+const Map = dynamic(() => import("@/components/Map"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-96 bg-neut-100 flex items-center justify-center">
+      <p className="text-neut-600">Loading map...</p>
+    </div>
+  ),
+});
 
 const Contact = () => {
   return (

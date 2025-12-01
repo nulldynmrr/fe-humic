@@ -17,42 +17,39 @@ import Cookies from "js-cookie";
 
 export function NavUser() {
   const router = useRouter();
-  const [admin, setAdmin] = useState({
-    username: "Loading...",
-    role: "Loading...",
-    avatar: "",
-  });
+  const [admin, setAdmin] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const fetchCurrentAdmin = useCallback(async () => {
     try {
       setLoading(true);
       const token = Cookies.get("token");
-      
+
       if (!token) {
         router.push("/login-administrator");
         return;
       }
+
       const response = await request.get("/admin");
-      
+
       if (response.data) {
         const data = response.data;
         setAdmin({
-          username:data.username,
+          username: data.username,
           role: data.role,
           avatar: data.avatar || data.profileImage || data.photo || "",
         });
       }
     } catch (error) {
       console.error("Failed to fetch admin data:", error);
-      
+
       if (error?.response?.status === 401 || error?.response?.status === 403) {
         Cookies.remove("token");
         router.push("/login-administrator");
       } else if (error?.response?.status === 404) {
         console.warn("Endpoint /admin not found, using localStorage fallback");
         const storedAdmin = localStorage.getItem("admin");
-        
+
         if (storedAdmin) {
           const adminData = JSON.parse(storedAdmin);
           setAdmin({
@@ -75,10 +72,8 @@ export function NavUser() {
     fetchCurrentAdmin();
   }, [fetchCurrentAdmin]);
 
-  console.log(admin);
-
   const getInitials = (username) => {
-    if (!username || username === "Loading...") return "...";
+    if (!username) return "...";
     return username
       .split(" ")
       .map((n) => n[0])
@@ -86,6 +81,29 @@ export function NavUser() {
       .toUpperCase()
       .slice(0, 2);
   };
+
+  // HAPUS console.log(admin); yang menyebabkan spam
+
+  // Loading state
+  if (loading || !admin) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton size="lg" disabled>
+            <Avatar className="h-8 w-8 rounded-lg">
+              <AvatarFallback className="rounded-lg">...</AvatarFallback>
+            </Avatar>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-medium">Loading...</span>
+              <span className="truncate text-xs text-muted-foreground">
+                ...
+              </span>
+            </div>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    );
+  }
 
   return (
     <SidebarMenu>
@@ -95,7 +113,6 @@ export function NavUser() {
             <SidebarMenuButton
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-              disabled={loading}
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={admin.avatar} alt={admin.username} />

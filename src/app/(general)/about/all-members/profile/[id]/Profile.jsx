@@ -52,12 +52,18 @@ export default function ProfileContent({ id }) {
 
   const staff = id ? staffById : staffs?.[0] || null;
 
-  if (!staff) {
+  if (!staff && !loading) {
     return (
       <div className="min-h-screen text-white flex justify-center items-center px-6 py-12">
-        <p className="text-gray-400 text-xl">
-          {loading ? <Skeleton /> : "Staff tidak ditemukan."}
-        </p>
+        <p className="text-gray-400 text-xl">Staff tidak ditemukan.</p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen text-white flex justify-center items-center px-6 py-12">
+        <Skeleton className="w-64 h-8" />
       </div>
     );
   }
