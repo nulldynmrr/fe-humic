@@ -1,43 +1,34 @@
-import Profiles from "@/app/(general)/about/all-members/profile/Profile";
+import { Suspense } from "react";
+import ProfileContent from "./Profile";
 import request from "@/utils/request";
 
-export async function generateMetadata({ searchParams }) {
-  const id = searchParams?.id;
-  if (!id) {
+export async function generateMetadata({ params }) {
+  const id = params?.id;
+
+  if (!id)
     return {
       title: "Staff Profiles",
       description: "Daftar profil staff Humic.",
-      robots: {
-        index: true,
-        follow: true,
-      },
     };
-  }
 
   try {
-    const res = await request.get(`/staff/${id}`);
-    const staff = res.data;
-
+    const response = await request.get(`/staff/${id}`);
+    const staff = response.data;
     return {
-      title: `${staff.name} | Staff Profile`,
-      description: staff.description?.slice(0, 150) || "Profil staff Humic.",
-      robots: {
-        index: true,
-        follow: true,
-      },
+      title: staff?.name || "Profil Staff",
+      description: staff
+        ? `Profil ${staff.name}, ${staff.position}`
+        : "Detail staff Humic",
     };
-  } catch (err) {
-    return {
-      title: "Staff Not Found",
-      description: "Profil staff tidak ditemukan.",
-      robots: {
-        index: false,
-        follow: false,
-      },
-    };
+  } catch {
+    return { title: "Profil Staff", description: "Detail staff Humic" };
   }
 }
 
-export default function Page() {
-  return <Profiles />;
+export default function Page({ params }) {
+  return (
+    <Suspense fallback={null}>
+      <ProfileContent id={params.id} />
+    </Suspense>
+  );
 }

@@ -259,7 +259,7 @@ const Dashboard = () => {
               ]}
             />
 
-            <div className="flex flex-col md:flex-row space-x-4">
+            <div className="flex flex-col md:flex-row space-x-4 space-y-4 md:space-y-0">
               <ButtonDefault
                 onClick={() => setOpenModalIntern(true)}
                 text="Apply for internship"

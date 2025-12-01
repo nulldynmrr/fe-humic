@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import File from "@/components/ui/File";
-import Select from "@/components/ui/SelectandSearch";
+import { Textarea } from "@/components/ui/textarea";
 import { z } from "zod";
 import request from "@/utils/request";
 import { toast } from "sonner";
@@ -212,28 +212,12 @@ export default function CreateStaff() {
             <Label htmlFor="position" required>
               Posisi
             </Label>
-            <Select
+            <Input
               name="position"
-              label=""
+              placeholder="Masukkan Posisi"
               value={formData.position}
-              onChange={(val) =>
-                handleInputChange({ target: { name: "position", value: val } })
-              }
-              data={[
-                { label: "Back-End", value: "Back-End" },
-                { label: "Front-End", value: "Front-End" },
-                { label: "UI/UX", value: "UI/UX" },
-                { label: "AI Developer", value: "AI Developer" },
-                { label: "Data Science", value: "Data Science" },
-                { label: "Network Engineer", value: "Network Engineer" },
-                { label: "Cybersecurity", value: "Cybersecurity" },
-                { label: "Devops", value: "Devops" },
-                { label: "Multimedia Designer", value: "Multimedia Designer" },
-                { label: "Mobile Developer", value: "Mobile Developer" },
-              ]}
-              placeholder="Pilih atau cari position..."
-              variant="dropdown"
-              autoShow={true}
+              onChange={handleInputChange}
+              className="mt-2"
             />
             {status.errors.position && (
               <p className="mt-1 text-sm text-red-600">
@@ -244,23 +228,6 @@ export default function CreateStaff() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="description" required>
-              Deskripsi
-            </Label>
-            <Input
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              placeholder="Masukkan Deskripsi"
-              className="mt-2"
-            />
-            {status.errors.description && (
-              <p className="mt-1 text-sm text-red-600">
-                {status.errors.description}
-              </p>
-            )}
-          </div>
 
           <div>
             <Label htmlFor="education" required>
@@ -279,25 +246,7 @@ export default function CreateStaff() {
               </p>
             )}
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="publication">Publication</Label>
-            <Input
-              name="publication"
-              value={formData.publication}
-              onChange={handleInputChange}
-              placeholder="Masukkan Publikasi"
-              className="mt-2"
-            />
-            {status.errors.publication && (
-              <p className="mt-1 text-sm text-red-600">
-                {status.errors.publication}
-              </p>
-            )}
-          </div>
-
+          
           <div>
             <Label htmlFor="email" required>
               Email
@@ -313,6 +262,42 @@ export default function CreateStaff() {
               <p className="mt-1 text-sm text-red-600">{status.errors.email}</p>
             )}
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <div>
+            <Label htmlFor="description" required>
+              Deskripsi
+            </Label>
+            <Textarea
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              placeholder="Masukkan Deskripsi"
+              className="mt-2"
+            />
+            {status.errors.description && (
+              <p className="mt-1 text-sm text-red-600">
+                {status.errors.description}
+              </p>
+            )}
+          </div>
+          <div>
+            <Label htmlFor="publication">Publication</Label>
+            <Textarea
+              name="publication"
+              value={formData.publication}
+              onChange={handleInputChange}
+              placeholder="Masukkan Publikasi"
+              className="mt-2"
+            />
+            {status.errors.publication && (
+              <p className="mt-1 text-sm text-red-600">
+                {status.errors.publication}
+              </p>
+            )}
+          </div>
+
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

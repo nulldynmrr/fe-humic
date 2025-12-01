@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Users, KeyRound } from "lucide-react";
 import request from "@/utils/request";
-import toast from "sonner";
+import { toast } from "sonner";
 
 import {
   Card,

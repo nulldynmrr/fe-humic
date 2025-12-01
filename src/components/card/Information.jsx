@@ -29,11 +29,6 @@ export default function Information({ type, data, loading = false }) {
     if (type === "berita") {
       return `/articles/${item.slug}`;
     }
-
-    if (type === "pengumuman") {
-      return `/articles/${item.slug}`;
-    }
-
     return "#";
   };
 
@@ -83,9 +78,15 @@ export default function Information({ type, data, loading = false }) {
               key={idx}
               className={`mb-4 ${
                 type !== "agenda" && type !== "berita" && idx !== 0
-                  ? "pt-3 mt-[-20px]"
+                  ? "pt-3"
                   : ""
               }`}
+              style={{
+                marginTop:
+                  type !== "agenda" && type !== "berita" && idx !== 0
+                    ? "-1.25rem"
+                    : undefined,
+              }}
             >
               <Link href={getLink(item)} className="block">
                 {idx === 0 && (type === "agenda" || type === "berita") ? (
@@ -96,8 +97,8 @@ export default function Information({ type, data, loading = false }) {
                       fill
                       className="object-cover"
                     />
-                    
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+
+                    <div className="absolute inset-0 from-black/70 to-transparent"></div>
                     <div className="absolute bottom-2 p-2 ml-2 text-white border-l-2 border-l-primary">
                       <h3 className="text-lg font-semibold line-clamp-2">
                         {item.title}
