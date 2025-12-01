@@ -11,7 +11,7 @@ export default function Profile({
   image_path,
   shape = "square", // square | circle
 }) {
-  const profileUrl = `/about/all-members/profile?id=${id}`;
+  const profileUrl = `/about/all-members/profile/${id}`;
 
   return (
     <div className="group flex flex-col items-center text-center p-4 bg-white transition-all duration-300 w-[280px] md:w-[360px] hover:scale-[1.02]">
