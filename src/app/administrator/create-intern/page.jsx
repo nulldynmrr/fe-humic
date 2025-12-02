@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -64,6 +65,7 @@ const scrollToError = (field) => {
 };
 
 export default function CreateIntern() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     role: "",
@@ -173,6 +175,7 @@ export default function CreateIntern() {
               "Data Internship berhasil dibuat dan ditambahkan ke project!"
             );
             onReset();
+            router.back();
           } else {
             toast.warning(
               "Intern berhasil dibuat, tapi gagal menambahkan ke project"

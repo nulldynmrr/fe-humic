@@ -16,57 +16,62 @@ import { toast } from "react-hot-toast";
 const ProjectInternship = ({ slug }) => {
   const [project, setProject] = useState({});
   const [projects, setProjects] = useState([]);
+  const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchProject = useCallback(async () => {
+  const fetchProjectAndMembers = useCallback(async () => {
     if (!slug) return;
     setLoading(true);
     try {
-      const response = await request.get(`/project/slug/${slug}`);
-      setProject(response.data);
+      // fetch project 
+      const projectRes = await request.get(`/project/slug/${slug}`);
+      const projectData = projectRes.data;
+      setProject(projectData);
+
+      // fetch project_member
+      const projectMembersRes = await request.get(
+        `/project_member/${projectData.id}`
+      );
+      const projectMembers = projectMembersRes.data;
+
+      // fetchall intern
+      const internsRes = await request.get("/intern");
+      const interns = internsRes.data;
+
+      // mapping project_member dan intern
+      const memberList = projectMembers.map((m) => {
+        const intern = interns.find((i) => i.id === m.id_intern);
+        return {
+          nama: m.name || "-",
+          posisi: m.role || "-",
+          institusi: intern?.university || "-",
+        };
+      });
+
+      setMembers(memberList);
     } catch (err) {
-      toast.error("Gagal memuat data project");
+      toast.error("Gagal memuat data project atau member");
       setProject({});
+      setMembers([]);
     } finally {
       setLoading(false);
     }
   }, [slug]);
 
   const fetchAllProjects = useCallback(async () => {
-    setLoading(true);
     try {
       const response = await request.get("/project");
       setProjects(response.data);
     } catch (err) {
       toast.error("Gagal memuat data project");
       setProjects([]);
-    } finally {
-      setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchProject();
+    fetchProjectAndMembers();
     fetchAllProjects();
-  }, [fetchProject, fetchAllProjects]);
-
-  const dataTabel = [
-    {
-      nama: "Sayyidus Syauqi A",
-      posisi: "UI UX Designer",
-      institusi: "Telkom University",
-    },
-    {
-      nama: "Dinar Muhammad Akbar",
-      posisi: "Data Analyst",
-      institusi: "Telkom University",
-    },
-    {
-      nama: "Rani Puspita",
-      posisi: "Frontend Developer",
-      institusi: "Telkom University",
-    },
-  ];
+  }, [fetchProjectAndMembers, fetchAllProjects]);
 
   return (
     <div className="gap gap-4">
@@ -81,7 +86,7 @@ const ProjectInternship = ({ slug }) => {
             ]}
           />
 
-          <h1 className="text-xl md:text-2xl font-semibold leading-snug text-neut-900">
+          <h1 className="text-xl md:text-2xl font-bold leading-snug text-neut-900">
             {project.title}
           </h1>
 
@@ -90,7 +95,7 @@ const ProjectInternship = ({ slug }) => {
           </p>
 
           {project.image_path && (
-            <div className="relative w-full h-64 md:h-80 rounded-md overflow-hidden">
+            <div className="relative w-full h-64 md:h-94 rounded-md overflow-hidden">
               <Image
                 src={`${process.env.NEXT_PUBLIC_HOST}${project.image_path}`}
                 alt="Gambar Project"
@@ -119,11 +124,11 @@ const ProjectInternship = ({ slug }) => {
           </div>
 
           <div
-            className="text-neut-800 leading-relaxed space-y-4 mt-8"
+            className="text-neut-800 leading-relaxed space-y-4 mt-4"
             dangerouslySetInnerHTML={{ __html: project.description }}
           />
 
-          <h1 className="text-3xl font-bold text-black text-left mb-4 md:mb-0">
+          <h1 className="text-3xl font-bold text-black text-left mt-12 mb-4 md:mb-0">
             Team Members
           </h1>
           <Table
@@ -132,16 +137,17 @@ const ProjectInternship = ({ slug }) => {
               { label: "Posisi", key: "posisi", align: "center" },
               { label: "Institusi", key: "institusi", align: "center" },
             ]}
-            data={dataTabel}
+            data={members}
+            loading={loading}
           />
         </div>
       </section>
 
       <section className="px-4 py-8 md:px-24 lg:px-34">
         <h1 className="text-3xl font-bold text-black text-center mb-4 md:mb-0">
-          Project Internship
+          Our Latest Projects
         </h1>
-        <Project data={projects} />
+        <Project data={projects} loading={loading} />
       </section>
     </div>
   );

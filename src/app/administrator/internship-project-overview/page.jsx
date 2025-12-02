@@ -35,10 +35,6 @@ export default function IntershipProject() {
     }
   };
 
-  const handleFilter = (filterType) => {
-    fetchAllProjects(query, filterType);
-  };
-
   const fetchAllProjects = useCallback(
     async (searchQuery = "", filterType = "") => {
       setLoading(true);
@@ -190,18 +186,6 @@ export default function IntershipProject() {
           columns={tableColumns}
           data={projects}
           filterKey="title"
-          filterOptions={[
-            {
-              label: "Ascending by Date",
-              value: "asc",
-              onClick: () => handleFilter("asc"),
-            },
-            {
-              label: "Descending by Date",
-              value: "desc",
-              onClick: () => handleFilter("desc"),
-            },
-          ]}
         />
       )}
       <Modal

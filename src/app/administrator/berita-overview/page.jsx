@@ -35,10 +35,6 @@ export default function Berita() {
     }
   };
 
-  const handleFilter = (filterType) => {
-    fetchAllBerita(query, filterType);
-  };
-
   const fetchAllBerita = useCallback(
     async (searchQuery = "", filterType = "") => {
       setLoading(true);
@@ -188,18 +184,6 @@ export default function Berita() {
           columns={tableColumns}
           data={berita}
           filterKey="title"
-          filterOptions={[
-            {
-              label: "Ascending by Date",
-              value: "asc",
-              onClick: () => handleFilter("asc"),
-            },
-            {
-              label: "Descending by Date",
-              value: "desc",
-              onClick: () => handleFilter("desc"),
-            },
-          ]}
         />
       )}
       <Modal

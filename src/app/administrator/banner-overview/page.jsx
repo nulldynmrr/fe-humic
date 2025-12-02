@@ -198,18 +198,6 @@ export default function Banner() {
         <DataTable
           columns={tableColumns}
           data={banner}
-          filterOptions={[
-            {
-              label: "Ascending by Date",
-              value: "asc",
-              onClick: () => handleFilter("asc"),
-            },
-            {
-              label: "Descending by Date",
-              value: "desc",
-              onClick: () => handleFilter("desc"),
-            },
-          ]}
           hide={true}
         />
       )}

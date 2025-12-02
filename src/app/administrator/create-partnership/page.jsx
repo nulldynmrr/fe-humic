@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,6 +44,7 @@ const scrollToError = (field) => {
 };
 
 export default function CreatePartnership() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -58,7 +60,6 @@ export default function CreatePartnership() {
 
   const [loading, setLoading] = useState(false);
 
-  // ------------------------- HANDLER INPUT -------------------------
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -81,7 +82,6 @@ export default function CreatePartnership() {
     }
   };
 
-  // ------------------------- SUBMIT -------------------------
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -126,6 +126,7 @@ export default function CreatePartnership() {
           response.data?.message || "Data Partnership berhasil dibuat!"
         );
         onReset();
+        router.back();
       } else {
         toast.error("Gagal membuat data Partnership - Respons tidak valid");
       }
@@ -166,7 +167,6 @@ export default function CreatePartnership() {
       </div>
 
       <form onSubmit={onSubmit} className="space-y-8 mt-12" noValidate>
-        {/* NAME */}
         <div>
           <Label htmlFor="name" required>
             Name
@@ -183,7 +183,6 @@ export default function CreatePartnership() {
           )}
         </div>
 
-        {/* DESCRIPTION */}
         <div>
           <Label htmlFor="description" required>
             Description
@@ -202,7 +201,6 @@ export default function CreatePartnership() {
           )}
         </div>
 
-        {/* LINK */}
         <div>
           <Label htmlFor="link" required>
             Link
@@ -219,7 +217,6 @@ export default function CreatePartnership() {
           )}
         </div>
 
-        {/* LOGO */}
         <div>
           <File
             label="Logo Partnership"
@@ -235,7 +232,6 @@ export default function CreatePartnership() {
           )}
         </div>
 
-        {/* ERROR / SUCCESS MESSAGE */}
         {status.text && (
           <div
             className={`mb-6 p-4 rounded-lg ${
@@ -248,7 +244,6 @@ export default function CreatePartnership() {
           </div>
         )}
 
-        {/* BUTTONS */}
         <div className="flex justify-end space-x-4 pt-6">
           <Button variant="secondary" onClick={onReset} disabled={loading}>
             Reset

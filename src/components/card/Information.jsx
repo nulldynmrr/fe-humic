@@ -130,7 +130,7 @@ export default function Information({ type, data, loading = false }) {
                   <div className="flex items-start gap-3">
                     <div className="flex flex-col items-center border border-neut-300 rounded-md overflow-hidden min-w-14 min-h-14">
                       <div className="bg-primary border border-primary text-white w-full text-center py-1 text-[10px] font-semibold uppercase">
-                        {new Date(item.date).toLocaleDateString("en-US", {
+                        {new Date(item.date).toLocaleDateString("id-ID", {
                           month: "short",
                         })}
                       </div>

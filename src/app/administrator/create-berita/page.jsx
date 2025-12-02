@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -58,6 +59,7 @@ const scrollToError = (field) => {
 };
 
 export default function CreateBerita() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -151,6 +153,7 @@ export default function CreateBerita() {
         toast.success(response.data?.message || "Data Berita berhasil dibuat!");
 
         onReset();
+        router.back();
       } else {
         toast.dismiss();
         toast.error("Gagal membuat data Berita - Respons tidak valid");

@@ -114,7 +114,7 @@ export default function ArticlePage({ slug }) {
                 ]}
               />
 
-              <h1 className="text-2xl md:text-3xl font-semibold mb-2">
+              <h1 className="text-2xl md:text-3xl font-bold mb-2">
                 {currentArticle.title}
               </h1>
 

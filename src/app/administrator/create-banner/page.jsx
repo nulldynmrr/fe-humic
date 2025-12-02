@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import File from "@/components/ui/File";
 import { z } from "zod";
@@ -29,6 +30,7 @@ const scrollToError = (field) => {
 };
 
 export default function CreateIntern() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     image: null,
   });
@@ -62,38 +64,6 @@ export default function CreateIntern() {
       setStatus((prev) => ({ ...prev, errors: newErrors }));
     }
   };
-
-  //   const handleImageChange = (file) => {
-  //   setImageError("");
-
-  //   if (!file) {
-  //     setFormData((prev) => ({ ...prev, image: null }));
-  //     return;
-  //   }
-
-  //   const img = new Image();
-  //   img.src = URL.createObjectURL(file);
-
-  //   img.onload = () => {
-  //     const width = img.width;
-  //     const height = img.height;
-  //     const ratio = width / height;
-
-  //     if ((width !== 1200 || height !== 400) && Math.abs(ratio - 3) > 0.01) {
-  //       setImageError("Ukuran banner harus 1200×400 atau rasio 3:1.");
-  //       setFormData((prev) => ({ ...prev, image: null }));
-  //       return;
-  //     }
-
-  //     setFormData((prev) => ({ ...prev, image: file }));
-
-  //     if (status.errors.image) {
-  //       const newErrors = { ...status.errors };
-  //       delete newErrors.image;
-  //       setStatus((prev) => ({ ...prev, errors: newErrors }));
-  //     }
-  //   };
-  // };
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -140,6 +110,7 @@ export default function CreateIntern() {
         toast.success(response.data?.message || "Data Banner berhasil dibuat!");
 
         onReset();
+        router.back();
       } else {
         toast.dismiss();
         toast.error("Gagal membuat data Banner - Respons tidak valid");

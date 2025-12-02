@@ -10,8 +10,8 @@ import {
   Users2,
   MessageSquare,
   Handshake,
-  Settings,
   Megaphone,
+  LineChart,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -111,9 +111,9 @@ const data = {
           icon: Megaphone,
         },
         {
-          title: "Settings",
-          url: "settings",
-          icon: Settings,
+          title: "Statistik",
+          url: "input-statistik",
+          icon: LineChart,
         },
       ],
     },

@@ -28,7 +28,7 @@ export default function RichText({ value, onChange, placeholder }) {
   const [imageFile, setImageFile] = useState(null);
 
   useEffect(() => {
-    setMounted(true); // Hanya render editor di client
+    setMounted(true);
   }, []);
 
   const editor = useEditor({
@@ -52,10 +52,9 @@ export default function RichText({ value, onChange, placeholder }) {
         `,
       },
     },
-    immediatelyRender: false, // wajib untuk SSR
+    immediatelyRender: false, 
   });
 
-  // Update content jika value berubah
   useEffect(() => {
     if (editor && editor.getHTML() !== value) {
       editor.commands.setContent(value || "");
@@ -88,7 +87,7 @@ export default function RichText({ value, onChange, placeholder }) {
     </Button>
   );
 
-  if (!mounted) return null; // jangan render editor di server
+  if (!mounted) return null;
 
   return (
     <div>
@@ -148,17 +147,6 @@ export default function RichText({ value, onChange, placeholder }) {
             onClick={() =>
               editor.chain().focus().unsetAllMarks().clearNodes().run()
             }
-          />
-          <ToolbarButton
-            icon={ImageIcon}
-            onClick={() => document.getElementById("image-upload").click()}
-          />
-          <input
-            id="image-upload"
-            type="file"
-            accept="image/*"
-            onChange={onUploadImage}
-            className="hidden"
           />
         </div>
       )}

@@ -37,10 +37,6 @@ export default function Partnership() {
     }
   };
 
-  const handleFilter = (filterType) => {
-    fetchAllParthnership(query, filterType);
-  };
-
   const fetchAllParthnership = useCallback(
     async (searchQuery = "", filterType = "") => {
       setLoading(true);
@@ -191,18 +187,6 @@ export default function Partnership() {
           columns={tableColumns}
           data={partnership}
           filterKey="name"
-          filterOptions={[
-            {
-              label: "Ascending by Date",
-              value: "asc",
-              onClick: () => handleFilter("asc"),
-            },
-            {
-              label: "Descending by Date",
-              value: "desc",
-              onClick: () => handleFilter("desc"),
-            },
-          ]}
         />
       )}
       <Modal

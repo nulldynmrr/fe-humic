@@ -35,10 +35,6 @@ export default function Staff() {
     }
   };
 
-  const handleFilter = (filterType) => {
-    fetchAllAgenda(query, filterType);
-  };
-
   const fetchAllIntern = useCallback(
     async (searchQuery = "", filterType = "") => {
       setLoading(true);
@@ -94,7 +90,7 @@ export default function Staff() {
     },
     { accessorKey: "name", header: "Name" },
     { accessorKey: "position", header: "Position" },
-    { accessorKey: "desctiption", header: "Description" },
+    { accessorKey: "description", header: "Description" },
     { accessorKey: "education", header: "Education" },
     { accessorKey: "publication", header: "Publication" },
     { accessorKey: "email", header: "Email" },
@@ -176,14 +172,6 @@ export default function Staff() {
 
         <div className="flex space-x-2 mt-2 md:mt-0">
           <Button
-            variant="secondary"
-            icon={Upload}
-            onClick={() => router.push("/administrator/import")}
-          >
-            Import
-          </Button>
-
-          <Button
             variant="default"
             icon={Plus}
             onClick={() => router.push("/administrator/create-staff")}
@@ -202,18 +190,6 @@ export default function Staff() {
           columns={tableColumns}
           data={staffs}
           filterKey="name"
-          filterOptions={[
-            {
-              label: "Ascending by Date",
-              value: "asc",
-              onClick: () => handleFilter("asc"),
-            },
-            {
-              label: "Descending by Date",
-              value: "desc",
-              onClick: () => handleFilter("desc"),
-            },
-          ]}
         />
       )}
       <Modal

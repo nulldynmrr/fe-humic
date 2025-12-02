@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,6 +45,7 @@ const scrollToError = (field) => {
 };
 
 export default function CreateProject() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -129,6 +131,7 @@ export default function CreateProject() {
         );
 
         onReset();
+        router.back();
       } else {
         toast.dismiss();
         toast.error("Gagal membuat data Project - Respons tidak valid");

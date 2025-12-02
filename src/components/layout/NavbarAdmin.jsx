@@ -15,6 +15,7 @@ import {
   LayoutDashboard,
   LogOut,
   User,
+  LineChart,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTheme } from "next-themes";
@@ -43,7 +44,7 @@ export default function AdminNavbar() {
     { label: "Overview", href: "/admin/dashboard", icon: LayoutDashboard },
     { label: "Customers", href: "/admin/customers", icon: Users },
     { label: "Products", href: "/admin/products", icon: Package },
-    { label: "Settings", href: "/admin/settings", icon: Settings },
+    { label: "Statistik", href: "/admin/input-statistik", icon: LineChart},
   ];
 
   const handleLogout = () => {
@@ -121,10 +122,6 @@ export default function AdminNavbar() {
             )}
           </Button>
         )}
-
-        <Button variant="ghost" size="icon">
-          <Settings className="h-[1.2rem] w-[1.2rem]" />
-        </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

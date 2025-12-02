@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -62,6 +63,7 @@ const scrollToError = (field) => {
 };
 
 export default function CreatePengumuman() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -148,7 +150,9 @@ export default function CreatePengumuman() {
       if (response.status === 200 || response.status === 201) {
         toast.dismiss();
         toast.success(response.data?.message || "Pengumuman berhasil dibuat!");
+       
         onReset();
+        router.back();
       } else {
         toast.error("Gagal membuat pengumuman");
       }
