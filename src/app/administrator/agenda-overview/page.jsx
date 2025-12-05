@@ -35,10 +35,6 @@ export default function Agenda() {
     }
   };
 
-  const handleFilter = (filterType) => {
-    fetchAllAgenda(query, filterType);
-  };
-
   const fetchAllAgenda = useCallback(
     async (searchQuery = "", filterType = "") => {
       setLoading(true);
@@ -217,18 +213,6 @@ export default function Agenda() {
           columns={tableColumns}
           data={agenda}
           filterKey="title"
-          filterOptions={[
-            {
-              label: "Ascending by Date",
-              value: "asc",
-              onClick: () => handleFilter("asc"),
-            },
-            {
-              label: "Descending by Date",
-              value: "desc",
-              onClick: () => handleFilter("desc"),
-            },
-          ]}
         />
       )}
       <Modal

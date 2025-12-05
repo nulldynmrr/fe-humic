@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -55,6 +56,7 @@ const scrollToError = (field) => {
 };
 
 export default function CreateStaff() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     position: "",
@@ -144,6 +146,7 @@ export default function CreateStaff() {
         );
 
         onReset();
+               router.back();router.back();
       } else {
         toast.dismiss();
         toast.error("Gagal membuat data Staff Humic - Respons tidak valid");

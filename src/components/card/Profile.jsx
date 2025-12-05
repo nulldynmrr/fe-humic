@@ -1,8 +1,8 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { FaLinkedin, FaGithub, FaInstagram } from "react-icons/fa";
 import React from "react";
+import { Skeleton } from "@/components/ui/Skeleton"; 
 
 export default function Profile({
   id,
@@ -10,8 +10,23 @@ export default function Profile({
   position,
   image_path,
   shape = "square", // square | circle
+  loading = false, 
 }) {
   const profileUrl = `/about/all-members/profile/${id}`;
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center text-center p-4 bg-white w-[280px] md:w-[360px] animate-pulse">
+        <Skeleton
+          className={`w-[220px] h-[220px] mb-4 ${
+            shape === "circle" ? "rounded-full" : "rounded-none"
+          }`}
+        />
+        <Skeleton className="w-3/4 h-6 mb-2" />
+        <Skeleton className="w-1/2 h-4" />
+      </div>
+    );
+  }
 
   return (
     <div className="group flex flex-col items-center text-center p-4 bg-white transition-all duration-300 w-[280px] md:w-[360px] hover:scale-[1.02]">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Select from "@/components/ui/SelectandSearch";
 import { Label } from "@/components/ui/label";
@@ -17,6 +18,7 @@ const testimonySchema = z.object({
 });
 
 export default function CreateTestimony() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     id_intern: "",
     content: "",
@@ -69,6 +71,7 @@ export default function CreateTestimony() {
         content: "",
         rating: 0,
       });
+      router.back();
     } catch (err) {
       toast.error("Gagal membuat testimoni");
     } finally {

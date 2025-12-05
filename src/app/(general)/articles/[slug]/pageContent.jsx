@@ -4,6 +4,7 @@ import React, { useCallback, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Information from "@/components/card/Information";
+import ArticlePageSkeleton from "@/components/ui/SkeletonPage";
 import { BreadcrumbDefault } from "@/components/ui/breadcrumb";
 import Header from "@/components/layout/Header";
 import Project from "@/components/card/Project";
@@ -97,7 +98,9 @@ export default function ArticlePage({ slug }) {
     fetchAllPengumuman,
   ]);
 
-  console.log(currentArticle);
+  if (loading) {
+    return <ArticlePageSkeleton />;
+  }
 
   return (
     <div className="min-h-screen">
@@ -114,7 +117,7 @@ export default function ArticlePage({ slug }) {
                 ]}
               />
 
-              <h1 className="text-2xl md:text-3xl font-semibold mb-2">
+              <h1 className="text-2xl md:text-3xl font-bold mb-2">
                 {currentArticle.title}
               </h1>
 

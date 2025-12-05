@@ -35,10 +35,6 @@ export default function Intern() {
     }
   };
 
-  const handleFilter = (filterType) => {
-    fetchAllAgenda(query, filterType);
-  };
-
   const fetchAllIntern = useCallback(
     async (searchQuery = "", filterType = "") => {
       setLoading(true);
@@ -72,26 +68,26 @@ export default function Intern() {
 
   const columns = [
     { header: "No", cell: ({ row }) => <span>{row.index + 1}</span> },
-    {
-      accessorKey: "image_path",
-      header: "Image",
-      cell: ({ getValue }) => {
-        const src = getValue();
-        return src ? (
-          <Image
-            src={`${process.env.NEXT_PUBLIC_HOST}${src}`}
-            alt="image"
-            width={60}
-            height={40}
-            className="rounded-md object-cover"
-          />
-        ) : (
-          <div className="w-[60px] h-[40px] bg-gray-200 dark:bg-gray-800 rounded-md flex items-center justify-center text-[10px] text-gray-500">
-            N/A
-          </div>
-        );
-      },
-    },
+   {
+  accessorKey: "image_path",
+  header: "Image",
+  cell: ({ getValue }) => {
+    const src = getValue();
+    return src ? (
+      <Image
+        src={`${process.env.NEXT_PUBLIC_HOST}${src}`}
+        alt="image"
+        width={60}
+        height={40}
+        className="rounded-md object-cover"
+      />
+    ) : (
+      <div className="w-[60px] h-[40px] bg-gray-200 dark:bg-gray-800 rounded-md flex items-center justify-center text-[10px] text-gray-500">
+        N/A
+      </div>
+    );
+  },
+},
     { accessorKey: "name", header: "Name" },
     { accessorKey: "role", header: "Role" },
     { accessorKey: "university", header: "University" },
@@ -176,14 +172,6 @@ export default function Intern() {
 
         <div className="flex space-x-2 mt-2 md:mt-0">
           <Button
-            variant="secondary"
-            icon={Upload}
-            onClick={() => router.push("/administrator/import")}
-          >
-            Import
-          </Button>
-
-          <Button
             variant="default"
             icon={Plus}
             onClick={() => router.push("/administrator/create-intern")}
@@ -202,18 +190,6 @@ export default function Intern() {
           columns={tableColumns}
           data={interns}
           filterKey="name"
-          filterOptions={[
-            {
-              label: "Ascending by Date",
-              value: "asc",
-              onClick: () => handleFilter("asc"),
-            },
-            {
-              label: "Descending by Date",
-              value: "desc",
-              onClick: () => handleFilter("desc"),
-            },
-          ]}
         />
       )}
       <Modal

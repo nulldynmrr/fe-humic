@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,6 +45,7 @@ const scrollToError = (field) => {
 };
 
 export default function CreateProject() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -129,6 +131,7 @@ export default function CreateProject() {
         );
 
         onReset();
+        router.back();
       } else {
         toast.dismiss();
         toast.error("Gagal membuat data Project - Respons tidak valid");
@@ -172,7 +175,7 @@ export default function CreateProject() {
   return (
     <section className="py-4 bg-sidebar p-6 rounded-sm shadow-md mt-16 md:mt-0">
       <div>
-        <h2 className="text-2xl font-bold">Create an Project XXX</h2>
+        <h2 className="text-2xl font-bold">Create an Project</h2>
         <p className="text-[#62748E] dark:text-[#828b97]">
           Here's a list of your tasks for this month!
         </p>

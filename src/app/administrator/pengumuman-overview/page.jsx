@@ -36,11 +36,7 @@ export default function Pengumuman() {
       );
     }
   };
-
-  const handleFilter = (filterType) => {
-    fetchAllPengumuman(query, filterType);
-  };
-
+  
   const fetchAllPengumuman = useCallback(
     async (searchQuery = "", filterType = "") => {
       setLoading(true);
@@ -190,18 +186,6 @@ export default function Pengumuman() {
           columns={tableColumns}
           data={pengumuman}
           filterKey="title"
-          filterOptions={[
-            {
-              label: "Ascending by Date",
-              value: "asc",
-              onClick: () => handleFilter("asc"),
-            },
-            {
-              label: "Descending by Date",
-              value: "desc",
-              onClick: () => handleFilter("desc"),
-            },
-          ]}
         />
       )}
       <Modal

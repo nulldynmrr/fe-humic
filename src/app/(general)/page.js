@@ -286,7 +286,7 @@ const Dashboard = () => {
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua.
             </p>
-            {testimoni.length >= 1 && testimoni.length <= 4 && (
+            {testimoni.length > 1  && (
               <div className="flex space-x-4">
                 <ButtonDefault
                   onClick={scrollLeft}
@@ -311,10 +311,10 @@ const Dashboard = () => {
               className="flex space-x-4 overflow-x-auto pr-[90px] snap-x snap-mandatory scrollbar-hide"
               style={{ scrollBehavior: "smooth" }}
             >
-              {testimoni.map((testimoni, index) => (
-                <div key={index} className="shrink-0 snap-start">
-                  <CardFeedback {...testimoni} />
-                </div>
+             {(testimoni || []).map((item, index) => (
+              <div key={index} className="shrink-0 snap-start">
+               <CardFeedback {...item} />
+              </div>
               ))}
             </div>
           </div>

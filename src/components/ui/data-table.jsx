@@ -35,8 +35,8 @@ export function DataTable({
   columns = [],
   data = [],
   filterKey = "",
-  filterOptions = [],
-  onFilterSelect,
+  // filterOptions = [],
+  // onFilterSelect,
   onFilterChange,
   placeholderSearch,
   hide = false,
@@ -89,7 +89,7 @@ export function DataTable({
 
         {!hide && (
           <div className="flex items-center gap-2 md:w-[25%] md:justify-end">
-            {filterOptions.length > 0 && (
+            {/* {filterOptions.length > 0 && (
               <DropdownMenu>
                 <DropdownMenuTrigger
                   asChild
@@ -116,7 +116,7 @@ export function DataTable({
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
-            )}
+            )} */}
 
             <DropdownMenu>
               <DropdownMenuTrigger
