@@ -44,12 +44,12 @@ export default function AdminNavbar() {
     { label: "Overview", href: "/admin/dashboard", icon: LayoutDashboard },
     { label: "Customers", href: "/admin/customers", icon: Users },
     { label: "Products", href: "/admin/products", icon: Package },
-    { label: "Statistik", href: "/admin/input-statistik", icon: LineChart},
+    { label: "Statistik", href: "/admin/input-statistik", icon: LineChart },
   ];
 
   const handleLogout = () => {
     Cookies.remove("token");
-    router.push("/login-administrator");
+    router.push("/login");
   };
 
   return (

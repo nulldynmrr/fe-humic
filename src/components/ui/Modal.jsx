@@ -1,7 +1,15 @@
 "use client";
 
 import React from "react";
-import { FaTimes, FaArrowRight, FaBullhorn, FaLaptop } from "react-icons/fa";
+import Image from "next/image";
+import { formatWaktu } from "@/lib/time";
+import {
+  FaTimes,
+  FaArrowRight,
+  FaBullhorn,
+  FaLaptop,
+  FaClock,
+} from "react-icons/fa";
 
 export const ModalAnnouncement = ({
   isOpen = false,
@@ -12,7 +20,10 @@ export const ModalAnnouncement = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div
+      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div className="bg-white rounded-xl w-[380px] md:w-[420px] p-6 relative">
         <button
           onClick={onClose}
@@ -76,7 +87,10 @@ export const ModalChoice = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div
+      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div className="bg-white rounded-xl w-[360px] p-6 relative">
         <button
           onClick={onClose}
@@ -103,6 +117,54 @@ export const ModalChoice = ({
             </button>
           ))}
         </div>
+      </div>
+    </div>
+  );
+};
+
+export const ModalInformation = ({ isOpen, onClose, data }) => {
+  if (!isOpen || !data) return null;
+
+  return (
+    <div
+      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="bg-white rounded-xl w-[380px] md:w-[420px] p-6 relative">
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+        >
+          <FaTimes size={18} />
+        </button>
+
+        {data.image_path && (
+          <div className="relative w-full h-40 mb-4 rounded-md overflow-hidden">
+            <Image
+              src={`${process.env.NEXT_PUBLIC_HOST}${data.image_path}`}
+              alt={data.title}
+              fill
+              className="object-cover"
+            />
+          </div>
+        )}
+
+        <div className="flex justify-center mb-3 text-yellow-500 text-3xl">
+          <FaBullhorn />
+        </div>
+
+        <h2 className="text-lg font-bold mb-2 text-gray-900 text-center">
+          {data.title}
+        </h2>
+
+        <p className="text-sm text-gray-800 leading-relaxed text-center whitespace-pre-line">
+          {data.content || "Tidak ada deskripsi."}
+        </p>
+
+        <p className="text-sm text-gray-700 mt-6 flex items-center justify-center gap-2">
+          <FaClock className="text-primary" />
+          <time>{formatWaktu(data.date, "date")}</time>
+        </p>
       </div>
     </div>
   );
