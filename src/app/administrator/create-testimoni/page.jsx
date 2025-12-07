@@ -82,6 +82,9 @@ export default function CreateTestimony() {
   return (
     <section className="py-6 bg-white dark:bg-neutral-900 p-6 rounded-sm shadow-md mt-8">
       <h1 className="text-2xl font-bold mb-10">Buat Testimoni</h1>
+         <p className="text-[#62748E] dark:text-[#828b97]">
+               Kelola data anggota HUMIC yang terdiri dari dosen, peneliti, dan kontributor.
+              </p>
 
       <form onSubmit={onSubmit} className="space-y-6">
         <div>

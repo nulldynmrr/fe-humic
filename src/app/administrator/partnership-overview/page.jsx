@@ -163,7 +163,7 @@ export default function Partnership() {
         <div>
           <h2 className="text-2xl font-bold">Partnership HUMIC</h2>
           <p className="text-[#62748E] dark:text-[#828b97]">
-            Here's a list of your tasks for this month!
+            Atur dan kelola data kerja sama HUMIC dengan institusi akademik, industri, atau lembaga penelitian.
           </p>
         </div>
 

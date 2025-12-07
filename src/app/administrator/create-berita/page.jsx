@@ -192,7 +192,7 @@ export default function CreateBerita() {
       <div>
         <h2 className="text-2xl font-bold">Create an Berita</h2>
         <p className="text-[#62748E] dark:text-[#828b97]">
-          Here's a list of your tasks for this month!
+          Kelola berita dan update terbaru mengenai penelitian, publikasi, dan kegiatan HUMIC
         </p>
       </div>
 

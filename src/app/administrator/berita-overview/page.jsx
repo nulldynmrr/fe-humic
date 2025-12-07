@@ -160,7 +160,8 @@ export default function Berita() {
         <div>
           <h2 className="text-2xl font-bold">Berita HUMIC</h2>
           <p className="text-[#62748E] dark:text-[#828b97]">
-            Here's a list of your tasks for this month!
+            Kelola berita dan update terbaru mengenai penelitian, publikasi, dan
+            kegiatan HUMIC
           </p>
         </div>
 
@@ -180,11 +181,7 @@ export default function Berita() {
           Memuat data Berita...
         </div>
       ) : (
-        <DataTable
-          columns={tableColumns}
-          data={berita}
-          filterKey="title"
-        />
+        <DataTable columns={tableColumns} data={berita} filterKey="title" />
       )}
       <Modal
         isOpen={openModal}
