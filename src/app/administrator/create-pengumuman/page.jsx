@@ -177,7 +177,7 @@ export default function CreatePengumuman() {
   return (
     <section className="py-4 bg-sidebar p-6 rounded-sm shadow-md mt-16 md:mt-0">
       <h2 className="text-2xl font-bold">Create Pengumuman</h2>
-      <p className="text-muted">Buat pengumuman</p>
+      <p className="text-muted">Kelola berbagai pengumuman resmi HUMIC seperti informasi internal, pemberitahuan penting, atau update kebijakan.</p>
 
       <form onSubmit={onSubmit} className="space-y-8 mt-10" noValidate>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

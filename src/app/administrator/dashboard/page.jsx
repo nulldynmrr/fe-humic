@@ -38,7 +38,7 @@ import {
 } from "recharts";
 
 import request from "@/utils/request";
-import toast from "sonner";
+import { toast } from "sonner";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({

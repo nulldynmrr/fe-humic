@@ -162,7 +162,7 @@ export default function Pengumuman() {
         <div>
           <h2 className="text-2xl font-bold">Pengumuman HUMIC</h2>
           <p className="text-[#62748E] dark:text-[#828b97]">
-            Here's a list of your tasks for this month!
+           Kelola berbagai pengumuman resmi HUMIC seperti informasi internal, pemberitahuan penting, atau update kebijakan.
           </p>
         </div>
 

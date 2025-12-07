@@ -189,7 +189,7 @@ export default function CreateStaff() {
       <div>
         <h2 className="text-2xl font-bold">Create an Staff Humic Member</h2>
         <p className="text-[#62748E] dark:text-[#828b97]">
-          Here's a list of your tasks for this month!
+         Kelola data anggota HUMIC yang terdiri dari dosen, peneliti, dan kontributor.
         </p>
       </div>
 

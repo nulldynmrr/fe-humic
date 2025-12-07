@@ -182,7 +182,7 @@ export default function Testimoni() {
         <div>
           <h2 className="text-2xl font-bold">Testimoni HUMIC</h2>
           <p className="text-[#62748E] dark:text-[#828b97]">
-            Here's a list of your tasks for this month!
+           Kelola testimoni dari mahasiswa, mitra, atau peserta kegiatan HUMIC. 
           </p>
         </div>
 
