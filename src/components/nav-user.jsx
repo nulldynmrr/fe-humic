@@ -25,7 +25,7 @@ export function NavUser() {
 
     if (!data) {
       Cookies.remove("token");
-      router.push("/login-administrator");
+      router.push("/login");
       return;
     }
 
