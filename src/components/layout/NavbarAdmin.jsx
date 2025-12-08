@@ -48,7 +48,6 @@ export default function AdminNavbar() {
     setAdmin(current);
   }, []);
 
-  // GET INISIAL NAMA
   const getInitials = (name) => {
     if (!name) return "AD";
     const parts = name.trim().split(" ");
@@ -70,7 +69,7 @@ export default function AdminNavbar() {
 
   const handleLogout = () => {
     Cookies.remove("token");
-    router.push("/login-administrator");
+    router.push("/login");
   };
 
   return (

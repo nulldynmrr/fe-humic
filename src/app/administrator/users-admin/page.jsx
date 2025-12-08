@@ -200,7 +200,7 @@ const UserAdmin = () => {
 
       <Dialog open={openAdd} onOpenChange={setOpenAdd}>
         <DialogContent>
-          <DialogHeader>
+          <DialogHeader className="border-b border-black/30 pb-3">
             <DialogTitle>Tambah Admin Baru</DialogTitle>
           </DialogHeader>
 
