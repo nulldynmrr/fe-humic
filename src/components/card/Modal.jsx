@@ -5,11 +5,18 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/date-picker";
+import RichText from "@/components/ui/richText";
 import { formatWaktu } from "@/lib/time";
 import request from "@/utils/request";
 import { toast } from "sonner";
 
 import { X } from "lucide-react";
+
+const containsHTML = (str) => {
+  if (!str || typeof str !== "string") return false;
+  const htmlRegex = /<\/?[a-z][\s\S]*>/i;
+  return htmlRegex.test(str);
+};
 
 export default function Modal({
   isOpen,
@@ -35,6 +42,10 @@ export default function Modal({
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleRichTextChange = (fieldKey, htmlContent) => {
+    setFormData((prev) => ({ ...prev, [fieldKey]: htmlContent }));
   };
 
   const getImageSrc = () => {
@@ -119,9 +130,13 @@ export default function Modal({
 
               const value = formData[field.key];
               const isDateField = field.key.toLowerCase().includes("date");
+              const hasHTMLContent = containsHTML(value);
 
               return (
-                <div key={field.key}>
+                <div
+                  key={field.key}
+                  className={hasHTMLContent ? "col-span-full" : ""}
+                >
                   <p className="text-xs text-gray-400 dark:text-gray-500">
                     {field.label}
                   </p>
@@ -152,6 +167,14 @@ export default function Modal({
                           }));
                         }}
                       />
+                    ) : hasHTMLContent ? (
+                      <RichText
+                        value={value || ""}
+                        onChange={(html) =>
+                          handleRichTextChange(field.key, html)
+                        }
+                        placeholder={`Masukkan ${field.label.toLowerCase()}...`}
+                      />
                     ) : (
                       <Input
                         type="text"
@@ -162,11 +185,22 @@ export default function Modal({
                       />
                     )
                   ) : (
-                    <p className="font-bold text-gray-900 dark:text-gray-100">
-                      {isDateField && value
-                        ? formatWaktu(value, "date")
-                        : value}
-                    </p>
+                    <div className="mt-2">
+                      {isDateField && value ? (
+                        <p className="font-bold text-gray-900 dark:text-gray-100">
+                          {formatWaktu(value, "date")}
+                        </p>
+                      ) : hasHTMLContent ? (
+                        <div
+                          className="prose prose-sm max-w-none dark:prose-invert"
+                          dangerouslySetInnerHTML={{ __html: value || "" }}
+                        />
+                      ) : (
+                        <p className="font-bold text-gray-900 dark:text-gray-100">
+                          {value}
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
               );

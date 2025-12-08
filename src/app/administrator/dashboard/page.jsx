@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
-
 import {
   Card,
   CardHeader,
@@ -8,7 +7,6 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-
 import {
   Select,
   SelectTrigger,
@@ -16,27 +14,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-} from "recharts";
-
+import { PieChart, Pie, Cell } from "recharts";
 import request from "@/utils/request";
 import { toast } from "sonner";
 
@@ -45,19 +23,12 @@ const Dashboard = () => {
     totalResearchProjects: 0,
     totalInternshipMember: 0,
     totalStaff: 0,
-    totalWarpInternshipMember: 0,
-    totalVisitors: 0,
   });
 
   const [logs, setLogs] = useState([]);
   const [filteredLogs, setFilteredLogs] = useState([]);
   const [filter, setFilter] = useState("all");
   const [logsAnalytics, setLogsAnalytics] = useState([]);
-  const [recentActivities, setRecentActivities] = useState({
-    salesThisMonth: 0,
-    activities: [],
-  });
-
   const [logsSummary, setLogsSummary] = useState({
     CREATE: 0,
     READ: 0,
@@ -65,23 +36,8 @@ const Dashboard = () => {
     DELETE: 0,
   });
 
-  const [visitorFilter, setVisitorFilter] = useState("7d");
   const [logsFilter, setLogsFilter] = useState("7d");
-
   const [isLoadingAll, setIsLoadingAll] = useState(true);
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    const checkDarkMode = () => {
-      setIsDark(document.documentElement.classList.contains("dark"));
-    };
-
-    checkDarkMode();
-    const obs = new MutationObserver(checkDarkMode);
-    obs.observe(document.documentElement, { attributes: true });
-
-    return () => obs.disconnect();
-  }, []);
 
   const fetchAllProject = useCallback(async () => {
     try {
@@ -217,12 +173,16 @@ const Dashboard = () => {
     load();
   }, [
     fetchAllProject,
+    fetchAllIntern,
     fetchAllStaff,
     fetchLogsAnalytics,
-    visitorFilter,
     logsFilter,
     fetchLogs,
   ]);
+
+  useEffect(() => {
+    fetchLogsAnalytics(logsFilter);
+  }, [logsFilter, fetchLogsAnalytics]);
 
   const COLORS = {
     CREATE: "#10b981",
@@ -232,60 +192,65 @@ const Dashboard = () => {
   };
 
   const cardClass =
-    "w-full h-full overflow-hidden border bg-white dark:bg-sidebar border-black/10 dark:border-white/10 backdrop-blur-md text-foreground";
+    "w-full overflow-hidden border bg-white dark:bg-sidebar border-black/10 dark:border-white/10 backdrop-blur-md text-foreground";
 
-  if (isLoadingAll)
+  if (isLoadingAll) {
     return (
       <div className="flex items-center justify-center h-screen text-gray-500">
         Loading...
       </div>
     );
+  }
 
   return (
     <div className="p-8 min-h-screen text-foreground">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Dashboard Analytics</h1>
 
-        <div className="w-full flex flex-row space-x-4">
-          <div className="max-w-[92rem] w-full flex flex-col space-x-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-8">
-              <Card className={cardClass}>
-                <CardHeader className="flex justify-between flex-row pb-2">
-                  <CardTitle>Total Research Projects</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">
-                    {stats.totalResearchProjects}
-                  </div>
-                  <p className="text-xs text-muted-foreground">Project Riset</p>
-                </CardContent>
-              </Card>
-              <Card className={cardClass}>
-                <CardHeader className="flex justify-between flex-row pb-2">
-                  <CardTitle>Internship Members</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">
-                    {stats.totalInternshipMember}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Member Internship Aktif
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className={cardClass}>
-                <CardHeader className="flex justify-between flex-row pb-2">
-                  <CardTitle>Staff Members</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">{stats.totalStaff}</div>
-                  <p className="text-xs text-muted-foreground">
-                    Member Staff Aktif
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <Card className={cardClass}>
+            <CardHeader className="flex justify-between flex-row pb-2">
+              <CardTitle className="text-base">
+                Total Research Projects
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">
+                {stats.totalResearchProjects}
+              </div>
+              <p className="text-xs text-muted-foreground">Project Riset</p>
+            </CardContent>
+          </Card>
 
+          <Card className={cardClass}>
+            <CardHeader className="flex justify-between flex-row pb-2">
+              <CardTitle className="text-base">Internship Members</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">
+                {stats.totalInternshipMember}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Member Internship Aktif
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className={cardClass}>
+            <CardHeader className="flex justify-between flex-row pb-2">
+              <CardTitle className="text-base">Staff Members</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{stats.totalStaff}</div>
+              <p className="text-xs text-muted-foreground">
+                Member Staff Aktif
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
             <Card className={cardClass}>
               <CardHeader>
                 <div className="flex items-center justify-between w-full">
@@ -295,10 +260,9 @@ const Dashboard = () => {
                   </div>
 
                   <Select value={filter} onValueChange={applyFilter}>
-                    <SelectTrigger className="w-[200px] bg-sidebar border border-black/10 dark:border-white/10">
+                    <SelectTrigger className="w-[180px] bg-sidebar border border-black/10 dark:border-white/10">
                       <SelectValue placeholder="Filter" />
                     </SelectTrigger>
-
                     <SelectContent className="bg-sidebar border border-black/10 dark:border-white/10">
                       <SelectItem value="all">Semua</SelectItem>
                       <SelectItem value="today">Hari ini</SelectItem>
@@ -312,37 +276,38 @@ const Dashboard = () => {
 
               <CardContent>
                 {filteredLogs.length === 0 ? (
-                  <div className="text-center text-muted py-6">
+                  <div className="text-center text-muted-foreground py-8">
                     Tidak ada log
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-3 max-h-[600px] overflow-y-auto">
                     {filteredLogs.map((log) => (
                       <div
                         key={log.id}
                         className="flex items-start gap-4 p-3 rounded-lg bg-sidebar/20 border border-black/10 dark:border-white/10"
                       >
-                        <div className="w-10 h-10 flex items-center justify-center bg-muted rounded-full">
+                        <div className="w-9 h-9 flex items-center justify-center bg-muted rounded-full flex-shrink-0">
                           <span className="font-bold text-sm">
                             {log.adminName.charAt(0).toUpperCase()}
                           </span>
                         </div>
 
-                        <div className="flex-1">
-                          <p className="font-medium">{log.adminName}</p>
-                          <p className="text-xs text-muted">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">
+                            {log.adminName}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
                             Table: {log.target_table} | ID: {log.target_id}
                           </p>
-
                           {log.description && (
-                            <p className="text-xs italic text-muted">
+                            <p className="text-xs italic text-muted-foreground mt-1">
                               {log.description}
                             </p>
                           )}
                         </div>
 
-                        <div className="flex flex-col items-end gap-1">
-                          <p
+                        <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                          <span
                             className={`text-xs font-semibold px-2 py-1 rounded-md text-white ${
                               log.action === "CREATE"
                                 ? "bg-green-500"
@@ -354,10 +319,14 @@ const Dashboard = () => {
                             }`}
                           >
                             {log.action}
-                          </p>
-
-                          <span className="text-muted text-xs">
-                            {new Date(log.created_at).toLocaleString()}
+                          </span>
+                          <span className="text-muted-foreground text-xs">
+                            {new Date(log.created_at).toLocaleString("id-ID", {
+                              day: "2-digit",
+                              month: "short",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
                           </span>
                         </div>
                       </div>
@@ -368,16 +337,15 @@ const Dashboard = () => {
             </Card>
           </div>
 
-          <div className="w-full">
+          <div className="lg:col-span-1">
             <Card className={cardClass}>
-              <CardHeader className="flex justify-between flex-row">
-                <div>
-                  <CardTitle>Logs Analytics</CardTitle>
-                  <CardDescription>Action yang dilakukan admin</CardDescription>
-                </div>
-
+              <CardHeader>
+                <CardTitle className="text-base">Logs Analytics</CardTitle>
+                <CardDescription className="text-xs">
+                  Action yang dilakukan admin
+                </CardDescription>
                 <Select value={logsFilter} onValueChange={setLogsFilter}>
-                  <SelectTrigger className="w-[150px] bg-sidebar border border-black/10 dark:border-white/10">
+                  <SelectTrigger className="w-full mt-2 bg-sidebar border border-black/10 dark:border-white/10">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-sidebar border border-black/10 dark:border-white/10">
@@ -389,66 +357,72 @@ const Dashboard = () => {
                 </Select>
               </CardHeader>
 
-              <CardContent>
-                <PieChart width={350} height={260}>
-                  <Pie
-                    data={logsAnalytics}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="count"
-                    label={(entry) => entry.action}
-                  >
-                    {logsAnalytics.map((entry, index) => (
-                      <Cell
-                        key={index}
-                        fill={COLORS[entry.action] || "#6b7280"}
-                      />
-                    ))}
-                  </Pie>
-                </PieChart>
+              <CardContent className="flex flex-col items-center">
+                {logsAnalytics.length > 0 ? (
+                  <>
+                    <PieChart width={280} height={240}>
+                      <Pie
+                        data={logsAnalytics}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="count"
+                        label={(entry) => entry.action}
+                      >
+                        {logsAnalytics.map((entry, index) => (
+                          <Cell
+                            key={index}
+                            fill={COLORS[entry.action] || "#6b7280"}
+                          />
+                        ))}
+                      </Pie>
+                    </PieChart>
 
-                <div className="mt-4 grid grid-cols-2 gap-3 text-center justify-center text-sm">
-                  {(() => {
-                    const entries = Object.entries(logsSummary).filter(
-                      ([key, value]) => value > 0
-                    );
-                    return entries.map(([key, value], index) => {
-                      const isLastOdd =
-                        entries.length % 2 !== 0 &&
-                        index === entries.length - 1;
-                      const colors = {
-                        CREATE: "green",
-                        READ: "amber",
-                        UPDATE: "blue",
-                        DELETE: "red",
-                      };
-                      return (
-                        <div
-                          key={key}
-                          className={`p-2 rounded bg-${colors[key]}-500/10 ${
-                            isLastOdd ? "col-span-2" : ""
-                          }`}
-                        >
-                          <p
-                            className={`font-bold text-${colors[key]}-600 dark:text-${colors[key]}-400`}
-                          >
-                            {value}
-                          </p>
-                          <p className="text-xs text-muted-foreground">{key}</p>
+                    <div className="mt-4 w-full grid grid-cols-2 gap-2 text-center text-sm">
+                      {Object.entries(logsSummary)
+                        .filter(([, value]) => value > 0)
+                        .map(([key, value], index, arr) => {
+                          const isLastOdd =
+                            arr.length % 2 !== 0 && index === arr.length - 1;
+                          const colors = {
+                            CREATE: "green",
+                            READ: "amber",
+                            UPDATE: "blue",
+                            DELETE: "red",
+                          };
+                          return (
+                            <div
+                              key={key}
+                              className={`p-2 rounded bg-${
+                                colors[key]
+                              }-500/10 ${isLastOdd ? "col-span-2" : ""}`}
+                            >
+                              <p
+                                className={`font-bold text-lg text-${colors[key]}-600 dark:text-${colors[key]}-400`}
+                              >
+                                {value}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {key}
+                              </p>
+                            </div>
+                          );
+                        })}
+
+                      {Object.values(logsSummary).every((v) => v === 0) && (
+                        <div className="col-span-2 text-muted-foreground text-xs py-4">
+                          Tidak ada aktivitas
                         </div>
-                      );
-                    });
-                  })()}
-
-                  {Object.values(logsSummary).every((v) => v === 0) && (
-                    <div className="col-span-2 text-muted-foreground text-xs">
-                      Tidak ada aktivitas
+                      )}
                     </div>
-                  )}
-                </div>
+                  </>
+                ) : (
+                  <div className="text-center text-muted-foreground py-8">
+                    Tidak ada data analytics
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

@@ -112,7 +112,7 @@ const data = {
         },
         {
           title: "Statistik",
-          url: "input-statistik",
+          url: "statistik-overview",
           icon: LineChart,
         },
       ],

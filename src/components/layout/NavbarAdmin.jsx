@@ -9,7 +9,6 @@ import {
   Search,
   Sun,
   Moon,
-  Settings,
   Users,
   Package,
   LayoutDashboard,
@@ -17,9 +16,11 @@ import {
   User,
   LineChart,
 } from "lucide-react";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTheme } from "next-themes";
 import { usePathname, useRouter } from "next/navigation";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,15 +29,34 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/Dropdown-menu";
+
 import Cookies from "js-cookie";
+import { getCurrentAdmin } from "@/utils/request";
 
 export default function AdminNavbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  const [mounted, setMounted] = useState(false);
+  const [admin, setAdmin] = useState(null);
+
+  useEffect(() => {
+    setMounted(true);
+
+    const current = getCurrentAdmin();
+    setAdmin(current);
+  }, []);
+
+  const getInitials = (name) => {
+    if (!name) return "AD";
+    const parts = name.trim().split(" ");
+
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return parts[0].slice(0, 2).toUpperCase();
+  };
+
+  const initials = getInitials(admin?.username);
 
   const isDashboard = pathname === "/admin/dashboard";
 
@@ -126,14 +146,16 @@ export default function AdminNavbar() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar className="cursor-pointer">
-              <AvatarImage src="/avatars/admin.jpg" alt="@admin" />
-              <AvatarFallback>A1</AvatarFallback>
+              <AvatarImage src={admin?.avatar || "/avatars/admin.jpg"} />
+              <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
 
           <DropdownMenuContent className="w-48 mt-4" align="end">
-            <DropdownMenuLabel>Account</DropdownMenuLabel>
+            <DropdownMenuLabel>{admin?.username || "Admin"}</DropdownMenuLabel>
+
             <DropdownMenuSeparator />
+
             <DropdownMenuItem
               onClick={() => router.push("/administrator/profile")}
               className="cursor-pointer capitalize text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors"
@@ -141,6 +163,7 @@ export default function AdminNavbar() {
               <User className="w-4 h-4 mr-2" />
               Edit Profile
             </DropdownMenuItem>
+
             <DropdownMenuItem
               onClick={handleLogout}
               className="cursor-pointer text-red-500 focus:text-red-600 capitalize transition-colors"

@@ -182,18 +182,11 @@ export default function Testimoni() {
         <div>
           <h2 className="text-2xl font-bold">Testimoni HUMIC</h2>
           <p className="text-[#62748E] dark:text-[#828b97]">
-           Kelola testimoni dari mahasiswa, mitra, atau peserta kegiatan HUMIC. 
+            Kelola testimoni dari mahasiswa, mitra, atau peserta kegiatan HUMIC.
           </p>
         </div>
 
         <div className="flex space-x-4 mt-2 md:mt-0">
-          <Button
-            variant="secondary"
-            icon={Plus}
-            onClick={() => router.push("/administrator/import-testimoni")}
-          >
-            Import
-          </Button>
           <Button
             variant="default"
             icon={Plus}
