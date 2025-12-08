@@ -342,42 +342,44 @@ const Dashboard = () => {
         </div>
       </section>
 
-      <section className="bg-neut-50 px-4 py-8 md:px-12 flex flex-col justify-center items-center overflow-hidden gap-6">
-        <h1 className="text-xl font-bold text-black">Our Partnership</h1>
+      {partnership.length > 0 && (
+        <section className="bg-neut-50 px-4 py-8 md:px-12 flex flex-col justify-center items-center overflow-hidden gap-6">
+          <h1 className="text-xl font-bold text-black">Our Partnership</h1>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-6xl mx-auto">
-          {partnership.map((p, index) => {
-            let imageSrc = p.logo.startsWith("http")
-              ? p.logo
-              : `${process.env.NEXT_PUBLIC_HOST}${p.logo}`;
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-6xl mx-auto">
+            {partnership.map((p, index) => {
+              let imageSrc = p.logo.startsWith("http")
+                ? p.logo
+                : `${process.env.NEXT_PUBLIC_HOST}${p.logo}`;
 
-            return (
-              <div
-                key={index}
-                className="flex items-center justify-center w-full"
-              >
-                {imageSrc ? (
-                  <div className="relative w-24 h-18 md:w-32 md:h-20">
-                    <Image
-                      src={imageSrc}
-                      alt={p.name || `partner-${index}`}
-                      fill
-                      className="object-contain"
-                      unoptimized
-                    />
-                  </div>
-                ) : (
-                  <div className="text-gray-400 text-sm text-center">
-                    No logo
-                    <br />
-                    {p.name || `Partner ${index + 1}`}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </section>
+              return (
+                <div
+                  key={index}
+                  className="flex items-center justify-center w-full"
+                >
+                  {imageSrc ? (
+                    <div className="relative w-24 h-18 md:w-32 md:h-20">
+                      <Image
+                        src={imageSrc}
+                        alt={p.name || `partner-${index}`}
+                        fill
+                        className="object-contain"
+                        unoptimized
+                      />
+                    </div>
+                  ) : (
+                    <div className="text-gray-400 text-sm text-center">
+                      No logo
+                      <br />
+                      {p.name || `Partner ${index + 1}`}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <ModalAnnouncement
         isOpen={openModalIntern}
@@ -396,14 +398,14 @@ const Dashboard = () => {
             title: "SIRAMA",
             onClick: () => {
               setopenModalWrap(false);
-              router.push("https://internify.humicprototyping.com/Internships");
+              router.push("https://sirama.telkomuniversity.ac.id/home");
             },
           },
           {
-            title: "SIRAMA 2",
+            title: "SIMKA",
             onClick: () => {
               setopenModalWrap(false);
-              router.push("https://internify.humicprototyping.com/Internships");
+              router.push("https://simka.telkomuniversity.ac.id");
             },
           },
         ]}
