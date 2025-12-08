@@ -29,23 +29,26 @@ const IntershipProject = () => {
     }
   }, []);
 
-  const onSearch = useCallback(async (search) => {
-    if (!search || search.trim() === "") {
-      fetchAllProject();
-      return;
-    }
+  const onSearch = useCallback(
+    async (search) => {
+      if (!search || search.trim() === "") {
+        fetchAllProject();
+        return;
+      }
 
-    setLoading(true);
-    try {
-      const response = await request.get(`/project/search?query=${search}`);
-      setProjects(response.data);
-    } catch (err) {
-      toast.error("Gagal mencari project");
-      setProjects([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchAllProject]);
+      setLoading(true);
+      try {
+        const response = await request.get(`/project/search?query=${search}`);
+        setProjects(response.data);
+      } catch (err) {
+        toast.error("Gagal mencari project");
+        setProjects([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchAllProject]
+  );
 
   useEffect(() => {
     fetchAllProject();
@@ -57,7 +60,7 @@ const IntershipProject = () => {
       <section className="px-4 py-8 md:px-24 lg:px-34">
         <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
           <h1 className="text-3xl font-bold text-black mb-4 md:mb-0 mt-6">
-            Our Portfolio Project
+            Our Project
           </h1>
           <SearchDefault
             placeholder="Project apa yang ingin kamu cari ?"
