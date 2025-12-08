@@ -169,3 +169,57 @@ export const ModalInformation = ({ isOpen, onClose, data }) => {
     </div>
   );
 };
+
+export const ModalConfirm = ({
+  isOpen = false,
+  title = "Konfirmasi",
+  description = "",
+  onConfirm = () => {},
+  onCancel = () => {},
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+      onClick={(e) => e.target === e.currentTarget && onCancel()}
+    >
+      <div className="bg-white rounded-xl w-[350px] md:w-[400px] p-6 relative">
+        <button
+          onClick={onCancel}
+          className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+        >
+          <FaTimes size={18} />
+        </button>
+
+        <div className="flex justify-center mb-3 text-primary text-3xl">
+          <FaBullhorn />
+        </div>
+
+        <h2 className="text-lg font-bold mb-2 text-gray-900 text-center">
+          {title}
+        </h2>
+
+        <p className="text-sm text-gray-700 leading-relaxed text-center mb-6">
+          {description}
+        </p>
+
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={onConfirm}
+            className="bg-primary text-white py-2 rounded-lg hover:bg-red-700 transition"
+          >
+            Ya, Lanjutkan
+          </button>
+
+          <button
+            onClick={onCancel}
+            className="bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition"
+          >
+            Batal
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};

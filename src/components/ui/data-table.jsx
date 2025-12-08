@@ -4,7 +4,7 @@ import * as React from "react";
 import {
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,  
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
@@ -67,11 +67,24 @@ export function DataTable({
 
   const isEmpty = !data || data.length === 0;
 
+  const truncateText = (text, maxWords = 50) => {
+    if (!text) return text;
+    const strText = String(text);
+
+    const stripped = strText
+      .replace(/<[^>]*>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    const words = stripped.split(" ");
+    if (words.length <= maxWords) return text;
+
+    return words.slice(0, maxWords).join(" ") + "...";
+  };
+
   return (
     <div className="w-full">
-
       <div className="flex flex-col md:flex-row md:items-center md:justify-between py-4 gap-2">
-
         {filterKey && (
           <div className="w-[75%] md:w-[320px]">
             <Input
@@ -151,7 +164,6 @@ export function DataTable({
             </DropdownMenu>
           </div>
         )}
-
       </div>
 
       <div className="relative w-full overflow-x-auto rounded-md border border-black/10 dark:border-white/10">
@@ -209,10 +221,14 @@ export function DataTable({
                     ) {
                       cellContent = formatWaktu(cell.getValue(), "default");
                     } else {
-                      cellContent = flexRender(
+                      const rawContent = flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
                       );
+                      cellContent =
+                        typeof rawContent === "string"
+                          ? truncateText(rawContent)
+                          : rawContent;
                     }
 
                     return (

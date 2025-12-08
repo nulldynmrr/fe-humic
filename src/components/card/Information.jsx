@@ -26,7 +26,7 @@ export default function Information({ type, data, loading = false }) {
     type === "agenda" ? "Agenda" : type === "berita" ? "Berita" : "Pengumuman";
 
   const getLink = (item) => {
-    if (type === "agenda") return `/agenda`;
+    if (type === "agenda") return `/agenda/${item.slug}`;
     if (type === "berita") return `/articles/${item.slug}`;
     return "#";
   };
@@ -38,7 +38,7 @@ export default function Information({ type, data, loading = false }) {
 
   return (
     <>
-      <section
+      <div
         className="flex flex-col overflow-hidden min-h-full"
         aria-labelledby={`${type}-title`}
       >
@@ -110,68 +110,68 @@ export default function Information({ type, data, loading = false }) {
                       </div>
                     </div>
                   </button>
+                ) : idx === 0 && (type === "agenda" || type === "berita") ? (
+                  <Link href={getLink(item)} className="block">
+                    <div className="relative w-full h-60 rounded-lg overflow-hidden">
+                      <Image
+                        src={`${process.env.NEXT_PUBLIC_HOST}${item.image_path}`}
+                        alt={item.title}
+                        fill
+                        className="object-cover"
+                      />
+
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+
+                      <div className="absolute bottom-2 p-2 ml-2 text-white border-l-2 border-l-primary">
+                        <h3 className="text-lg font-semibold line-clamp-2">
+                          {item.title}
+                        </h3>
+                        <div className="flex items-center gap-3 text-md mt-1">
+                          <span className="flex items-center gap-1">
+                            <FaCalendarAlt />{" "}
+                            <time dateTime={item.date}>
+                              {formatWaktu(item.date, "date")}
+                            </time>
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <FaClock /> {formatWaktu(item.date, "time")}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
                 ) : (
                   <Link href={getLink(item)} className="block">
-                    {idx === 0 && (type === "agenda" || type === "berita") ? (
-                      <div className="relative w-full h-60 rounded-lg overflow-hidden">
-                        <Image
-                          src={`${process.env.NEXT_PUBLIC_HOST}${item.image_path}`}
-                          alt={item.title}
-                          fill
-                          className="object-cover"
-                        />
-
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-
-                        <div className="absolute bottom-2 p-2 ml-2 text-white border-l-2 border-l-primary">
-                          <h3 className="text-lg font-semibold line-clamp-2">
-                            {item.title}
-                          </h3>
-                          <div className="flex items-center gap-3 text-md mt-1">
-                            <span className="flex items-center gap-1">
-                              <FaCalendarAlt />{" "}
-                              <time dateTime={item.date}>
-                                {formatWaktu(item.date, "date")}
-                              </time>
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <FaClock /> {formatWaktu(item.date, "time")}
-                            </span>
-                          </div>
+                    <div className="flex items-start gap-3">
+                      <div className="flex flex-col items-center border border-neut-300 rounded-md overflow-hidden min-w-14 min-h-14">
+                        <div className="bg-primary border border-primary text-white w-full text-center py-1 text-[10px] font-semibold uppercase">
+                          {new Date(item.date).toLocaleDateString("id-ID", {
+                            month: "short",
+                          })}
+                        </div>
+                        <div className="bg-white text-neut-900 text-sm font-bold py-1 w-full text-center">
+                          {new Date(item.date).getDate()}
                         </div>
                       </div>
-                    ) : (
-                      <div className="flex items-start gap-3">
-                        <div className="flex flex-col items-center border border-neut-300 rounded-md overflow-hidden min-w-14 min-h-14">
-                          <div className="bg-primary border border-primary text-white w-full text-center py-1 text-[10px] font-semibold uppercase">
-                            {new Date(item.date).toLocaleDateString("id-ID", {
-                              month: "short",
-                            })}
-                          </div>
-                          <div className="bg-white text-neut-900 text-sm font-bold py-1 w-full text-center">
-                            {new Date(item.date).getDate()}
-                          </div>
-                        </div>
 
-                        <div className="flex flex-col">
-                          <h3 className="text-md font-medium text-neut-900 line-clamp-2">
-                            {item.title}
-                          </h3>
-                          <div className="flex items-center gap-2 text-xs font-semibold text-primary mt-2">
-                            <FaClock />{" "}
-                            <time dateTime={item.date}>
-                              {formatWaktu(item.date)}
-                            </time>
-                          </div>
+                      <div className="flex flex-col">
+                        <h3 className="text-md font-medium text-neut-900 line-clamp-2">
+                          {item.title}
+                        </h3>
+                        <div className="flex items-center gap-2 text-xs font-semibold text-primary mt-2">
+                          <FaClock />{" "}
+                          <time dateTime={item.date}>
+                            {formatWaktu(item.date)}
+                          </time>
                         </div>
                       </div>
-                    )}
+                    </div>
                   </Link>
                 )}
               </article>
             ))}
         </div>
-      </section>
+      </div>
 
       <ModalInformation
         isOpen={openAnnouncement}

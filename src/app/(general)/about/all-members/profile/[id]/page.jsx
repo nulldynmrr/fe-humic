@@ -4,11 +4,10 @@ import axios from "axios";
 
 export async function generateMetadata({ params }) {
   const { id } = params;
-  console.log(id);
 
   if (!id) {
     return {
-      title: "Snpmtaff Member",
+      title: "Staff Member",
       description: "Staff Member Humic.",
       robots: { index: true, follow: true },
     };
@@ -26,8 +25,7 @@ export async function generateMetadata({ params }) {
         ? `Profil staff: ${staff.name}`
         : "Detail staff Humic",
     };
-  } catch (err) {
-    console.error(err);
+  } catch {
     return {
       title: "Staff Member",
       description: "Detail Staff Member Humic",
@@ -36,11 +34,9 @@ export async function generateMetadata({ params }) {
 }
 
 export default function Page({ params }) {
-  const { id } = params;
-
   return (
     <Suspense fallback={null}>
-      <Profile id={id} />
+      <Profile id={params.id} />
     </Suspense>
   );
 }

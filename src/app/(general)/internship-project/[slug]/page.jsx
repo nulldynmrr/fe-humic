@@ -3,7 +3,8 @@ import ProjectInternship from "./ProjectInternship";
 import axios from "axios";
 
 export async function generateMetadata({ params }) {
-  const slug = params?.slug;
+  const Params = await params;
+  const slug = Params?.slug;
 
   if (!slug) {
     return {
@@ -34,10 +35,12 @@ export async function generateMetadata({ params }) {
   }
 }
 
-export default function Page({ params }) {
+export default async function Page({ params }) {
+  const Params = await params;
+
   return (
     <Suspense fallback={null}>
-      <ProjectInternship slug={params.slug} />
+      <ProjectInternship slug={Params?.slug} />
     </Suspense>
   );
 }

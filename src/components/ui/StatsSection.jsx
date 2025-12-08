@@ -13,7 +13,7 @@ export default function StatsSection({ data = [] }) {
               {item.value}+
             </h3>
             <p className="text-sm sm:text-base text-black max-w-[140px] h-[30px]">
-              {item.label}
+              {item.name}
             </p>
           </div>
         ))}

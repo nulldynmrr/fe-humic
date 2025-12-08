@@ -71,20 +71,28 @@ export default function CreateStatistik() {
         return;
       }
 
-      // Kirim ke API
-      const response = await request.post("/statistik", {
+      // Kirim data ke API
+      const response = await request.post("/statistics", {
         name: formData.name,
         value: formData.value,
       });
 
       if (response.status === 200 || response.status === 201) {
         toast.success(response.data?.message || "Statistik berhasil dibuat!");
-        router.back();
+        router.push("/administrator/statistik-overview");
       } else {
         toast.error("Gagal membuat data Statistik");
       }
     } catch (error) {
-      toast.error("Terjadi kesalahan server.");
+      console.error("Create statistik error:", error);
+      console.error("Error response:", error.response?.data);
+
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Terjadi kesalahan server.";
+
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -105,6 +113,7 @@ export default function CreateStatistik() {
             Keterangan Statistik
           </Label>
           <Input
+            id="name"
             name="name"
             value={formData.name}
             onChange={handleInputChange}
@@ -121,6 +130,7 @@ export default function CreateStatistik() {
             Value (angka saja)
           </Label>
           <Input
+            id="value"
             name="value"
             value={formData.value}
             onChange={handleInputChange}
@@ -136,14 +146,15 @@ export default function CreateStatistik() {
           <div className="p-4 bg-white rounded-md border shadow-sm">
             <p className="text-sm text-gray-600 mb-1">Preview Statistik:</p>
 
-            <div>
-              <p className="text-gray-700 text-2xl font-bold">
+            <div className="text-center py-4">
+              <p className="text-primary text-4xl font-bold">
                 {formData.value}+
               </p>
-              <p className="text-gray-700 text-base">{formData.name}</p>
+              <p className="text-gray-700 text-base mt-2">{formData.name}</p>
             </div>
           </div>
         )}
+
         {status.text && (
           <div
             className={`mb-6 p-4 rounded-lg ${
@@ -160,11 +171,15 @@ export default function CreateStatistik() {
           <Button
             variant="secondary"
             type="button"
-            onClick={() => setFormData({ name: "", value: "" })}
+            onClick={() => {
+              setFormData({ name: "", value: "" });
+              setStatus({ type: "", text: "", errors: {} });
+            }}
+            disabled={loading}
           >
             Reset
           </Button>
-          <Button variant="default" disabled={loading}>
+          <Button variant="default" type="submit" disabled={loading}>
             {loading ? "Menyimpan..." : "Simpan"}
           </Button>
         </div>

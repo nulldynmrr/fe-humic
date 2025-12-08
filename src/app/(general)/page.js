@@ -7,7 +7,7 @@ import List from "@/components/ui/Checklist";
 import Stats from "@/components/ui/StatsSection";
 import ButtonDefault from "@/components/ui/button";
 import Information from "@/components/card/Information";
-import CardFeedback from "@/components/card/Feedback";
+import CardFeedbackCarousel from "@/components/card/Feedback";
 import Accordion from "@/components/card/Accordion";
 import PageLoader from "@/components/ui/loading";
 import { ModalAnnouncement, ModalChoice } from "@/components/ui/Modal";
@@ -15,7 +15,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
-import { FaCalendarAlt, FaClock, FaBell } from "react-icons/fa";
 
 import request from "@/utils/request";
 import toast from "react-hot-toast";
@@ -29,6 +28,7 @@ const Dashboard = () => {
   const [pengumuman, setPengumuman] = useState([]);
   const [testimoni, setTestimoni] = useState([]);
   const [partnership, setPartnership] = useState([]);
+  const [stats, setStats] = useState([]);
   const [isLoadingAll, setIsLoadingAll] = useState(true);
   const [openModalIntern, setOpenModalIntern] = useState(false);
   const [openModalWrap, setopenModalWrap] = useState(false);
@@ -74,9 +74,19 @@ const Dashboard = () => {
     }
   }, [fetchSection]);
 
+  const fetchStatistics = useCallback(async () => {
+    try {
+      const response = await request.get("/statistics");
+      setStats(response.data ?? []);
+    } catch (err) {
+      toast.error("Gagal memuat statistik");
+    }
+  }, []);
+
   useEffect(() => {
     fetchDashboardData();
-  }, [fetchDashboardData]);
+    fetchStatistics();
+  }, [fetchDashboardData, fetchStatistics]);
 
   if (isLoadingAll) return <PageLoader />;
 
@@ -109,14 +119,6 @@ const Dashboard = () => {
 
   const scrollLeft = () => animateScroll(feedbackRef.current, -getStep());
   const scrollRight = () => animateScroll(feedbackRef.current, getStep());
-
-  const stats = [
-    { value: 10, label: "Divisi Magang yang Tersedia" },
-    { value: 80, label: "Project Magang yang Telah Selesai" },
-    { value: 120, label: "Mahasiswa Alumni Warp Internship" },
-    { value: 150, label: "Mahasiswa Alumni Internship" },
-    { value: 15, label: "Kolaborasi dengan Industri & Institusi" },
-  ];
 
   const images = [
     "/assets/home/image-program-1.png",
@@ -157,11 +159,10 @@ const Dashboard = () => {
     },
   ];
 
-  console.log(berita);
-
   return (
     <>
       <ImageSlider className="mt-12" />
+
       <section className="px-4 py-8 md:px-12 h-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
           <Information type="agenda" data={agenda} loading={isLoadingAll} />
@@ -173,6 +174,7 @@ const Dashboard = () => {
           />
         </div>
       </section>
+
       <section className="h-full md:min-h-[600px] overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="px-4 py-8 md:px-12 bg-primary text-white text-xl h-[400px] flex flex-col justify-between">
@@ -205,6 +207,7 @@ const Dashboard = () => {
             ))}
           </div>
         </div>
+
         <div className="grid grid-cols-4">
           {images.slice(4, 8).map((src, index) => (
             <div key={index} className="relative w-full h-[180px] md:h-[200px]">
@@ -218,6 +221,7 @@ const Dashboard = () => {
           ))}
         </div>
       </section>
+
       <section className="px-4 py-8 md:px-12 h-full md:min-h-[600px] overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 h-full items-center gap-8 bg-white">
           <div className="relative w-full max-w-md mx-auto h-[500px]">
@@ -275,9 +279,13 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-
-        <Stats data={stats} />
+        <div className="w-full flex justify-center mt-10 px-8">
+          <div className="max-w-4xl w-full">
+            <Stats data={stats} />
+          </div>
+        </div>
       </section>
+
       <section className="pl-4 py-8 md:pl-12 h-full overflow-hidden bg-[#3A3C40]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div className="space-y-6">
@@ -286,7 +294,8 @@ const Dashboard = () => {
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua.
             </p>
-            {testimoni.length > 1  && (
+
+            {testimoni.length > 1 && (
               <div className="flex space-x-4">
                 <ButtonDefault
                   onClick={scrollLeft}
@@ -305,21 +314,19 @@ const Dashboard = () => {
               </div>
             )}
           </div>
+
           <div className="overflow-hidden -mr-[90px] w-full md:w-[751px]">
             <div
               ref={feedbackRef}
               className="flex space-x-4 overflow-x-auto pr-[90px] snap-x snap-mandatory scrollbar-hide"
               style={{ scrollBehavior: "smooth" }}
             >
-             {(testimoni || []).map((item, index) => (
-              <div key={index} className="shrink-0 snap-start">
-               <CardFeedback {...item} />
-              </div>
-              ))}
+              <CardFeedbackCarousel feedbacks={testimoni} />
             </div>
           </div>
         </div>
       </section>
+
       <section className="px-4 py-8 md:px-12 h-full md:min-h-[600px] flex flex-col justify-center items-center overflow-hidden gap-6">
         <h1 className="text-3xl font-bold text-black">
           Frequently asked questions
@@ -327,28 +334,49 @@ const Dashboard = () => {
         <p className="text-[#667085] text-md">
           Everything you need to know about the product and billing.
         </p>
+
         <div className="w-full max-w-xl">
           {faqs.map((faq, i) => (
             <Accordion key={i} {...faq} />
           ))}
         </div>
       </section>
+
       <section className="bg-neut-50 px-4 py-8 md:px-12 flex flex-col justify-center items-center overflow-hidden gap-6">
         <h1 className="text-xl font-bold text-black">Our Partnership</h1>
-        {partnership.length >= 0 && partnership.length <= 12 && (
-          <div className="grid grid-cols-4 gap-4">
-            {partnership.map((p, index) => (
-              <div key={index} className="relative w-full h-20">
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_HOST}${p.logo}`}
-                  alt={p.name}
-                  fill
-                  className="object-cover"
-                />
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-6xl mx-auto">
+          {partnership.map((p, index) => {
+            let imageSrc = p.logo.startsWith("http")
+              ? p.logo
+              : `${process.env.NEXT_PUBLIC_HOST}${p.logo}`;
+
+            return (
+              <div
+                key={index}
+                className="flex items-center justify-center w-full"
+              >
+                {imageSrc ? (
+                  <div className="relative w-24 h-18 md:w-32 md:h-20">
+                    <Image
+                      src={imageSrc}
+                      alt={p.name || `partner-${index}`}
+                      fill
+                      className="object-contain"
+                      unoptimized
+                    />
+                  </div>
+                ) : (
+                  <div className="text-gray-400 text-sm text-center">
+                    No logo
+                    <br />
+                    {p.name || `Partner ${index + 1}`}
+                  </div>
+                )}
               </div>
-            ))}
-          </div>
-        )}
+            );
+          })}
+        </div>
       </section>
 
       <ModalAnnouncement

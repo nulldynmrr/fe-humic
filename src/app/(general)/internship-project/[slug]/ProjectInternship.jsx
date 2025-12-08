@@ -40,10 +40,18 @@ const ProjectInternship = ({ slug }) => {
       const interns = internsRes.data;
 
       // mapping project_member dan intern
+      // const memberList = projectMembers.map((m) => {
+      //   const intern = interns.find((i) => i.id === m.id_intern);
+      //   return {
+      //     nama: m.name || "-",
+      //     posisi: m.role || "-",
+      //     institusi: intern?.university || "-",
+      //   };
+      // });
       const memberList = projectMembers.map((m) => {
         const intern = interns.find((i) => i.id === m.id_intern);
         return {
-          nama: m.name || "-",
+          nama: intern?.name || "-",
           posisi: m.role || "-",
           institusi: intern?.university || "-",
         };
