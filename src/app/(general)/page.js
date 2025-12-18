@@ -7,7 +7,7 @@ import List from "@/components/ui/Checklist";
 import Stats from "@/components/ui/StatsSection";
 import ButtonDefault from "@/components/ui/button";
 import Information from "@/components/card/Information";
-import CardFeedbackCarousel from "@/components/card/Feedback";
+import CardFeedback from "@/components/card/Feedback";
 import Accordion from "@/components/card/Accordion";
 import PageLoader from "@/components/ui/loading";
 import { ModalAnnouncement, ModalChoice } from "@/components/ui/Modal";
@@ -15,6 +15,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
+import { FaCalendarAlt, FaClock, FaBell } from "react-icons/fa";
 
 import request from "@/utils/request";
 import toast from "react-hot-toast";
@@ -28,7 +29,6 @@ const Dashboard = () => {
   const [pengumuman, setPengumuman] = useState([]);
   const [testimoni, setTestimoni] = useState([]);
   const [partnership, setPartnership] = useState([]);
-  const [stats, setStats] = useState([]);
   const [isLoadingAll, setIsLoadingAll] = useState(true);
   const [openModalIntern, setOpenModalIntern] = useState(false);
   const [openModalWrap, setopenModalWrap] = useState(false);
@@ -74,19 +74,9 @@ const Dashboard = () => {
     }
   }, [fetchSection]);
 
-  const fetchStatistics = useCallback(async () => {
-    try {
-      const response = await request.get("/statistics");
-      setStats(response.data ?? []);
-    } catch (err) {
-      toast.error("Gagal memuat statistik");
-    }
-  }, []);
-
   useEffect(() => {
     fetchDashboardData();
-    fetchStatistics();
-  }, [fetchDashboardData, fetchStatistics]);
+  }, [fetchDashboardData]);
 
   if (isLoadingAll) return <PageLoader />;
 
@@ -120,6 +110,14 @@ const Dashboard = () => {
   const scrollLeft = () => animateScroll(feedbackRef.current, -getStep());
   const scrollRight = () => animateScroll(feedbackRef.current, getStep());
 
+  const stats = [
+    { value: 10, label: "Divisi Magang yang Tersedia" },
+    { value: 80, label: "Project Magang yang Telah Selesai" },
+    { value: 120, label: "Mahasiswa Alumni Warp Internship" },
+    { value: 150, label: "Mahasiswa Alumni Internship" },
+    { value: 15, label: "Kolaborasi dengan Industri & Institusi" },
+  ];
+
   const images = [
     "/assets/home/image-program-1.png",
     "/assets/home/image-program-2.png",
@@ -133,36 +131,41 @@ const Dashboard = () => {
 
   const faqs = [
     {
-      question: "Is there a free trial available?",
+      question: "Apa itu HUMIC?",
       answer:
-        "Yes, you can try us for free for 30 days. If you want, we’ll provide you with a free, personalized 30-minute onboarding call to get you up and running as soon as possible.",
+        "HUMIC (Human Centric Engineering) adalah pusat riset di Telkom University yang berfokus pada pengembangan teknologi yang berorientasi pada manusia, mencakup bidang biomedis, IoT, AI, dan rekayasa berbasis data.",
     },
     {
-      question: "Can I change my plan later?",
+      question: "Apa saja kegiatan utama yang dilakukan HUMIC?",
       answer:
-        "Yes, you can upgrade or downgrade your plan anytime directly from your account settings.",
+        "HUMIC melakukan penelitian, pengembangan produk, publikasi ilmiah, seminar, workshop, internship dan kolaborasi dengan industri serta institusi akademik untuk menciptakan inovasi yang bermanfaat bagi masyarakat.",
     },
     {
-      question: "Can I change my plan later?",
+      question: "Bagaimana cara mengetahui kegiatan atau event terbaru HUMIC?",
       answer:
-        "Yes, you can upgrade or downgrade your plan anytime directly from your account settings.",
+        "Semua informasi kegiatan terbaru seperti seminar, workshop, dan publikasi akan diperbarui secara rutin pada halaman News & Events di website HUMIC.",
     },
     {
-      question: "Can I change my plan later?",
+      question: "Di mana saya dapat melihat proyek dan hasil riset HUMIC?",
       answer:
-        "Yes, you can upgrade or downgrade your plan anytime directly from your account settings.",
+        "Daftar proyek, publikasi, dan dokumentasi kegiatan HUMIC dapat dilihat melalui halaman Research & Innovation dan News & Events di website ini.",
     },
     {
-      question: "What is your cancellation policy?",
+      question:
+        "Apakah HUMIC memiliki fasilitas laboratorium atau ruang riset sendiri?",
       answer:
-        "You can cancel your subscription anytime, and your access will remain until the end of your billing cycle.",
+        "Ya, HUMIC memiliki fasilitas riset yang dapat digunakan oleh peneliti, dosen, dan mahasiswa untuk pengembangan proyek dan eksperimen sesuai bidang masing-masing.",
+    },
+    {
+      question: "Bagaimana cara menghubungi HUMIC?",
+      answer:
+        "Anda dapat menghubungi kami melalui halaman Contact & Collaboration, mengisi formulir kontak yang tersedia, atau melalui email resmi HUMIC untuk informasi lebih lanjut.",
     },
   ];
 
   return (
     <>
       <ImageSlider className="mt-12" />
-
       <section className="px-4 py-8 md:px-12 h-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
           <Information type="agenda" data={agenda} loading={isLoadingAll} />
@@ -174,7 +177,6 @@ const Dashboard = () => {
           />
         </div>
       </section>
-
       <section className="h-full md:min-h-[600px] overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="px-4 py-8 md:px-12 bg-primary text-white text-xl h-[400px] flex flex-col justify-between">
@@ -207,7 +209,6 @@ const Dashboard = () => {
             ))}
           </div>
         </div>
-
         <div className="grid grid-cols-4">
           {images.slice(4, 8).map((src, index) => (
             <div key={index} className="relative w-full h-[180px] md:h-[200px]">
@@ -221,7 +222,6 @@ const Dashboard = () => {
           ))}
         </div>
       </section>
-
       <section className="px-4 py-8 md:px-12 h-full md:min-h-[600px] overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 h-full items-center gap-8 bg-white">
           <div className="relative w-full max-w-md mx-auto h-[500px]">
@@ -263,7 +263,7 @@ const Dashboard = () => {
               ]}
             />
 
-            <div className="flex flex-col md:flex-row space-x-4 space-y-4 md:space-y-0">
+            <div className="flex flex-col md:flex-row space-x-4">
               <ButtonDefault
                 onClick={() => setOpenModalIntern(true)}
                 text="Apply for internship"
@@ -279,13 +279,9 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <div className="w-full flex justify-center mt-10 px-8">
-          <div className="max-w-4xl w-full">
-            <Stats data={stats} />
-          </div>
-        </div>
-      </section>
 
+        <Stats data={stats} />
+      </section>
       <section className="pl-4 py-8 md:pl-12 h-full overflow-hidden bg-[#3A3C40]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div className="space-y-6">
@@ -294,8 +290,7 @@ const Dashboard = () => {
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua.
             </p>
-
-            {testimoni.length > 1 && (
+            {testimoni.length >= 1 && testimoni.length <= 4 && (
               <div className="flex space-x-4">
                 <ButtonDefault
                   onClick={scrollLeft}
@@ -314,25 +309,27 @@ const Dashboard = () => {
               </div>
             )}
           </div>
-
           <div className="overflow-hidden -mr-[90px] w-full md:w-[751px]">
             <div
               ref={feedbackRef}
               className="flex space-x-4 overflow-x-auto pr-[90px] snap-x snap-mandatory scrollbar-hide"
               style={{ scrollBehavior: "smooth" }}
             >
-              <CardFeedbackCarousel feedbacks={testimoni} />
+              {testimoni.map((testimoni, index) => (
+                <div key={index} className="shrink-0 snap-start">
+                  <CardFeedback {...testimoni} />
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
-
       <section className="px-4 py-8 md:px-12 h-full md:min-h-[600px] flex flex-col justify-center items-center overflow-hidden gap-6">
         <h1 className="text-3xl font-bold text-black">
           Frequently asked questions
         </h1>
         <p className="text-[#667085] text-md">
-          Everything you need to know about the product and billing.
+          Punya pertanyaan tentang HUMIC, program, atau riset kami?
         </p>
 
         <div className="w-full max-w-xl">
@@ -341,45 +338,23 @@ const Dashboard = () => {
           ))}
         </div>
       </section>
-
-      {partnership.length > 0 && (
-        <section className="bg-neut-50 px-4 py-8 md:px-12 flex flex-col justify-center items-center overflow-hidden gap-6">
-          <h1 className="text-xl font-bold text-black">Our Partnership</h1>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-6xl mx-auto">
-            {partnership.map((p, index) => {
-              let imageSrc = p.logo.startsWith("http")
-                ? p.logo
-                : `${process.env.NEXT_PUBLIC_HOST}${p.logo}`;
-
-              return (
-                <div
-                  key={index}
-                  className="flex items-center justify-center w-full"
-                >
-                  {imageSrc ? (
-                    <div className="relative w-24 h-18 md:w-32 md:h-20">
-                      <Image
-                        src={imageSrc}
-                        alt={p.name || `partner-${index}`}
-                        fill
-                        className="object-contain"
-                        unoptimized
-                      />
-                    </div>
-                  ) : (
-                    <div className="text-gray-400 text-sm text-center">
-                      No logo
-                      <br />
-                      {p.name || `Partner ${index + 1}`}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+      <section className="bg-neut-50 px-4 py-8 md:px-12 flex flex-col justify-center items-center overflow-hidden gap-6">
+        <h1 className="text-xl font-bold text-black">Our Partnership</h1>
+        {partnership.length >= 0 && partnership.length <= 12 && (
+          <div className="grid grid-cols-4 gap-4">
+            {partnership.map((p, index) => (
+              <div key={index} className="relative w-full h-20">
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_HOST}${p.logo}`}
+                  alt={p.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            ))}
           </div>
-        </section>
-      )}
+        )}
+      </section>
 
       <ModalAnnouncement
         isOpen={openModalIntern}
@@ -398,14 +373,14 @@ const Dashboard = () => {
             title: "SIRAMA",
             onClick: () => {
               setopenModalWrap(false);
-              router.push("https://sirama.telkomuniversity.ac.id/home");
+              router.push("https://internify.humicprototyping.com/Internships");
             },
           },
           {
-            title: "SIMKA",
+            title: "SIRAMA 2",
             onClick: () => {
               setopenModalWrap(false);
-              router.push("https://simka.telkomuniversity.ac.id");
+              router.push("https://internify.humicprototyping.com/Internships");
             },
           },
         ]}
