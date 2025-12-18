@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
-import { NavProjects } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
 import {
@@ -27,12 +26,9 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar";
 
+import { getCurrentAdmin } from "@/utils/request";
+
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   teams: [
     {
       name: "Humic Centered",
@@ -121,6 +117,14 @@ const data = {
 };
 
 export function AppSidebar({ ...props }) {
+  const admin = getCurrentAdmin();
+
+  const user = {
+    name: admin?.username || "Admin",
+    email: admin?.role || "admin",
+    avatar: admin?.avatar || "/avatars/shadcn.jpg",
+  };
+
   return (
     <SidebarProvider>
       <Sidebar
@@ -128,10 +132,10 @@ export function AppSidebar({ ...props }) {
         className="border-r   
         bg-white 
         dark:bg-[#1f1f1f] 
-          border 
+        border 
         border-black/10 
         dark:border-white/10  
-          backdrop-blur-md"
+        backdrop-blur-md"
       >
         <SidebarHeader className="px-4 pt-4">
           <TeamSwitcher teams={data.teams} />
@@ -142,7 +146,7 @@ export function AppSidebar({ ...props }) {
         </SidebarContent>
 
         <SidebarFooter className="px-4 pb-4">
-          <NavUser user={data.user} />
+          <NavUser user={user} />
         </SidebarFooter>
 
         <SidebarRail />

@@ -41,6 +41,8 @@ export default function StatsOverview() {
     setEditForm({ name: stat.name, value: stat.value });
   };
 
+  console.log(stats);
+
   const handleSaveEdit = async () => {
     try {
       await request.patch(`/statistics/${editingId}`, editForm);
