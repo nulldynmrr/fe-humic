@@ -4,7 +4,6 @@ import React, { useCallback, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Information from "@/components/card/Information";
-import ArticlePageSkeleton from "@/components/ui/SkeletonPage";
 import { BreadcrumbDefault } from "@/components/ui/breadcrumb";
 import Header from "@/components/layout/Header";
 import Project from "@/components/card/Project";
@@ -14,6 +13,11 @@ import request from "@/utils/request";
 import { toast } from "react-hot-toast";
 
 export default function ArticlePage({ slug }) {
+  // const params = useParams();
+  // const { slug } = params;
+
+  console.log(slug);
+
   const [currentArticle, setCurrentArticle] = useState(null);
   const [articles, setArticles] = useState([]);
   const [agenda, setAgenda] = useState([]);
@@ -98,9 +102,7 @@ export default function ArticlePage({ slug }) {
     fetchAllPengumuman,
   ]);
 
-  if (loading) {
-    return <ArticlePageSkeleton />;
-  }
+  console.log(currentArticle);
 
   return (
     <div className="min-h-screen">
@@ -117,7 +119,7 @@ export default function ArticlePage({ slug }) {
                 ]}
               />
 
-              <h1 className="text-2xl md:text-3xl font-bold mb-2">
+              <h1 className="text-2xl md:text-3xl font-semibold mb-2">
                 {currentArticle.title}
               </h1>
 
@@ -127,7 +129,7 @@ export default function ArticlePage({ slug }) {
               </p>
 
               {currentArticle.image_path && (
-                <div className="relative w-full h-64 md:h-80 rounded-md overflow-hidden mt-12 mb-4">
+                <div className="relative w-full h-64 md:h-80 rounded-md overflow-hidden mb-4">
                   <Image
                     src={`${process.env.NEXT_PUBLIC_HOST}${currentArticle.image_path}`}
                     alt={currentArticle.title}

@@ -9,76 +9,28 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { getCurrentAdmin } from "@/utils/request";
-import Cookies from "js-cookie";
 
-export function NavUser() {
-  const router = useRouter();
-  const [admin, setAdmin] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const data = getCurrentAdmin();
-
-    if (!data) {
-      Cookies.remove("token");
-      router.push("/login");
-      return;
-    }
-
-    setAdmin(data);
-    setLoading(false);
-  }, [router]);
-
-  const getInitials = (username) => {
-    if (!username) return "...";
-    return username
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
-  if (loading || !admin) {
-    return (
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton size="lg" disabled>
-            <Avatar className="h-8 w-8 rounded-lg">
-              <AvatarFallback className="rounded-lg">...</AvatarFallback>
-            </Avatar>
-            <div className="grid flex-1 text-left">
-              <span className="font-medium">Loading...</span>
-              <span className="text-xs text-muted-foreground">...</span>
-            </div>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    );
-  }
+export function NavUser({ user }) {
+  const { isMobile } = useSidebar();
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton size="lg">
+            <SidebarMenuButton
+              size="lg"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={admin.avatar} alt={admin.username} />
-                <AvatarFallback className="rounded-lg">
-                  {getInitials(admin.username)}
-                </AvatarFallback>
+                <AvatarImage src={user.avatar} alt={user.name} />
+                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
-
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{admin.username}</span>
-                <span className="truncate text-xs capitalize text-muted-foreground">
-                  {admin.role}
-                </span>
+                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate text-xs">{user.email}</span>
               </div>
             </SidebarMenuButton>
           </DropdownMenuTrigger>
