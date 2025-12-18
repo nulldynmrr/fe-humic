@@ -33,7 +33,7 @@ const ImageSlider = () => {
   }, [fetchAllBanner]);
 
   return (
-    <div className="relative w-full bg-black overflow-hidden">
+    <div className="relative w-full overflow-hidden">
       <Swiper
         modules={[Pagination, Autoplay]}
         pagination={{ clickable: true }}

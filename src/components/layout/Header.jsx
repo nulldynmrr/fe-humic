@@ -10,10 +10,9 @@ const Header = ({ title, subtitle, imageSrc, showSubtitle = true }) => {
         alt={title}
         fill
         className="object-cover"
-        priority
+        sizes="(max-width: 768px) 100vw, 100vw"
       />
-
-      <div className="absolute inset-0 bg-black" style={{ opacity: 0.9 }} />
+      <div className="absolute inset-0 bg-black/90" />
 
       <div className="relative z-10 flex items-center h-full text-white">
         <div className="flex-shrink-0">
