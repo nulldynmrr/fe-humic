@@ -71,7 +71,6 @@ export default function CreateStatistik() {
         return;
       }
 
-      // Kirim data ke API
       const response = await request.post("/statistics", {
         name: formData.name,
         value: formData.value,
