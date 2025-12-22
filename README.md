@@ -1,4 +1,4 @@
-# HUMIC Website  
+# Website HUMIC 
 Frontend Internship Project
 
 🔗 Live Demo: https://fe-humic.vercel.app/
