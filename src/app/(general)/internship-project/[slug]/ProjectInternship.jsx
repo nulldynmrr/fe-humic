@@ -23,31 +23,37 @@ const ProjectInternship = ({ slug }) => {
   const fetchProjectAndMembers = useCallback(async () => {
     if (!slug) return;
     setLoading(true);
+
     try {
       // fetch project
       const projectRes = await request.get(`/project/slug/${slug}`);
       const projectData = projectRes.data;
       setProject(projectData);
 
-      // fetch project_member
-      const projectMembersRes = await request.get(
-        `/project_member/${projectData.id}`
-      );
-      const projectMembers = projectMembersRes.data;
+      let projectMembers = [];
 
-      // fetchall intern
+      // fetch project_member
+      try {
+        const projectMembersRes = await request.get(
+          `/project_member/${projectData.id}`
+        );
+        projectMembers = projectMembersRes.data;
+      } catch (err) {
+        // 404 berarti belum ada member
+        if (err.response?.status !== 404) {
+          throw err;
+        }
+      }
+
+      if (projectMembers.length === 0) {
+        setMembers([]);
+        return;
+      }
+
+      // fetch all intern
       const internsRes = await request.get("/intern");
       const interns = internsRes.data;
 
-      // mapping project_member dan intern
-      // const memberList = projectMembers.map((m) => {
-      //   const intern = interns.find((i) => i.id === m.id_intern);
-      //   return {
-      //     nama: m.name || "-",
-      //     posisi: m.role || "-",
-      //     institusi: intern?.university || "-",
-      //   };
-      // });
       const memberList = projectMembers.map((m) => {
         const intern = interns.find((i) => i.id === m.id_intern);
         return {
@@ -59,7 +65,7 @@ const ProjectInternship = ({ slug }) => {
 
       setMembers(memberList);
     } catch (err) {
-      toast.error("Gagal memuat data project atau member");
+      toast.error("Gagal memuat data project");
       setProject({});
       setMembers([]);
     } finally {
@@ -141,25 +147,32 @@ const ProjectInternship = ({ slug }) => {
               dangerouslySetInnerHTML={{ __html: project.description }}
             />
 
-            <h1 className="text-3xl font-bold text-black text-left mt-12 mb-4 md:mb-0">
+            <h1 className="text-3xl font-bold text-black text-left mt-12 mb-4">
               Team Members
             </h1>
-            <Table
-              columns={[
-                { label: "Nama", key: "nama", align: "center" },
-                { label: "Posisi", key: "posisi", align: "center" },
-                { label: "Institusi", key: "institusi", align: "center" },
-              ]}
-              data={members}
-              loading={loading}
-            />
+
+            {members.length === 0 ? (
+              <div className="text-sm text-neut-500 italic">
+                Tim untuk project ini belum tersedia.
+              </div>
+            ) : (
+              <Table
+                columns={[
+                  { label: "Nama", key: "nama", align: "center" },
+                  { label: "Posisi", key: "posisi", align: "center" },
+                  { label: "Institusi", key: "institusi", align: "center" },
+                ]}
+                data={members}
+                loading={loading}
+              />
+            )}
           </div>
         )}
       </section>
 
       {!loading && (
         <section className="px-4 py-8 md:px-24 lg:px-34">
-          <h1 className="text-3xl font-bold text-black text-center mb-4 md:mb-0">
+          <h1 className="text-3xl font-bold text-black text-center mb-4">
             Our Latest Projects
           </h1>
           <Project data={projects} loading={loading} />
