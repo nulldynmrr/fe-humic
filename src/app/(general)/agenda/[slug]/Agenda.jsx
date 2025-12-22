@@ -1,19 +1,20 @@
 "use client";
 
 import React, { useCallback, useState, useEffect } from "react";
+import Link from "next/link";
 import Image from "next/image";
-import { BreadcrumbDefault } from "@/components/ui/breadcrumb";
-import ProjectInternshipSkeleton from "@/components/ui/SkeletonPage";
-import Header from "@/components/layout/Header";
 import Information from "@/components/card/Information";
-import { FaCalendarAlt, FaClock } from "react-icons/fa";
-
+import { BreadcrumbDefault } from "@/components/ui/breadcrumb";
+import Header from "@/components/layout/Header";
+import Project from "@/components/card/Project";
+import { FaUser } from "react-icons/fa";
 import { formatWaktu } from "@/lib/time";
 import request from "@/utils/request";
 import { toast } from "react-hot-toast";
 
-const Agenda = ({ slug }) => {
-  const [currentAgenda, SetCurrentAgenda] = useState({});
+export default function AgendaPage({ slug }) {
+  const [currentAgenda, setCurrentAgenda] = useState(null);
+  const [agendas, setAgendas] = useState([]);
   const [agenda, setAgenda] = useState([]);
   const [berita, setBerita] = useState([]);
   const [pengumuman, setPengumuman] = useState([]);
@@ -23,125 +24,136 @@ const Agenda = ({ slug }) => {
     if (!slug) return;
     setLoading(true);
     try {
-      const res = await request.get(`/agenda/slug/${slug}`);
-      SetCurrentAgenda(res.data);
+      const response = await request.get(`/agenda/slug/${slug}`);
+      setCurrentAgenda(response.data);
     } catch (err) {
-      toast.error("Gagal memuat data Agenda");
-      SetCurrentAgenda({});
+      toast.error("Gagal memuat detail agenda");
+      setCurrentAgenda(null);
     } finally {
       setLoading(false);
     }
   }, [slug]);
 
-  const fetchRelatedAgenda = useCallback(async () => {
+  const fetchAllArticles = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await request.get("/berita");
+      setAgendas(response.data);
+    } catch (err) {
+      toast.error("Gagal memuat daftar berita");
+      setAgendas([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchAllAgenda = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await request.get("/agenda?limit=4");
-      const filtered = response.data.filter((item) => item.slug !== slug);
-      setAgenda(filtered);
+      setAgenda(response.data);
     } catch (err) {
       setAgenda([]);
+    } finally {
+      setLoading(false);
     }
-  }, [slug]);
+  }, []);
 
-  const fetchBerita = useCallback(async () => {
+  const fetchAllBerita = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await request.get("/berita?limit=4");
       setBerita(response.data);
     } catch (err) {
       setBerita([]);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
-  const fetchPengumuman = useCallback(async () => {
+  const fetchAllPengumuman = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await request.get("/pengumuman?limit=5");
       setPengumuman(response.data);
     } catch (err) {
       setPengumuman([]);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
   useEffect(() => {
     fetchAgenda();
-    fetchRelatedAgenda();
-    fetchBerita();
-    fetchPengumuman();
-  }, [fetchAgenda, fetchRelatedAgenda, fetchBerita, fetchPengumuman]);
+    fetchAllArticles();
+    fetchAllAgenda();
+    fetchAllBerita();
+    fetchAllPengumuman();
+  }, [
+    fetchAgenda,
+    fetchAllArticles,
+    fetchAllAgenda,
+    fetchAllBerita,
+    fetchAllPengumuman,
+  ]);
+
+  console.log(currentAgenda);
 
   return (
-    <div className="gap gap-4">
-      <Header title="Agenda" imageSrc="/assets/bg-header.png" />
+    <div className="min-h-screen">
+      <Header title="Our Articles" imageSrc="/assets/bg-header.png" />
 
-      <section className="px-4 py-8 md:px-24 lg:px-34 mt-2 w-full">
-        {loading ? (
-          <ProjectInternshipSkeleton />
-        ) : (
-          <div className="flex flex-col gap-4">
-            <BreadcrumbDefault
-              items={[
-                { label: "Home", href: "/" },
-                { label: "Agenda", href: "/agenda" },
-                { label: currentAgenda.title || "Detail" },
-              ]}
-            />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-20 items-start">
+        <section className="md:col-span-2 h-full min-h-[500px] ">
+          {currentAgenda && (
+            <div className="py-8">
+              <BreadcrumbDefault
+                items={[
+                  { label: "Agenda", href: "/agenda" },
+                  { label: currentAgenda.title },
+                ]}
+              />
 
-            <h1 className="text-xl md:text-2xl font-bold leading-snug text-neut-900">
-              {currentAgenda.title}
-            </h1>
+              <h1 className="text-2xl md:text-3xl font-semibold mb-2">
+                {currentAgenda.title}
+              </h1>
 
-            <div className="flex items-center gap-4 text-sm text-neut-600">
-              <div className="flex items-center gap-2">
-                <FaCalendarAlt size={14} />
-                <span>
-                  {currentAgenda.date
-                    ? formatWaktu(currentAgenda.date, "date")
-                    : "-"}
-                </span>
-              </div>
-              {currentAgenda.created_at && (
-                <div className="flex items-center gap-2">
-                  <FaClock size={14} />
-                  <span>
-                    Diterbitkan {formatWaktu(currentAgenda.created_at, "date")}
-                  </span>
+              <p className="text-sm text-neut-600 mb-4">
+                Diterbitkan pada {formatWaktu(currentAgenda.created_at, "date")}
+              </p>
+
+              {currentAgenda.image_path && (
+                <div className="relative w-full h-64 md:h-80 rounded-md overflow-hidden mb-4">
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_HOST}${currentAgenda.image_path}`}
+                    alt={currentAgenda.title}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
               )}
+
+              <div
+                className="text-neut-800 leading-relaxed space-y-4"
+                dangerouslySetInnerHTML={{ __html: currentAgenda.content }}
+              />
             </div>
+          )}
 
-            {currentAgenda.image_url && (
-              <div className="relative w-full h-64 md:h-96 rounded-md overflow-hidden">
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_HOST}${currentAgenda.image_url}`}
-                  alt={currentAgenda.title || "Gambar Agenda"}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            )}
-
-            <div
-              className="text-neut-800 leading-relaxed space-y-4 mt-4"
-              dangerouslySetInnerHTML={{ __html: currentAgenda.content }}
-            />
-          </div>
-        )}
-      </section>
-
-      {!loading && (
-        <section className="px-4 py-8 md:px-24 lg:px-34 mt-2 w-full">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Information type="agenda" data={agenda} loading={loading} />
-            <Information type="berita" data={berita} loading={loading} />
-            <Information
-              type="pengumuman"
-              data={pengumuman}
-              loading={loading}
-            />
+          <div className="py-8">
+            <h1 className="text-3xl font-bold text-black text-center mb-4 md:mb-0">
+              Other Articles
+            </h1>
+            <Project data={agendas} />
           </div>
         </section>
-      )}
+
+        <section className="flex flex-col py-8 space-y-0">
+          <Information type="agenda" data={agenda} loading={loading} />
+          <Information type="berita" data={berita} loading={loading} />
+          <Information type="pengumuman" data={pengumuman} loading={loading} />
+        </section>
+      </div>
     </div>
   );
-};
-
-export default Agenda;
+}
