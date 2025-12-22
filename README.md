@@ -59,14 +59,9 @@ Pendekatan ini memudahkan admin dalam pengelolaan konten secara konsisten.
 ---
 
 ## Peran Internship
-- Pengembangan UI frontend dari nol
+- Pengembangan UI frontend dari awal
 - Implementasi halaman publik dan admin
 - Integrasi API
 - Refactor komponen agar reusable
 - Penyusunan struktur folder berbasis fitur
 - Deployment aplikasi frontend
-
----
-
-## Hasil
-Website berhasil dibangun sebagai aplikasi frontend **end-to-end** dengan sistem admin yang terstruktur dan siap digunakan untuk kebutuhan organisasi.
