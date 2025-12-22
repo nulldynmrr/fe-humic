@@ -97,8 +97,6 @@ export default function ArticlePage({ slug }) {
     fetchAllPengumuman,
   ]);
 
-  console.log(currentArticle);
-
   return (
     <div className="min-h-screen">
       <Header title="Our Articles" imageSrc="/assets/bg-header.png" />
