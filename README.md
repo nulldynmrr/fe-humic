@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# HUMIC Website  
+Frontend Internship Project
 
-## Getting Started
+🔗 Live Demo: https://fe-humic.vercel.app/
 
-First, run the development server:
+## Deskripsi
+Website HUMIC dikembangkan sebagai proyek **Internship Frontend Developer** yang mencakup pengembangan **end-to-end**, mulai dari **landing page publik** hingga **dashboard admin** untuk manajemen konten.  
+Aplikasi terintegrasi dengan backend melalui API dan dirancang modular agar mudah dikembangkan.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Fitur Utama
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### 🌐 Page Public
+ About  
+ 1. Agenda
+ 2. Articles
+ 3. Berita
+ 4. Pengumuman
+ 5. Partnership
+ 6. Internship Project
+ 7. Teams dan Staffs
+ 8. Testimoni
+ 9. Contact  
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 🛠️ Dashboard Admin
+1.  Manajemen Agenda
+2.  Manajemen Berita
+3.  Manajemen Banner
+4.  Manajemen Pengumuman
+5.  Manajemen Partnership
+6.  Manajemen Internship Project
+7.  Manajemen Staff & Teams
+8.  Manajemen Testimoni
+9.  Manajemen Statistik
+10.  Manajemen User Admin
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Struktur Modul
+Setiap modul memiliki:
+- Halaman **Create**
+- Halaman **Overview**
+- Fitur edit dan manajemen data
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Pendekatan ini memudahkan admin dalam pengelolaan konten secara konsisten.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Tech Stack
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=next.js&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
+![CSS](https://img.shields.io/badge/CSS-1572B6?style=flat&logo=css3&logoColor=white)
+![REST API](https://img.shields.io/badge/REST_API-005571?style=flat)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Peran Internship
+- Pengembangan UI frontend dari nol
+- Implementasi halaman publik dan admin
+- Integrasi API
+- Refactor komponen agar reusable
+- Penyusunan struktur folder berbasis fitur
+- Deployment aplikasi frontend
+
+---
+
+## Hasil
+Website berhasil dibangun sebagai aplikasi frontend **end-to-end** dengan sistem admin yang terstruktur dan siap digunakan untuk kebutuhan organisasi.
