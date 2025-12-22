@@ -1,11 +1,11 @@
 # Website HUMIC 
 Frontend Internship Project
 
-🔗 Live Demo: https://fe-humic.vercel.app/
-
 ## Deskripsi
-Website HUMIC dikembangkan sebagai proyek **Internship Frontend Developer** yang mencakup pengembangan **end-to-end**, mulai dari **landing page publik** hingga **dashboard admin** untuk manajemen konten.  
+Website HUMIC dikembangkan sebagai proyek **Internship Frontend Developer** yang mencakup pengembangan **end-to-end**, mulai dari **landing page** hingga **dashboard admin** untuk manajemen Humic.  
 Aplikasi terintegrasi dengan backend melalui API dan dirancang modular agar mudah dikembangkan.
+
+🔗 Live Demo: https://fe-humic.vercel.app/
 
 ## Fitur Utama
 
