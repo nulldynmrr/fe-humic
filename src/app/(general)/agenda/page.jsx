@@ -56,7 +56,7 @@ const Agenda = () => {
         <h1 className="text-3xl font-bold text-black mb-4 md:mb-0 mt-6">
           Daftar Agenda
         </h1>
-        <Project data={agenda} />
+        <Project data={agenda} loading={loading} />
       </section>
     </div>
   );

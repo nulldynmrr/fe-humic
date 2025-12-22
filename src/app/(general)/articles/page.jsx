@@ -40,7 +40,7 @@ const Article = () => {
           </h1>
         </div>
 
-        <Project data={articles} />
+        <Project data={articles} loading={loading} />
       </section>
     </div>
   );
