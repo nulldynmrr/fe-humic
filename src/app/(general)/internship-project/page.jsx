@@ -38,7 +38,7 @@ const IntershipProject = () => {
 
       setLoading(true);
       try {
-        const response = await request.get(`/project/search?query=${search}`);
+        const response = await request.get(`/project/search?que=${search}`);
         setProjects(response.data);
       } catch (err) {
         toast.error("Gagal mencari project");
@@ -54,6 +54,7 @@ const IntershipProject = () => {
     fetchAllProject();
   }, [fetchAllProject]);
 
+  console.log(projects);
   return (
     <div className="min-h-screen">
       <Header title="Internship Project" imageSrc="/assets/bg-header.png" />
