@@ -7,8 +7,6 @@ Frontend Internship Project
 Website HUMIC dikembangkan sebagai proyek **Internship Frontend Developer** yang mencakup pengembangan **end-to-end**, mulai dari **landing page publik** hingga **dashboard admin** untuk manajemen konten.  
 Aplikasi terintegrasi dengan backend melalui API dan dirancang modular agar mudah dikembangkan.
 
----
-
 ## Fitur Utama
 
 ### 🌐 Page Public
@@ -35,18 +33,6 @@ Aplikasi terintegrasi dengan backend melalui API dan dirancang modular agar muda
 9.  Manajemen Statistik
 10.  Manajemen User Admin
 
----
-
-## Struktur Modul
-Setiap modul memiliki:
-- Halaman **Create**
-- Halaman **Overview**
-- Fitur edit dan manajemen data
-
-Pendekatan ini memudahkan admin dalam pengelolaan konten secara konsisten.
-
----
-
 ## Tech Stack
 
 ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)
@@ -55,8 +41,6 @@ Pendekatan ini memudahkan admin dalam pengelolaan konten secara konsisten.
 ![CSS](https://img.shields.io/badge/CSS-1572B6?style=flat&logo=css3&logoColor=white)
 ![REST API](https://img.shields.io/badge/REST_API-005571?style=flat)
 ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white)
-
----
 
 ## Peran Internship
 - Pengembangan UI frontend dari awal
