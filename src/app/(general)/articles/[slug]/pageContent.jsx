@@ -13,11 +13,6 @@ import request from "@/utils/request";
 import { toast } from "react-hot-toast";
 
 export default function ArticlePage({ slug }) {
-  // const params = useParams();
-  // const { slug } = params;
-
-  console.log(slug);
-
   const [currentArticle, setCurrentArticle] = useState(null);
   const [articles, setArticles] = useState([]);
   const [agenda, setAgenda] = useState([]);

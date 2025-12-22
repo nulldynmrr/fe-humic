@@ -105,7 +105,7 @@ export default function Information({ type, data, loading = false }) {
                         fill
                         className="object-cover"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                      <div className="absolute inset-0 from-black/70 to-transparent"></div>
                       <div className="absolute bottom-2 p-2 ml-2 text-white border-l-2 border-l-primary">
                         <h3 className="text-lg font-semibold line-clamp-2">
                           {item.title}
