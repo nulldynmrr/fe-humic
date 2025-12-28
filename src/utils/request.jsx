@@ -41,10 +41,7 @@ request.interceptors.response.use(
   (res) => res,
   (error) => {
     if (error.response?.status === 401) {
-      Cookies.remove("token");
-      if (typeof window !== "undefined") {
-        window.location.href = "/login";
-      }
+      console.warn("Unauthorized, token mungkin belum siap");
     }
     return Promise.reject(error);
   }
