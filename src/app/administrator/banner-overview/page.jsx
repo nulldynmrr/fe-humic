@@ -122,28 +122,6 @@ export default function Banner() {
           <TableAction
             actions={[
               {
-                label: "Lihat Detail",
-                icon: <Eye className="h-4 w-4" />,
-                className:
-                  "capitalize cursor-pointer text-black dark:text-white bg-red-500 hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
-                onClick: () => {
-                  setSelectedRow(data);
-                  setOpenModal(true);
-                  setModalMode("view");
-                },
-              },
-              {
-                label: "Edit",
-                icon: <Edit className="h-4 w-4" />,
-                className:
-                  "capitalize cursor-pointer text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-200/20 transition-colors",
-                onClick: () => {
-                  setSelectedRow(data);
-                  setOpenModal(true);
-                  setModalMode("edit");
-                },
-              },
-              {
                 label: "Delete",
                 icon: <Trash className="h-4 w-4" />,
                 className:
