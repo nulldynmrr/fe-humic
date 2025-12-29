@@ -240,7 +240,10 @@ export function DataTable({
                       cell.column.id === "end_date"
                     ) {
                       cellContent = formatWaktu(cell.getValue(), "default");
-                    } else if (cell.column.id === "content") {
+                    } else if (
+                      cell.column.id === "content" ||
+                      cell.column.id === "description"
+                    ) {
                       const rawValue = cell.getValue();
                       cellContent = renderContentPreview(rawValue);
                     } else {

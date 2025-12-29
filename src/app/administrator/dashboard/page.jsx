@@ -16,13 +16,9 @@ import {
 } from "@/components/ui/select";
 import { PieChart, Pie, Cell } from "recharts";
 import request from "@/utils/request";
-import { toast } from "sonner";
 import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
 
 const Dashboard = () => {
-  const router = useRouter();
-
   const [stats, setStats] = useState({
     totalResearchProjects: 0,
     totalInternshipMember: 0,
@@ -32,6 +28,7 @@ const Dashboard = () => {
   const [logs, setLogs] = useState([]);
   const [filteredLogs, setFilteredLogs] = useState([]);
   const [filter, setFilter] = useState("all");
+
   const [logsAnalytics, setLogsAnalytics] = useState([]);
   const [logsSummary, setLogsSummary] = useState({
     CREATE: 0,
@@ -43,165 +40,125 @@ const Dashboard = () => {
   const [logsFilter, setLogsFilter] = useState("7d");
   const [isLoadingAll, setIsLoadingAll] = useState(true);
 
-  const fetchAllProject = useCallback(async () => {
-    try {
-      const res = await request.get("/project");
-      setStats((prev) => ({
-        ...prev,
-        totalResearchProjects: res.data?.length || 0,
-      }));
-    } catch {
-      setStats((prev) => ({ ...prev, totalResearchProjects: 0 }));
-    }
-  }, []);
+  const applyFilter = (value) => {
+    setFilter(value);
+  };
 
-  const fetchAllIntern = useCallback(async () => {
+  const fetchStats = async () => {
     try {
-      const res = await request.get("/intern");
-      setStats((prev) => ({
-        ...prev,
-        totalInternshipMember: res.data?.length || 0,
-      }));
-    } catch {
-      setStats((prev) => ({ ...prev, totalInternshipMember: 0 }));
-    }
-  }, []);
+      const [p, i, s] = await Promise.all([
+        request.get("/project"),
+        request.get("/intern"),
+        request.get("/staff"),
+      ]);
 
-  const fetchAllStaff = useCallback(async () => {
-    try {
-      const res = await request.get("/staff");
-      setStats((prev) => ({
-        ...prev,
-        totalStaff: res.data?.length || 0,
-      }));
+      setStats({
+        totalResearchProjects: p.data?.length || 0,
+        totalInternshipMember: i.data?.length || 0,
+        totalStaff: s.data?.length || 0,
+      });
     } catch {
-      setStats((prev) => ({ ...prev, totalStaff: 0 }));
+      setStats({
+        totalResearchProjects: 0,
+        totalInternshipMember: 0,
+        totalStaff: 0,
+      });
+    }
+  };
+
+  const fetchLogs = useCallback(async () => {
+    try {
+      const res = await request.get("/logs");
+      const data = Array.isArray(res.data) ? res.data : [];
+
+      setLogs(
+        data.map((l) => ({
+          ...l,
+          adminName: l.admin?.username || "Unknown",
+        }))
+      );
+    } catch {
+      setLogs([]);
     }
   }, []);
 
   const fetchLogsAnalytics = useCallback(async (filter = "7d") => {
     try {
       const res = await request.get("/logs");
-      let data = Array.isArray(res.data) ? res.data : [];
+      const data = Array.isArray(res.data) ? res.data : [];
 
       const now = new Date();
       const daysMap = { today: 1, "7d": 7, "30d": 30, "90d": 90 };
       const days = daysMap[filter] || 7;
 
-      const filtered = data.filter((log) => {
-        const diff = (now - new Date(log.created_at)) / 86400000;
+      const filtered = data.filter((l) => {
+        const diff = (now - new Date(l.created_at)) / 86400000;
         return diff <= days;
       });
 
-      const grouped = filtered.reduce((acc, log) => {
-        acc[log.action] = (acc[log.action] || 0) + 1;
+      const grouped = filtered.reduce((acc, l) => {
+        acc[l.action] = (acc[l.action] || 0) + 1;
         return acc;
       }, {});
 
-      const arr = Object.entries(grouped).map(([action, count]) => ({
-        action,
-        count,
-      }));
+      setLogsAnalytics(
+        Object.entries(grouped).map(([action, count]) => ({
+          action,
+          count,
+        }))
+      );
 
-      setLogsAnalytics(arr);
-
-      const summary = {
-        CREATE: filtered.filter((l) => l.action === "CREATE").length,
-        READ: filtered.filter((l) => l.action === "READ").length,
-        UPDATE: filtered.filter((l) => l.action === "UPDATE").length,
-        DELETE: filtered.filter((l) => l.action === "DELETE").length,
-      };
-
-      setLogsSummary(summary);
+      setLogsSummary({
+        CREATE: grouped.CREATE || 0,
+        READ: grouped.READ || 0,
+        UPDATE: grouped.UPDATE || 0,
+        DELETE: grouped.DELETE || 0,
+      });
     } catch {
       setLogsAnalytics([]);
       setLogsSummary({ CREATE: 0, READ: 0, UPDATE: 0, DELETE: 0 });
     }
   }, []);
 
-  const fetchLogs = useCallback(async () => {
-    try {
-      const response = await request.get("/logs");
-      const logsData = Array.isArray(response.data) ? response.data : [];
-
-      const mapped = await Promise.all(
-        logsData.map(async (log) => {
-          try {
-            const adminRes = await request.get(`/admin/${log.id_admin}`);
-            return { ...log, adminName: adminRes.data.username || "Unknown" };
-          } catch {
-            return { ...log, adminName: "Unknown" };
-          }
-        })
-      );
-
-      setLogs(mapped);
-      setFilteredLogs(mapped);
-    } catch (error) {
-      console.error("Error fetching logs:", error);
-    }
-  }, []);
-
-  const applyFilter = (value) => {
-    setFilter(value);
-
-    if (value === "all") {
+  useEffect(() => {
+    if (filter === "all") {
       setFilteredLogs(logs);
       return;
     }
 
     const now = new Date();
-    const days = { today: 1, "3d": 3, "7d": 7, "1m": 30 }[value];
+    const days = { today: 1, "3d": 3, "7d": 7, "1m": 30 }[filter];
 
-    const filtered = logs.filter((log) => {
-      const logDate = new Date(log.created_at);
-      const diff = (now - logDate) / (1000 * 60 * 60 * 24);
-      return diff <= days;
-    });
+    setFilteredLogs(
+      logs.filter((l) => {
+        const diff = (now - new Date(l.created_at)) / 86400000;
+        return diff <= days;
+      })
+    );
+  }, [logs, filter]);
 
-    setFilteredLogs(filtered);
-  };
   useEffect(() => {
-    const load = async () => {
-      const token = Cookies.get("admin_token");
+    const token = Cookies.get("admin_token");
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
 
-      if (!token) {
-        console.warn("No admin token found, redirecting to login");
-        window.location.href = "/login";
-        return;
-      }
-
+    const init = async () => {
       setIsLoadingAll(true);
-      try {
-        await Promise.all([
-          fetchAllProject(),
-          fetchAllIntern(),
-          fetchAllStaff(),
-          fetchLogsAnalytics(logsFilter),
-          fetchLogs(),
-        ]);
-      } catch (error) {
-        console.error("Error loading dashboard:", error);
+      await fetchStats();
+      setIsLoadingAll(false);
 
-        if (error?.response?.status === 401) {
-          Cookies.remove("admin_token");
-          localStorage.removeItem("admin");
-          window.location.href = "/login";
-        }
-      } finally {
-        setIsLoadingAll(false);
-      }
+      fetchLogs();
+      fetchLogsAnalytics(logsFilter);
     };
 
-    load();
+    init();
   }, []);
 
   useEffect(() => {
     fetchLogsAnalytics(logsFilter);
-  }, [logsFilter, fetchLogsAnalytics]);
-  useEffect(() => {
-    fetchLogsAnalytics(logsFilter);
-  }, [logsFilter, fetchLogsAnalytics]);
+  }, [logsFilter]);
 
   const COLORS = {
     CREATE: "#10b981",
@@ -220,7 +177,6 @@ const Dashboard = () => {
       </div>
     );
   }
-
   return (
     <div className="p-8 min-h-screen text-foreground">
       <div className="max-w-7xl mx-auto">
@@ -267,7 +223,6 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <Card className={cardClass}>
