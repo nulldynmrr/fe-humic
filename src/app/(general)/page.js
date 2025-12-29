@@ -29,59 +29,70 @@ const Dashboard = () => {
   const [testimoni, setTestimoni] = useState([]);
   const [partnership, setPartnership] = useState([]);
   const [stats, setStats] = useState([]);
-  const [isLoadingAll, setIsLoadingAll] = useState(true);
+
+  const [loadingAgenda, setLoadingAgenda] = useState(true);
+  const [loadingBerita, setLoadingBerita] = useState(true);
+  const [loadingPengumuman, setLoadingPengumuman] = useState(true);
+  const [loadingTestimoni, setLoadingTestimoni] = useState(true);
+  const [loadingPartnership, setLoadingPartnership] = useState(true);
+  const [loadingStats, setLoadingStats] = useState(true);
+
   const [openModalIntern, setOpenModalIntern] = useState(false);
   const [openModalWrap, setopenModalWrap] = useState(false);
 
-  const fetchSection = useCallback(async (url, errorMessage) => {
-    try {
-      const response = await request.get(url);
-      return response.data ?? [];
-    } catch (err) {
-      if (err.response) {
-        toast.dismiss();
-      } else {
-        toast.error(errorMessage);
+  const fetchSection = useCallback(
+    async (url, setter, setLoading, errorMsg) => {
+      setLoading(true);
+      try {
+        const res = await request.get(url);
+        setter(res.data ?? []);
+      } catch (err) {
+        if (!err.response) toast.error(errorMsg);
+      } finally {
+        setLoading(false);
       }
-      return [];
-    }
-  }, []);
-
-  const fetchDashboardData = useCallback(async () => {
-    setIsLoadingAll(true);
-    try {
-      const [
-        agendaData,
-        beritaData,
-        pengumumanData,
-        testimoniData,
-        partnershipData,
-        statistikData,
-      ] = await Promise.all([
-        fetchSection("/agenda?limit=4", "Gagal memuat data agenda"),
-        fetchSection("/berita?limit=4", "Gagal memuat data berita"),
-        fetchSection("/pengumuman?limit=5", "Gagal memuat data pengumuman"),
-        fetchSection("/testimony", "Gagal memuat data testimoni"),
-        fetchSection("/partners", "Gagal memuat data partnership"),
-        fetchSection("/statistics", "Gagal memuat data statistik"),
-      ]);
-
-      setAgenda(agendaData);
-      setBerita(beritaData);
-      setPengumuman(pengumumanData);
-      setTestimoni(testimoniData);
-      setPartnership(partnershipData);
-      setStats(statistikData);
-    } finally {
-      setIsLoadingAll(false);
-    }
-  }, [fetchSection]);
+    },
+    []
+  );
 
   useEffect(() => {
-    fetchDashboardData();
-  }, [fetchDashboardData]);
-
-  if (isLoadingAll) return <PageLoader />;
+    fetchSection(
+      "/agenda?limit=4",
+      setAgenda,
+      setLoadingAgenda,
+      "Gagal memuat data agenda"
+    );
+    fetchSection(
+      "/berita?limit=4",
+      setBerita,
+      setLoadingBerita,
+      "Gagal memuat data berita"
+    );
+    fetchSection(
+      "/pengumuman?limit=5",
+      setPengumuman,
+      setLoadingPengumuman,
+      "Gagal memuat data pengumuman"
+    );
+    fetchSection(
+      "/testimony",
+      setTestimoni,
+      setLoadingTestimoni,
+      "Gagal memuat data testimoni"
+    );
+    fetchSection(
+      "/partners",
+      setPartnership,
+      setLoadingPartnership,
+      "Gagal memuat data partnership"
+    );
+    fetchSection(
+      "/statistics",
+      setStats,
+      setLoadingStats,
+      "Gagal memuat data statistik"
+    );
+  }, [fetchSection]);
 
   const animateScroll = (container, distance, duration = 450) => {
     if (!container) return;
@@ -93,8 +104,7 @@ const Dashboard = () => {
     const step = (now) => {
       const elapsed = now - startTime;
       const progress = Math.min(1, elapsed / duration);
-      const eased = easeOutCubic(progress);
-      container.scrollLeft = start + distance * eased;
+      container.scrollLeft = start + distance * easeOutCubic(progress);
       if (progress < 1) requestAnimationFrame(step);
     };
 
@@ -106,8 +116,7 @@ const Dashboard = () => {
     if (!container) return 370;
     const firstChild = container.querySelector(":scope > div");
     if (!firstChild) return 370;
-    const rect = firstChild.getBoundingClientRect();
-    return Math.round(rect.width + 16);
+    return Math.round(firstChild.getBoundingClientRect().width + 16);
   };
 
   const scrollLeft = () => animateScroll(feedbackRef.current, -getStep());
@@ -161,14 +170,15 @@ const Dashboard = () => {
   return (
     <>
       <ImageSlider className="mt-12" />
+
       <section className="px-4 py-8 md:px-12 h-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-          <Information type="agenda" data={agenda} loading={isLoadingAll} />
-          <Information type="berita" data={berita} loading={isLoadingAll} />
+          <Information type="agenda" data={agenda} loading={loadingAgenda} />
+          <Information type="berita" data={berita} loading={loadingBerita} />
           <Information
             type="pengumuman"
             data={pengumuman}
-            loading={isLoadingAll}
+            loading={loadingPengumuman}
           />
         </div>
       </section>
@@ -336,19 +346,24 @@ const Dashboard = () => {
       </section>
 
       {partnership && partnership.length > 0 && (
-        <section className="bg-neut-50 px-4 py-8 md:px-12 flex flex-col justify-center items-center overflow-hidden gap-6">
-          <h1 className="text-xl font-bold text-black">Our Partnership</h1>
-          <div className="grid grid-cols-4 gap-4">
-            {partnership.map((p, index) => (
-              <div key={index} className="relative w-full h-20">
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_HOST}${p.logo}`}
-                  alt={p.name}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            ))}
+        <section className="bg-neut-50 px-4 py-8 md:px-12">
+          <div className="max-w-6xl mx-auto">
+            <h1 className="text-xl font-bold text-center">Our Partnership</h1>
+
+            <div className="grid grid-cols-4 gap-4 mt-6">
+              {partnership.map((p, i) => (
+                <div className="relative h-20 flex items-center justify-center">
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_HOST}${p.logo}`}
+                      alt={p.name}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       )}
