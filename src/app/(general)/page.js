@@ -275,12 +275,12 @@ const Dashboard = () => {
                 variant="secondary"
                 maxWidth
               />
-              <ButtonDefault
+              {/* <ButtonDefault
                 onClick={() => setopenModalWrap(true)}
                 text="Apply for warp internship"
                 variant="primary"
                 maxWidth
-              />
+              /> */}
             </div>
           </div>
         </div>
