@@ -36,7 +36,7 @@ export default function Pengumuman() {
       );
     }
   };
-  
+
   const fetchAllPengumuman = useCallback(
     async (searchQuery = "", filterType = "") => {
       setLoading(true);
@@ -91,7 +91,7 @@ export default function Pengumuman() {
       },
     },
     { accessorKey: "title", header: "Title" },
-    { accessorKey: "content", header: "Description" },
+    { accessorKey: "content", header: "Kontent" },
     {
       accessorKey: "date",
       header: "Date",
@@ -162,7 +162,8 @@ export default function Pengumuman() {
         <div>
           <h2 className="text-2xl font-bold">Pengumuman HUMIC</h2>
           <p className="text-[#62748E] dark:text-[#828b97]">
-           Kelola berbagai pengumuman resmi HUMIC seperti informasi internal, pemberitahuan penting, atau update kebijakan.
+            Kelola berbagai pengumuman resmi HUMIC seperti informasi internal,
+            pemberitahuan penting, atau update kebijakan.
           </p>
         </div>
 
@@ -182,11 +183,7 @@ export default function Pengumuman() {
           Memuat data Pengumuman...
         </div>
       ) : (
-        <DataTable
-          columns={tableColumns}
-          data={pengumuman}
-          filterKey="title"
-        />
+        <DataTable columns={tableColumns} data={pengumuman} filterKey="title" />
       )}
       <Modal
         isOpen={openModal}
