@@ -173,14 +173,6 @@ export default function Banner() {
 
         <div className="flex space-x-2 mt-2 md:mt-0">
           <Button
-            variant="secondary"
-            icon={Upload}
-            onClick={() => router.push("/administrator/import")}
-          >
-            Import
-          </Button>
-
-          <Button
             variant="default"
             icon={Plus}
             onClick={() => router.push("/administrator/create-banner")}
@@ -195,11 +187,7 @@ export default function Banner() {
           Memuat data banner...
         </div>
       ) : (
-        <DataTable
-          columns={tableColumns}
-          data={banner}
-          hide={true}
-        />
+        <DataTable columns={tableColumns} data={banner} hide={true} />
       )}
 
       <Modal

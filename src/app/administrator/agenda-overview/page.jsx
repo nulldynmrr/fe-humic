@@ -89,6 +89,7 @@ export default function Agenda() {
       },
     },
     { accessorKey: "title", header: "Title" },
+    { accessorKey: "content", header: "Kontent" },
     {
       accessorKey: "date",
       header: "Date",

@@ -67,19 +67,39 @@ export function DataTable({
 
   const isEmpty = !data || data.length === 0;
 
-  const truncateText = (text, maxWords = 50) => {
-    if (!text) return text;
-    const strText = String(text);
+  const renderContentPreview = (html) => {
+    if (typeof html !== "string") return html;
 
-    const stripped = strText
-      .replace(/<[^>]*>/g, " ")
+    const text = html
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, " ")
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, " ")
+      .replace(/<br\s*\/?>/gi, " ")
+      .replace(/<\/p>/gi, " ")
+      .replace(/<[^>]+>/g, " ")
       .replace(/\s+/g, " ")
       .trim();
 
-    const words = stripped.split(" ");
-    if (words.length <= maxWords) return text;
+    const words = text.split(" ");
+    const charLimit = 60;
+    const wordLimit = 40;
 
-    return words.slice(0, maxWords).join(" ") + "...";
+    if (text.length <= charLimit && words.length <= wordLimit) {
+      return text;
+    }
+
+    let result = "";
+
+    if (words.length > wordLimit) {
+      result = words.slice(0, wordLimit).join(" ");
+    } else {
+      result = text;
+    }
+
+    if (result.length > charLimit) {
+      result = result.slice(0, charLimit);
+    }
+
+    return result + "...";
   };
 
   return (
@@ -220,15 +240,14 @@ export function DataTable({
                       cell.column.id === "end_date"
                     ) {
                       cellContent = formatWaktu(cell.getValue(), "default");
+                    } else if (cell.column.id === "content") {
+                      const rawValue = cell.getValue();
+                      cellContent = renderContentPreview(rawValue);
                     } else {
-                      const rawContent = flexRender(
+                      cellContent = flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
                       );
-                      cellContent =
-                        typeof rawContent === "string"
-                          ? truncateText(rawContent)
-                          : rawContent;
                     }
 
                     return (

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import RichText from "@/components/ui/richText";
 import File from "@/components/ui/File";
 import { DatePicker } from "@/components/ui/date-picker";
 import { z } from "zod";
@@ -91,6 +91,16 @@ export default function CreatePengumuman() {
     }
   };
 
+  const handleRichTextChange = (htmlContent) => {
+    setFormData((prev) => ({ ...prev, content: htmlContent }));
+
+    if (status.errors.content) {
+      const newErrors = { ...status.errors };
+      delete newErrors.content;
+      setStatus((prev) => ({ ...prev, errors: newErrors }));
+    }
+  };
+
   const handleImageChange = (file) => {
     setFormData((prev) => ({ ...prev, image: file }));
 
@@ -150,7 +160,7 @@ export default function CreatePengumuman() {
       if (response.status === 200 || response.status === 201) {
         toast.dismiss();
         toast.success(response.data?.message || "Pengumuman berhasil dibuat!");
-       
+
         onReset();
         router.back();
       } else {
@@ -177,7 +187,10 @@ export default function CreatePengumuman() {
   return (
     <section className="py-4 bg-sidebar p-6 rounded-sm shadow-md mt-16 md:mt-0">
       <h2 className="text-2xl font-bold">Create Pengumuman</h2>
-      <p className="text-muted">Kelola berbagai pengumuman resmi HUMIC seperti informasi internal, pemberitahuan penting, atau update kebijakan.</p>
+      <p className="text-muted">
+        Kelola berbagai pengumuman resmi HUMIC seperti informasi internal,
+        pemberitahuan penting, atau update kebijakan.
+      </p>
 
       <form onSubmit={onSubmit} className="space-y-8 mt-10" noValidate>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -223,12 +236,10 @@ export default function CreatePengumuman() {
           <Label htmlFor="content" required>
             Content
           </Label>
-          <Textarea
-            name="content"
+          <RichText
             value={formData.content}
-            onChange={handleInputChange}
+            onChange={handleRichTextChange}
             placeholder="Tulis isi pengumuman..."
-            className="mt-2"
           />
           {status.errors.content && (
             <p className="text-sm text-red-600 mt-1">{status.errors.content}</p>

@@ -81,15 +81,18 @@ function LoginForm() {
       const data = await loginAdmin(formData.username, formData.password);
 
       if (data?.token) {
-        Cookies.set("token", data.token, { expires: 1 });
+        Cookies.set("admin_token", data.token, {
+          expires: 1,
+          path: "/",
+          sameSite: "Lax",
+        });
 
         const adminData = {
-          id: data.id || data.adminId || data._id,
-          username: data.username || formData.username,
-          name:
-            data.name || data.fullName || data.displayName || formData.username,
+          id: data.admin?.id || data.id,
+          username: data.admin?.username || data.username || formData.username,
+          name: data.admin?.username || data.username || formData.username,
           email: data.email || "",
-          avatar: data.avatar || data.profileImage || data.photo || "",
+          avatar: data.avatar || "",
           role: data.role || "admin",
         };
 
@@ -98,15 +101,21 @@ function LoginForm() {
         toast.dismiss();
         toast.success(data.message || "Login Successful");
 
-        router.push("/administrator/dashboard");
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
+        window.location.href = "/administrator/dashboard";
       } else {
         toast.dismiss();
         toast.error("Login failed - No token received");
         setLoading(false);
       }
     } catch (error) {
-      let errorMessage =
-        error?.response?.data?.message || error?.message || "Login failed";
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        "Username atau password salah";
+
       setValidations([{ name: "username", message: errorMessage }]);
       toast.dismiss();
       toast.error(errorMessage);

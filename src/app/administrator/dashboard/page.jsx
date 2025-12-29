@@ -17,8 +17,12 @@ import {
 import { PieChart, Pie, Cell } from "recharts";
 import request from "@/utils/request";
 import { toast } from "sonner";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 const Dashboard = () => {
+  const router = useRouter();
+
   const [stats, setStats] = useState({
     totalResearchProjects: 0,
     totalInternshipMember: 0,
@@ -133,8 +137,8 @@ const Dashboard = () => {
 
       setLogs(mapped);
       setFilteredLogs(mapped);
-    } catch {
-      toast.error("Gagal memuat log");
+    } catch (error) {
+      console.error("Error fetching logs:", error);
     }
   }, []);
 
@@ -157,29 +161,44 @@ const Dashboard = () => {
 
     setFilteredLogs(filtered);
   };
-
   useEffect(() => {
     const load = async () => {
-      setIsLoadingAll(true);
-      await Promise.all([
-        fetchAllProject(),
-        fetchAllIntern(),
-        fetchAllStaff(),
-        fetchLogsAnalytics(logsFilter),
-        fetchLogs(),
-      ]);
-      setIsLoadingAll(false);
-    };
-    load();
-  }, [
-    fetchAllProject,
-    fetchAllIntern,
-    fetchAllStaff,
-    fetchLogsAnalytics,
-    logsFilter,
-    fetchLogs,
-  ]);
+      const token = Cookies.get("admin_token");
 
+      if (!token) {
+        console.warn("No admin token found, redirecting to login");
+        window.location.href = "/login";
+        return;
+      }
+
+      setIsLoadingAll(true);
+      try {
+        await Promise.all([
+          fetchAllProject(),
+          fetchAllIntern(),
+          fetchAllStaff(),
+          fetchLogsAnalytics(logsFilter),
+          fetchLogs(),
+        ]);
+      } catch (error) {
+        console.error("Error loading dashboard:", error);
+
+        if (error?.response?.status === 401) {
+          Cookies.remove("admin_token");
+          localStorage.removeItem("admin");
+          window.location.href = "/login";
+        }
+      } finally {
+        setIsLoadingAll(false);
+      }
+    };
+
+    load();
+  }, []);
+
+  useEffect(() => {
+    fetchLogsAnalytics(logsFilter);
+  }, [logsFilter, fetchLogsAnalytics]);
   useEffect(() => {
     fetchLogsAnalytics(logsFilter);
   }, [logsFilter, fetchLogsAnalytics]);

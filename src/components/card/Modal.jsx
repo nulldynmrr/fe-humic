@@ -131,11 +131,14 @@ export default function Modal({
               const value = formData[field.key];
               const isDateField = field.key.toLowerCase().includes("date");
               const hasHTMLContent = containsHTML(value);
+              const isActionField = field.key.toLowerCase() === "content";
 
               return (
                 <div
                   key={field.key}
-                  className={hasHTMLContent ? "col-span-full" : ""}
+                  className={
+                    hasHTMLContent || isActionField ? "col-span-full" : ""
+                  }
                 >
                   <p className="text-xs text-gray-400 dark:text-gray-500">
                     {field.label}
@@ -167,7 +170,7 @@ export default function Modal({
                           }));
                         }}
                       />
-                    ) : hasHTMLContent ? (
+                    ) : hasHTMLContent || isActionField ? (
                       <RichText
                         value={value || ""}
                         onChange={(html) =>
@@ -190,7 +193,7 @@ export default function Modal({
                         <p className="font-bold text-gray-900 dark:text-gray-100">
                           {formatWaktu(value, "date")}
                         </p>
-                      ) : hasHTMLContent ? (
+                      ) : hasHTMLContent || isActionField ? (
                         <div
                           className="prose prose-sm max-w-none dark:prose-invert"
                           dangerouslySetInnerHTML={{ __html: value || "" }}

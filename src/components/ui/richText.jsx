@@ -52,7 +52,7 @@ export default function RichText({ value, onChange, placeholder }) {
         `,
       },
     },
-    immediatelyRender: false, 
+    immediatelyRender: false,
   });
 
   useEffect(() => {
@@ -150,10 +150,10 @@ export default function RichText({ value, onChange, placeholder }) {
           />
         </div>
       )}
-    <EditorContent
-  editor={editor}
-  className="rounded-md p-2 min-h-[200px] bg-background focus:outline-none focus:ring-0 border-0"
- />
+      <EditorContent
+        editor={editor}
+        className="rounded-md  min-h-[200px] bg-transparent focus:outline-none focus:ring-0 border-0"
+      />
     </div>
   );
 }
