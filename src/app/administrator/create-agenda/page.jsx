@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import RichText from "@/components/ui/richText";
 import File from "@/components/ui/File";
 import { DatePicker } from "@/components/ui/date-picker";
 import { z } from "zod";
@@ -85,6 +85,16 @@ export default function CreateAgenda() {
     if (status.errors[name]) {
       const newErrors = { ...status.errors };
       delete newErrors[name];
+      setStatus((prev) => ({ ...prev, errors: newErrors }));
+    }
+  };
+
+  const handleRichTextChange = (htmlContent) => {
+    setFormData((prev) => ({ ...prev, content: htmlContent }));
+
+    if (status.errors.content) {
+      const newErrors = { ...status.errors };
+      delete newErrors.content;
       setStatus((prev) => ({ ...prev, errors: newErrors }));
     }
   };
@@ -192,7 +202,8 @@ export default function CreateAgenda() {
       <div>
         <h2 className="text-2xl font-bold">Create an Agenda</h2>
         <p className="text-[#62748E] dark:text-[#828b97]">
-          Kelola seluruh agenda kegiatan HUMIC seperti seminar, workshop, dan event riset.
+          Kelola seluruh agenda kegiatan HUMIC seperti seminar, workshop, dan
+          event riset.
         </p>
       </div>
 
@@ -240,12 +251,10 @@ export default function CreateAgenda() {
           <Label htmlFor="content" required>
             Content
           </Label>
-          <Textarea
-            name="content"
+          <RichText
             value={formData.content}
-            onChange={handleInputChange}
+            onChange={handleRichTextChange}
             placeholder="Tulis konten agenda disini ..."
-            className="mt-2"
           />
 
           {status.errors.content && (
